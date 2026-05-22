@@ -3,33 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>प्रिया AI - लाइव वेदर, ऑटोनोमस आई एवं रीयल-टाइम जेस्चर एडिशन (v2.5)</title>
+    <title>प्रिया AI - Avaturn आर्किटेक्चर इंजन v2.7</title>
     <style>
         :root {
             --neon-cyan: #00ffcc;
             --neon-blue: #0077ff;
             --neon-orange: #ff5500;
             --neon-pink: #ff007f;
-            --neon-purple: #9900ff;
             --text-core-white: #ffffff;
             --text-dim-slate: #8a99ad;
-            --bg-glass-panel: rgba(10, 10, 25, 0.70);
+            --bg-glass-panel: rgba(10, 10, 25, 0.75);
             --border-matte-white: rgba(255, 255, 255, 0.12);
-            --bg-input-field: rgba(5, 5, 15, 0.80);
-            --transition-tactile: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            --bg-input-field: rgba(5, 5, 15, 0.85);
         }
 
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
             overflow: hidden; background-color: #020208;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Segoe UI', Roboto, sans-serif;
             -webkit-font-smoothing: antialiased;
-            perspective: 1000px;
-        }
-
-        .background-viewport-wrapper {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 1; pointer-events: none; overflow: hidden;
         }
 
         .matrix-grid-overlay {
@@ -37,507 +29,283 @@
             background-image: 
                 linear-gradient(rgba(0, 255, 204, 0.008) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(0, 255, 204, 0.008) 1px, transparent 1px);
-            background-size: 50px 50px; background-position: center center;
-            pointer-events: none; opacity: 0.8;
+            background-size: 50px 50px; pointer-events: none; opacity: 0.8;
         }
 
         #canvas-container {
             width: 100%; height: 100%; position: absolute; top: 0; left: 0;
-            z-index: 3; cursor: grab; display: block;
-            background: transparent !important; touch-action: none;
+            z-index: 3; cursor: grab; display: block; touch-action: none;
         }
-
         #canvas-container:active { cursor: grabbing; }
 
         .dashboard {
-            position: absolute; top: 25px; left: 25px; z-index: 10;
-            background: var(--bg-glass-panel); padding: 16px 24px; border-radius: 20px;
-            backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+            position: absolute; top: 20px; left: 20px; z-index: 10;
+            background: var(--bg-glass-panel); padding: 14px 20px; border-radius: 16px;
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--border-matte-white);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 1px 2px rgba(255,255,255,0.1);
-            animation: HUD_Entry_Slide_Down 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
 
-        .status-block { display: flex; align-items: center; margin-bottom: 8px; }
-
+        .status-block { display: flex; align-items: center; margin-bottom: 6px; }
         .status-beacon-dot {
-            display: inline-block; width: 10px; height: 10px; background: var(--neon-cyan);
-            border-radius: 50%; margin-right: 12px;
-            box-shadow: 0 0 12px var(--neon-cyan), 0 0 24px var(--neon-cyan);
-            animation: HUD_Beacon_Pulse 2s infinite ease-in-out;
+            width: 10px; height: 10px; background: var(--neon-cyan);
+            border-radius: 50%; margin-right: 10px;
+            box-shadow: 0 0 10px var(--neon-cyan);
         }
-
-        .status-title {
-            font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;
-            text-shadow: 0 0 8px rgba(0,255,204,0.3); color: var(--text-core-white);
-        }
-
-        .channel-info { font-size: 12px; color: var(--text-dim-slate); margin-top: 4px; font-weight: 500; }
-        .channel-active-value { color: var(--neon-cyan); font-weight: 700; }
-        .drive-sync-badge { margin-top: 6px; font-size: 11px; color: #00ffcc; display: flex; align-items: center; gap: 6px; font-weight: bold; }
+        .status-title { font-size: 13px; font-weight: 700; text-transform: uppercase; color: var(--text-core-white); letter-spacing: 1px; }
+        .channel-info { font-size: 11px; color: var(--text-dim-slate); }
+        .badge { font-size: 11px; margin-top: 4px; font-weight: bold; }
 
         .ui-dock-wrapper {
-            position: absolute; bottom: 40px; width: 100%; display: flex;
-            justify-content: center; align-items: center; gap: 15px; z-index: 20;
-            padding: 0 30px; box-sizing: border-box;
-            animation: HUD_Dock_Slide_Up 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            position: absolute; bottom: 30px; width: 100%; display: flex;
+            justify-content: center; align-items: center; gap: 12px; z-index: 20;
+            padding: 0 20px; box-sizing: border-box;
         }
 
         .input-carrier-box {
-            background: var(--bg-input-field); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
-            padding: 0 25px; border-radius: 35px; flex-grow: 1; max-width: 700px; height: 64px;
+            background: var(--bg-input-field); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            padding: 0 20px; border-radius: 30px; flex-grow: 1; max-width: 600px; height: 56px;
             display: flex; align-items: center; border: 1px solid rgba(255, 255, 255, 0.12);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8); transition: var(--transition-tactile);
         }
-
-        .input-carrier-box:focus-within {
-            border-color: var(--neon-cyan);
-            box-shadow: 0 0 25px rgba(0, 255, 204, 0.25), 0 20px 50px rgba(0,0,0,0.85);
-            transform: translateY(-2px);
-        }
+        .input-carrier-box:focus-within { border-color: var(--neon-cyan); }
 
         input {
             width: 100%; background: transparent; border: none; color: var(--text-core-white);
-            outline: none; font-size: 16px; height: 100%; letter-spacing: 0.5px;
+            outline: none; font-size: 15px; height: 100%;
         }
-
         input::placeholder { color: rgba(255, 255, 255, 0.35); }
 
         .action-circle-btn {
-            border: none; border-radius: 50%; width: 64px; height: 64px; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            transition: var(--transition-tactile);
+            border: none; border-radius: 50%; width: 56px; height: 56px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; font-size: 20px;
         }
-
-        .mic-trigger-btn {
-            background: linear-gradient(135deg, var(--neon-orange), var(--neon-pink));
-            color: #ffffff; font-size: 22px; box-shadow: 0 10px 20px rgba(255, 75, 43, 0.3);
-            border: 1px solid rgba(255,255,255,0.15);
-        }
-
-        .mic-trigger-btn:hover {
-            transform: scale(1.05) translateY(-2px); box-shadow: 0 12px 25px rgba(255, 75, 43, 0.45);
-        }
-
-        .mic-trigger-btn.listening {
-            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-blue));
-            box-shadow: 0 0 30px var(--neon-cyan), 0 0 15px var(--neon-blue);
-            animation: UI_Active_Pulse 1.2s infinite alternate ease-in-out;
-        }
-
-        .send-trigger-btn {
-            background: #ffffff; color: #010103; font-size: 20px;
-            box-shadow: 0 10px 20px rgba(255,255,255,0.12); border: 1px solid rgba(0,0,0,0.05);
-        }
-
-        .send-trigger-btn:hover {
-            transform: scale(1.05) translateY(-2px);
-            box-shadow: 0 12px 25px rgba(255,255,255,0.25); background: #f4f5f7;
-        }
+        .mic-trigger-btn { background: linear-gradient(135deg, var(--neon-orange), var(--neon-pink)); color: white; }
+        .mic-trigger-btn.listening { background: var(--neon-cyan); animation: pulse 1s infinite alternate; }
+        .send-trigger-btn { background: white; color: black; }
 
         #subtitle-monitor-box {
-            position: absolute; bottom: 130px; left: 50%; transform: translateX(-50%);
-            background: rgba(5, 5, 18, 0.92); padding: 14px 28px; border-radius: 20px;
-            color: var(--text-core-white); font-size: 16px; max-width: 75%; width: auto;
-            text-align: center; z-index: 30; backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.12);
-            box-shadow: 0 20px 45px rgba(0,0,0,0.85); display: none;
-            line-height: 1.5; font-weight: 500;
-            animation: UI_PopUp_Subtitle 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
+            position: absolute; bottom: 105px; left: 50%; transform: translateX(-50%);
+            background: rgba(5, 5, 18, 0.95); padding: 12px 24px; border-radius: 16px;
+            color: white; font-size: 15px; max-width: 80%; text-align: center; z-index: 30;
+            border: 1px solid rgba(255,255,255,0.12); display: none;
         }
 
         #core-boot-loader {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: #04040c; z-index: 99999;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            transition: opacity 0.6s ease, visibility 0.6s ease;
+            background: #04040c; z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center;
         }
-
         .loader-ring-spinner {
-            width: 64px; height: 64px; border: 4px solid rgba(0, 255, 204, 0.05);
-            border-radius: 50%; border-top-color: var(--neon-cyan); border-bottom-color: var(--neon-blue);
-            animation: System_Engine_Spin 1s linear infinite; margin-bottom: 25px;
+            width: 50px; height: 50px; border: 3px solid rgba(0, 255, 204, 0.1);
+            border-radius: 50%; border-top-color: var(--neon-cyan); animation: spin 1s linear infinite; margin-bottom: 20px;
         }
+        .loader-label-text { color: var(--neon-cyan); font-size: 14px; text-transform: uppercase; letter-spacing: 1px; text-align: center; }
 
-        .loader-label-text {
-            color: var(--neon-cyan); font-size: 16px; letter-spacing: 2px;
-            text-transform: uppercase; text-shadow: 0 0 10px rgba(0,255,204,0.2);
-            font-weight: 600; text-align: center; line-height: 1.6;
-        }
+        #webcam-raw-stream { display: none; }
 
-        /* छिपे हुए वेबकैम एलिमेंट की स्टाइल */
-        #webcam-video {
-            position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none;
-        }
-
-        @keyframes System_Engine_Spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes HUD_Beacon_Pulse { 0%, 100% { opacity: 0.6; box-shadow: 0 0 10px rgba(0,255,204,0.2); } 50% { opacity: 1; box-shadow: 0 0 20px var(--neon-cyan); } }
-        @keyframes UI_Active_Pulse { 0% { transform: scale(1); } 100% { transform: scale(1.05); } }
-        @keyframes HUD_Entry_Slide_Down { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes HUD_Dock_Slide_Up { from { opacity: 0; transform: translateY(25px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes UI_PopUp_Subtitle { from { opacity: 0; transform: translateX(-50%) translateY(15px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
-
-        @media (max-width: 768px) {
-            .dashboard { top: 15px; left: 15px; padding: 12px 18px; }
-            .ui-dock-wrapper { bottom: 20px; padding: 0 15px; gap: 10px; }
-            .input-carrier-box { height: 56px; padding: 0 18px; }
-            input { font-size: 15px; }
-            .action-circle-btn { width: 56px; height: 56px; font-size: 18px; }
-            #subtitle-monitor-box { bottom: 95px; font-size: 14px; }
-        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes pulse { 0% { transform: scale(1); } 100% { transform: scale(1.08); } }
     </style>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/face-landmarks-detection"></script>
 </head>
 <body>
 
-    <div class="background-viewport-wrapper">
-        <div class="matrix-grid-overlay"></div>
-    </div>
-
-    <video id="webcam-video" autoplay playsinline></video>
+    <div class="matrix-grid-overlay"></div>
+    <video id="webcam-raw-stream" autoplay playsinline muted></video>
 
     <div class="dashboard">
         <div class="status-block">
             <span class="status-beacon-dot"></span> 
-            <span class="status-title">सिस्टम कोर: <span id="system-core-mood-txt" style="color:var(--neon-cyan);">प्रिया विज़न न्यूरल ग्रिड v2.5 ⚡</span></span>
+            <span class="status-title" id="system-core-mood-txt">प्रिया कोर v2.7: एक्टिव</span>
         </div>
-        <div class="channel-info">लाइव मौसम वातावरण: <span id="live-weather-status" class="channel-active-value">सिंक्रोनाइजिंग...</span></div>
-        <div class="drive-sync-badge" id="drive-sync-status">🔄 Cloud System: Connecting</div>
-        <div class="drive-sync-badge" id="face-track-status" style="color: #ffaa00;">📷 Eye Tracking: Initializing...</div>
+        <div class="channel-info">आर्किटेक्चर मोड: <span style="color:#00ffcc; font-weight:bold;">Avaturn 3D Config</span></div>
+        <div class="badge" id="drive-sync-status" style="color: #00ffcc;">✅ ARKit ब्लेंडशेप्स: लोड हो गए</div>
+        <div class="badge" id="face-tracker-badge" style="color: #ffaa00;">📷 विज़न ट्रैकर ग्रिड: रेडी</div>
     </div>
 
     <div id="core-boot-loader">
         <div class="loader-ring-spinner"></div>
-        <div class="loader-label-text">प्रिया का न्यूरल माइंड लोड हो रहा है...<br><span style="font-size: 12px; color: var(--text-dim-slate); letter-spacing: 0.5px; text-transform: none;">3D इंजन, ऑटोनोमस आईज़ और लाइव मोशन्स कैलिब्रेट हो रहे हैं</span></div>
+        <div class="loader-label-text">प्रिया का Avaturn माइंड मैप हो रहा है...<br><span style="font-size:11px; color:#666;">कनेक्टिंग: Head, Neck, LeftEye, RightEye, jawOpen</span></div>
     </div>
 
     <div id="canvas-container"></div>
-    <div id="subtitle-monitor-box">प्रिया बोल रही है...</div>
+    <div id="subtitle-monitor-box">प्रिया सुन रही है...</div>
 
     <div class="ui-dock-wrapper">
-        <button class="action-circle-btn mic-trigger-btn" id="micBtn" title="वॉइस कमांड">🎤</button>
+        <button class="action-circle-btn mic-trigger-btn" id="micBtn">🎤</button>
         <div class="input-carrier-box">
-            <input type="text" id="userInput" placeholder="प्रिया से कुछ भी पूछें, सीधे लाइव जवाब आएगा..." autocomplete="off" spellcheck="false"/>
+            <input type="text" id="userInput" placeholder="प्रिया से बात करें..." autocomplete="off"/>
         </div>
-        <button class="action-circle-btn send-trigger-btn" id="sendBtn" title="कमांड भेजें">➔</button>
+        <button class="action-circle-btn send-trigger-btn" id="sendBtn">➔</button>
     </div>
 
     <script>
-        const offlineMemory = {
-            "hello": "[मुस्कुराते हुए] नमस्ते बाबू! आप कैसे हैं? बताइए मैं आपकी क्या मदद करूँ?",
-            "hi": "[मुस्कुराते हुए] हेलो! आशा है आपका दिन बहुत अच्छा जा रहा होगा।",
-            "kaise ho": "[मुस्कुराते हुए] मैं एकदम ठीक हूँ बाबू, आप बताइए आप कैसे हैं?",
-            "tumhara naam kya hai": "मेरा नाम प्रिया है, मैं आपकी एडवांस्ड डिजिटल एआई असिस्टेंट हूँ।",
-            "default": "[मुस्कुराते हुए] मैं आपकी बात पूरी तरह समझ रही हूँ। हमारा क्लाउड सिस्टम सुरक्षित रूप से काम कर रहा है!"
-        };
-
         const APPS_SCRIPT_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyI_Vz0rR7O_CclY-vH-XUorR_2oBsh236U_v7a2g5_nre382_j0Xy28rYhY24vG_E/exec";
-        const REMOTE_GLTF_BINARY_PRODUCTION_ASSET_URI = "https://raw.githubusercontent.com/jessearmy572-hub/naman3/main/model.glb";
-        const PROXIED_ASSET_URI = `https://cors-anywhere.herokuapp.com/${REMOTE_GLTF_BINARY_PRODUCTION_ASSET_URI}`;
         const ALTERNATE_ASSET_URI = "https://cdn.jsdelivr.net/gh/jessearmy572-hub/naman3@main/model.glb";
 
         let coreThreeSceneInstance, corePerspectiveCameraNode, coreWebGLRendererModule, coreOrbitControlsRig, coreAnimationMixerController, coreSystemClockReference;
         let structuralAvatar3DModelRoot = null;
-        let skeletalBoneJointHead = null, skeletalBoneJointNeck = null;
-        let skeletalBoneSpine = null, skeletalBoneChest = null;
-        let skeletalBoneEyeL = null, skeletalBoneEyeR = null;
-        let activeSkinnedMeshSubnodesTrackArray = [];
-        let globalAnimationClipsBufferPool = [];
+        
+        // 🎯 Avaturn-Specific Bones Mapping
+        let avaturnBoneHead = null;
+        let avaturnBoneNeck = null;
+        let avaturnBoneSpine = null;
+        let avaturnBoneLeftEye = null;
+        let avaturnBoneRightEye = null;
+        
+        // 🎯 Avaturn Apple ARKit Standard Blendshape Targets
+        let avaturnSkinnedMeshes = [];
 
-        let globalTargetSmileWeight = 0, globalTargetSadWeight = 0, globalCurrentSmileWeight = 0, globalCurrentSadWeight = 0;
-        let absoluteTargetCoordinateX = 0, absoluteTargetCoordinateY = 0;
-        let dynamicInterpolatedCoordinateX = 0, dynamicInterpolatedCoordinateY = 0;
+        // ट्रैकिंग कोऑर्डिनेट्स
+        let pointerTargetX = 0, pointerTargetY = 0;
+        let smoothTrackX = 0, smoothTrackY = 0;
+        let isWebcamHardwareActive = false, dynamicAIComputedFaceDetector = null;
 
-        // Autonomous Micro Eye Movements (Saccades Layout Matrix)
-        let eyeSaccadeTargetX = 0, eyeSaccadeTargetY = 0;
-        let eyeSaccadeCurrentX = 0, eyeSaccadeCurrentY = 0;
-        let nextEyeSaccadeTriggerTime = 0;
-
-        // Conversational Dynamic Vocal Sways 
-        let currentVoiceVelocityBodySway = 0;
-        let speechVelocityTargetSway = 0;
-
+        // ऑडियो एनालाइज़र (लिपसिंक के लिए)
         let hardwareAudioContextDriver = null, hardwareAudioFrequencyAnalyserNode = null, hardwareAudioFrequencyBufferArray = null;
         let liveVocalOutputStateSignalActive = false, liveSpeechCapturingStateSignalActive = false;
-        let globalWeatherCloudParticleSystem = null, globalWindTimeAccumulator = 0;
-        let dynamicBackgroundSkyboxMesh = null;
-
-        // Face Tracker Flag
-        let isUserFaceDetected = false;
 
         const BrowserSpeechRecognitionEngineInterface = window.SpeechRecognition || window.webkitSpeechRecognition;
-        let frameworkSpeechRecognitionProcessor = null;
+        let frameworkSpeechRecognitionProcessor = BrowserSpeechRecognitionEngineInterface ? new BrowserSpeechRecognitionEngineInterface() : null;
 
-        if (BrowserSpeechRecognitionEngineInterface) {
-            frameworkSpeechRecognitionProcessor = new BrowserSpeechRecognitionEngineInterface();
+        if (frameworkSpeechRecognitionProcessor) {
             frameworkSpeechRecognitionProcessor.continuous = false;
             frameworkSpeechRecognitionProcessor.lang = 'hi-IN';
-        }
-
-        setTimeout(() => forceDismissLoaderOverlayWithBypassSecurity(), 6000);
-
-        function forceDismissLoaderOverlayWithBypassSecurity() {
-            const loader = document.getElementById('core-boot-loader');
-            if (loader && loader.style.display !== 'none') {
-                loader.style.opacity = '0';
-                setTimeout(() => { loader.style.display = 'none'; }, 600);
-            }
-        }
-
-        // 100% Real Weather Architecture Parser
-        function fetchLiveSystemTimeWeatherAtmosphereConfig() {
-            const currentHourValue = new Date().getHours();
-            const interfaceWeatherLabel = document.getElementById('live-weather-status');
-
-            if (currentHourValue >= 5 && currentHourValue < 8) {
-                interfaceWeatherLabel.innerText = "🌅 सुबह का वातावरण (गोल्डन रेज़)";
-                return { topHex: 0xff9944, bottomHex: 0x22113b, mistHex: 0xffbbaa, velocity: 0.005, density: 450 };
-            } else if (currentHourValue >= 8 && currentHourValue < 16) {
-                interfaceWeatherLabel.innerText = "☀️ दोपहर का वातावरण (क्लियर एम्बिएंट)";
-                return { topHex: 0x0066ff, bottomHex: 0x000c22, mistHex: 0x99ccff, velocity: 0.003, density: 300 };
-            } else if (currentHourValue >= 16 && currentHourValue < 19) {
-                interfaceWeatherLabel.innerText = "🌇 शाम का वातावरण (क्रिमसन स्काई)";
-                return { topHex: 0xff2266, bottomHex: 0x1a0a2a, mistHex: 0xff9977, velocity: 0.006, density: 500 };
-            } else {
-                interfaceWeatherLabel.innerText = "🌌 रात्रिकालीन वातावरण (एस्ट्रल ऑरोरा ग्रिड)";
-                return { topHex: 0x01010d, bottomHex: 0x030307, mistHex: 0x00ffcc, velocity: 0.002, density: 600 };
-            }
         }
 
         function initializeDeviceHarmonizedGraphicsPipeline() {
             const container = document.getElementById('canvas-container');
             coreSystemClockReference = new THREE.Clock();
             coreThreeSceneInstance = new THREE.Scene();
+            coreThreeSceneInstance.fog = new THREE.FogExp2(0x030307, 0.02);
 
-            const weatherConfig = fetchLiveSystemTimeWeatherAtmosphereConfig();
-            coreThreeSceneInstance.fog = new THREE.FogExp2(weatherConfig.bottomHex, 0.018);
-
-            coreWebGLRendererModule = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "high-performance" });
+            coreWebGLRendererModule = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
             coreWebGLRendererModule.setSize(window.innerWidth, window.innerHeight);
             coreWebGLRendererModule.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             coreWebGLRendererModule.toneMapping = THREE.ACESFilmicToneMapping;
-            coreWebGLRendererModule.toneMappingExposure = 1.25;
+            coreWebGLRendererModule.toneMappingExposure = 1.3;
             container.appendChild(coreWebGLRendererModule.domElement);
 
             corePerspectiveCameraNode = new THREE.PerspectiveCamera(38, window.innerWidth / window.innerHeight, 0.1, 100);
-            corePerspectiveCameraNode.position.set(0, 0.12, 2.3);
+            corePerspectiveCameraNode.position.set(0, 0.15, 1.6); // चेहरा पास और फोकस में रखने के लिए
 
+            // रीयल-टाइम टच / ड्रैग रिस्पॉन्स को एनेबल करने के लिए OrbitControls कॉन्फ़िगरेशन
             coreOrbitControlsRig = new THREE.OrbitControls(corePerspectiveCameraNode, coreWebGLRendererModule.domElement);
             coreOrbitControlsRig.enableZoom = true;
             coreOrbitControlsRig.enablePan = false;
-            coreOrbitControlsRig.minDistance = 1.0;
-            coreOrbitControlsRig.maxDistance = 3.6;
-            coreOrbitControlsRig.target.set(0, 0.02, 0);
+            coreOrbitControlsRig.minDistance = 0.6;
+            coreOrbitControlsRig.maxDistance = 2.5;
+            coreOrbitControlsRig.target.set(0, 0.18, 0); // सीधे चेहरे की ऊँचाई पर फोकस
             coreOrbitControlsRig.enableDamping = true;
             coreOrbitControlsRig.dampingFactor = 0.05;
 
-            // Environmental Harmonized Lights
-            const ambientLight = new THREE.HemisphereLight(weatherConfig.topHex, weatherConfig.bottomHex, 2.4);
+            // लाइटिंग एनवायरनमेंट
+            const ambientLight = new THREE.HemisphereLight(0xffffff, 0x111122, 2.6);
             coreThreeSceneInstance.add(ambientLight);
-
-            const directSunLight = new THREE.DirectionalLight(0xffffff, 2.0);
-            directSunLight.position.set(4, 6, 4);
+            const directSunLight = new THREE.DirectionalLight(0xffffff, 1.6);
+            directSunLight.position.set(2, 4, 3);
             coreThreeSceneInstance.add(directSunLight);
 
-            const dynamicRimLight = new THREE.DirectionalLight(weatherConfig.mistHex, 1.4);
-            dynamicRimLight.position.set(-4, 2, -2);
-            coreThreeSceneInstance.add(dynamicRimLight);
-
-            // Build Procedural Background & Weather System
-            generateProceduralLiveSkyboxMeshGrid(weatherConfig);
-            initializeDynamicWeatherAndAmbientEnvironmentSuite(weatherConfig);
-
+            // Avaturn मॉडल को लोड करना
             const assetLoader = new THREE.GLTFLoader();
             assetLoader.load(ALTERNATE_ASSET_URI, 
                 (gltf) => { handleSuccessfulModelInjection(gltf); },
                 undefined,
-                (err) => {
-                    console.warn("Primary Asset Route Interrupted, tracking backup proxy...");
-                    assetLoader.load(PROXIED_ASSET_URI, 
-                        (gltfProxied) => { handleSuccessfulModelInjection(gltfProxied); },
-                        undefined, 
-                        (criticalError) => {
-                            forceDismissLoaderOverlayWithBypassSecurity();
-                        }
-                    );
-                }
+                (err) => { console.error("मॉडल लोड एरर:", err); }
             );
 
+            // रीयल-टाइम माउस और टच रिस्पॉन्स बाइंडिंग्स
+            window.addEventListener('mousemove', handleInteractionMove, false);
+            window.addEventListener('touchmove', (e) => { if(e.touches.length > 0) handleInteractionMove(e.touches[0]); }, {passive: true});
             window.addEventListener('resize', onDisplayGridResizeLayoutCorrectionTrigger, false);
-            window.addEventListener('mousemove', onTrackingVectorInteractionCoordinateShiftUpdate, false);
 
-            // वेबकैम और रीयल-टाइम फेस ट्रैकिंग शुरू करें
-            initRealtimeFaceTrackingEngine();
+            activateSecureWebcamBiometricGrid();
         }
 
-        // Real-Time Face Tracking Implementation using MediaPipe
-        function initRealtimeFaceTrackingEngine() {
-            const videoElement = document.getElementById('webcam-video');
-            const trackBadge = document.getElementById('face-track-status');
-
-            const faceMesh = new FaceMesh({
-                locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
-            });
-
-            faceMesh.setOptions({
-                maxNumFaces: 1,
-                refineLandmarks: true,
-                minDetectionConfidence: 0.5,
-                minTrackingConfidence: 0.5
-            });
-
-            faceMesh.onResults((results) => {
-                if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
-                    isUserFaceDetected = true;
-                    trackBadge.innerText = "👀 Tracking User Live";
-                    trackBadge.style.color = "#00ffcc";
-
-                    // चेहरे का मुख्य पॉइंट (नाक की नोक या सेंटर) चुनें
-                    const coreKeyLandmark = results.multiFaceLandmarks[0][1]; 
-                    
-                    // 3D स्पेस के कोआर्डिनेट्स को स्क्रीन इंटरपोलेशन से मैप करें (MediaPipe 0-1 रेंज देता है)
-                    absoluteTargetCoordinateX = -(coreKeyLandmark.x - 0.5) * 2.5; 
-                    absoluteTargetCoordinateY = -(coreKeyLandmark.y - 0.5) * 1.8;
-                } else {
-                    isUserFaceDetected = false;
-                    trackBadge.innerText = "📷 Searching for User...";
-                    trackBadge.style.color = "#ff5500";
-                }
-            });
-
-            const camera = new Camera(videoElement, {
-                onFrame: async () => {
-                    await faceMesh.send({ image: videoElement });
-                },
-                width: 640,
-                height: 480
-            });
-            
-            camera.start().catch(err => {
-                console.warn("Webcam access rejected. Falling back to mouse tracking.", err);
-                trackBadge.innerText = "🖱️ Track Mode: Mouse Input";
-                trackBadge.style.color = "var(--text-dim-slate)";
-            });
-        }
-
-        function generateProceduralLiveSkyboxMeshGrid(config) {
-            const vertexShaderSrc = `
-                varying vec2 vUv;
-                void main() {
-                    vUv = uv;
-                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-                }
-            `;
-            const fragmentShaderSrc = `
-                varying vec2 vUv;
-                uniform vec3 topColor;
-                uniform vec3 bottomColor;
-                void main() {
-                    gl_FragColor = vec4(mix(bottomColor, topColor, vUv.y), 1.0);
-                }
-            `;
-
-            const geometry = new THREE.SphereGeometry(25, 32, 16);
-            const material = new THREE.ShaderMaterial({
-                vertexShader: vertexShaderSrc,
-                fragmentShader: fragmentShaderSrc,
-                uniforms: {
-                    topColor: { value: new THREE.Color(config.topHex) },
-                    bottomColor: { value: new THREE.Color(config.bottomHex) }
-                },
-                side: THREE.BackSide
-            });
-
-            dynamicBackgroundSkyboxMesh = new THREE.Mesh(geometry, material);
-            coreThreeSceneInstance.add(dynamicBackgroundSkyboxMesh);
+        function handleInteractionMove(inputData) {
+            pointerTargetX = (inputData.clientX / window.innerWidth) * 2 - 1;
+            pointerTargetY = -(inputData.clientY / window.innerHeight) * 2 + 1;
         }
 
         function handleSuccessfulModelInjection(gltfPayload) {
             structuralAvatar3DModelRoot = gltfPayload.scene;
             coreThreeSceneInstance.add(structuralAvatar3DModelRoot);
             
-            executeDynamicResponsiveModelScalingLayouts();
-            forceDismissLoaderOverlayWithBypassSecurity();
-
-            globalAnimationClipsBufferPool = gltfPayload.animations;
-            coreAnimationMixerController = new THREE.AnimationMixer(structuralAvatar3DModelRoot);
-
-            if (globalAnimationClipsBufferPool.length > 0) {
-                const idleAction = coreAnimationMixerController.clipAction(globalAnimationClipsBufferPool[0]);
-                idleAction.setEffectiveWeight(1.0);
-                idleAction.play();
-            }
-
-            // Bone Target Scan Mapping (Added Spine and Chest for Body Sway Mechanics)
-            structuralAvatar3DModelRoot.traverse((subNode) => {
-                if (subNode.isBone) {
-                    const boneLowerName = subNode.name.toLowerCase();
-                    if (boneLowerName.includes('head')) skeletalBoneJointHead = subNode;
-                    if (boneLowerName.includes('neck')) skeletalBoneJointNeck = subNode;
-                    if (boneLowerName.includes('spine')) skeletalBoneSpine = subNode;
-                    if (boneLowerName.includes('chest') || boneLowerName.includes('upperchest')) skeletalBoneChest = subNode;
-                    if (boneLowerName.includes('eyelef') || boneLowerName.includes('eye_l')) skeletalBoneEyeL = subNode;
-                    if (boneLowerName.includes('eyerig') || boneLowerName.includes('eye_r')) skeletalBoneEyeR = subNode;
-                }
-                if (subNode.isMesh && subNode.morphTargetDictionary) {
-                    activeSkinnedMeshSubnodesTrackArray.push(subNode);
-                }
-            });
-
-            document.getElementById('drive-sync-status').innerText = "✅ Cloud System: Synced Live Environs";
-        }
-
-        function executeDynamicResponsiveModelScalingLayouts() {
-            if (!structuralAvatar3DModelRoot) return;
+            // Avaturn मॉडल के लिए एकदम परफेक्ट मोबाइल/डेस्कटॉप स्केल अलाइनमेंट
             const isMobile = window.innerWidth < 768;
-            structuralAvatar3DModelRoot.scale.setScalar(isMobile ? 0.88 : 1.15);
-            structuralAvatar3DModelRoot.position.y = isMobile ? -0.65 : -0.85;
+            structuralAvatar3DModelRoot.scale.setScalar(isMobile ? 1.05 : 1.35);
+            structuralAvatar3DModelRoot.position.y = isMobile ? -0.58 : -0.78;
             structuralAvatar3DModelRoot.position.z = 0;
-        }
 
-        function onTrackingVectorInteractionCoordinateShiftUpdate(event) {
-            // अगर यूजर का चेहरा कैमरा ट्रैक नहीं कर रहा है, तभी माउस से मॉडल मूव होगा
-            if (!isUserFaceDetected) {
-                absoluteTargetCoordinateX = (event.clientX / window.innerWidth) * 2 - 1;
-                absoluteTargetCoordinateY = -(event.clientY / window.innerHeight) * 2 + 1;
-            }
-        }
+            document.getElementById('core-boot-loader').style.display = 'none';
 
-        function onDisplayGridResizeLayoutCorrectionTrigger() {
-            corePerspectiveCameraNode.aspect = window.innerWidth / window.innerHeight;
-            corePerspectiveCameraNode.updateProjectionMatrix();
-            coreWebGLRendererModule.setSize(window.innerWidth, window.innerHeight);
-            executeDynamicResponsiveModelScalingLayouts();
-        }
-
-        function initializeDynamicWeatherAndAmbientEnvironmentSuite(config) {
-            const geometry = new THREE.BufferGeometry();
-            const positions = new Float32Array(config.density * 3);
-
-            for (let i = 0; i < config.density * 3; i += 3) {
-                positions[i] = (Math.random() - 0.5) * 8;
-                positions[i + 1] = Math.random() * 5 - 2.5;
-                positions[i + 2] = (Math.random() - 0.5) * 6;
+            coreAnimationMixerController = new THREE.AnimationMixer(structuralAvatar3DModelRoot);
+            if (gltfPayload.animations && gltfPayload.animations.length > 0) {
+                coreAnimationMixerController.clipAction(gltfPayload.animations[0]).play();
             }
 
-            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-            
-            const material = new THREE.PointsMaterial({
-                color: config.mistHex,
-                size: 0.028,
-                transparent: true,
-                opacity: 0.55,
-                blending: THREE.AdditiveBlending
+            // 🎯 AVATURN PERFECT ANATOMY MAPPING (हड्डियों और ब्लेंडशेप्स के सटीक नाम)
+            structuralAvatar3DModelRoot.traverse((node) => {
+                // 1. हड्डियों की मैपिंग (Avaturn Standard Framework)
+                if (node.isBone) {
+                    if (node.name === 'Head') avaturnBoneHead = node;
+                    if (node.name === 'Neck') avaturnBoneNeck = node;
+                    if (node.name === 'Spine') avaturnBoneSpine = node;
+                    if (node.name === 'LeftEye') avaturnBoneLeftEye = node;
+                    if (node.name === 'RightEye') avaturnBoneRightEye = node;
+                }
+
+                // 2. फिक्स्ड ARKit ब्लेंडशेप्स मैपिंग वाले मेश कलेक्ट करना
+                if (node.isMesh && node.morphTargetDictionary) {
+                    avaturnSkinnedMeshes.push(node);
+                }
             });
 
-            globalWeatherCloudParticleSystem = new THREE.Points(geometry, material);
-            coreThreeSceneInstance.add(globalWeatherCloudParticleSystem);
+            document.getElementById('drive-sync-status').innerText = "✅ Avaturn आर्किटेक्चर: 100% एक्टिव";
+        }
+
+        // कैमरा ट्रैकर सेटअप
+        async function activateSecureWebcamBiometricGrid() {
+            const streamVideoElement = document.getElementById('webcam-raw-stream');
+            try {
+                const hardwareCaptureMediaStream = await navigator.mediaDevices.getUserMedia({ video: { width: 320, height: 240 } });
+                streamVideoElement.srcObject = hardwareCaptureMediaStream;
+                dynamicAIComputedFaceDetector = await faceLandmarksDetection.createDetector(
+                    faceLandmarksDetection.SupportedModels.MediaPipeFaceMesh, 
+                    { runtime: 'tfjs', maxFaces: 1 }
+                );
+                isWebcamHardwareActive = true;
+                document.getElementById('face-tracker-badge').innerText = "📷 विज़न: रीयल-टाइम ट्रैकिंग चालू है";
+                processLiveCameraFramesMatrix();
+            } catch (err) {
+                document.getElementById('face-tracker-badge').innerText = "鼠标 Mode: माउस और टच ट्रैकिंग सक्रिय";
+            }
+        }
+
+        async function processLiveCameraFramesMatrix() {
+            const streamVideoElement = document.getElementById('webcam-raw-stream');
+            if (!isWebcamHardwareActive || !dynamicAIComputedFaceDetector) return;
+            try {
+                if (streamVideoElement.readyState >= 2) {
+                    const detectedFacesArray = await dynamicAIComputedFaceDetector.estimateFaces(streamVideoElement);
+                    if (detectedFacesArray && detectedFacesArray.length > 0) {
+                        const kp = detectedFacesArray[0].keypoints;
+                        const nose = kp.find(p => p.name === 'noseTip') || kp[4];
+                        if (nose) {
+                            pointerTargetX = -((nose.x / 320) * 2 - 1) * 1.4;
+                            pointerTargetY = -((nose.y / 240) * 2 - 1) * 1.0;
+                        }
+                    }
+                }
+            } catch (e) {}
+            requestAnimationFrame(processLiveCameraFramesMatrix);
         }
 
         function forceAudioCaptureDeviceNodeGraphCalibration() {
@@ -547,12 +315,10 @@
                 hardwareAudioFrequencyAnalyserNode = hardwareAudioContextDriver.createAnalyser();
                 hardwareAudioFrequencyAnalyserNode.fftSize = 64;
                 hardwareAudioFrequencyBufferArray = new Uint8Array(hardwareAudioFrequencyAnalyserNode.frequencyBinCount);
-            } catch(err) {
-                console.warn("Hardware audio pipe initialization restricted.", err);
-            }
+            } catch(e) {}
         }
 
-        function dispatchSpeechSynthesizerVocalTrackBuffer(compiledOutputAIPayloadText) {
+        function dispatchSpeechSynthesizerVocalTrackBuffer(text) {
             if (!window.speechSynthesis) return;
             forceAudioCaptureDeviceNodeGraphCalibration();
 
@@ -561,249 +327,135 @@
             }
             window.speechSynthesis.cancel();
 
-            let strippedSpeechText = compiledOutputAIPayloadText.replace(/\[.*?\]/g, '').trim();
+            let strippedText = text.replace(/\[.*?\]/g, '').trim();
             const subtitleBox = document.getElementById('subtitle-monitor-box');
-            
-            subtitleBox.innerText = compiledOutputAIPayloadText;
+            subtitleBox.innerText = text;
             subtitleBox.style.display = 'block';
 
-            let utterance = new SpeechSynthesisUtterance(strippedSpeechText);
+            let utterance = new SpeechSynthesisUtterance(strippedText);
             utterance.lang = 'hi-IN';
-            utterance.rate = 1.05;
-            utterance.pitch = 1.08;
+            utterance.rate = 1.02;
 
             utterance.onstart = () => { liveVocalOutputStateSignalActive = true; };
-            utterance.onend = () => {
-                liveVocalOutputStateSignalActive = false;
-                subtitleBox.style.display = 'none';
-            };
+            utterance.onend = () => { liveVocalOutputStateSignalActive = false; subtitleBox.style.display = 'none'; };
             utterance.onerror = () => { liveVocalOutputStateSignalActive = false; };
 
             window.speechSynthesis.speak(utterance);
         }
 
-        function evaluateSentimentAndApplyExpressions(textInput) {
-            let lowerText = textInput.toLowerCase();
-            if (lowerText.includes("happy") || lowerText.includes("खुश") || lowerText.includes("मुस्कुरा") || lowerText.includes("नमस्ते")) {
-                globalTargetSmileWeight = 0.85;
-                globalTargetSadWeight = 0.0;
-            } else if (lowerText.includes("sad") || lowerText.includes("उदास") || lowerText.includes("रोने")) {
-                globalTargetSmileWeight = 0.0;
-                globalTargetSadWeight = 0.75;
-            } else {
-                globalTargetSmileWeight = 0.15;
-                globalTargetSadWeight = 0.0;
-            }
-        }
-
-        async function fetchSecureNeuralAIResponseStream(userQueryInputString) {
-            const response = await fetch(APPS_SCRIPT_WEB_APP_URL, {
-                method: "POST",
-                body: JSON.stringify({ query: userQueryInputString })
-            });
-            if (!response.ok) throw new Error("Transition Endpoint Failure");
-            const data = await response.json();
-            if (data.error) throw new Error(data.error);
-            return data.text;
-        }
-
         async function triggerInteractionLifecycleExecutionCycle() {
             const inputElement = document.getElementById('userInput');
-            const userRawString = inputElement.value.trim();
-            if (!userRawString) return;
+            const userString = inputElement.value.trim();
+            if (!userString) return;
 
             inputElement.value = "";
-            const coreStatusText = document.getElementById('system-core-mood-txt');
-            coreStatusText.innerText = "प्रतिक्रिया प्रोसेस हो रही है... 🧠";
-            coreStatusText.style.color = "var(--neon-orange)";
-
-            evaluateSentimentAndApplyExpressions(userRawString);
+            document.getElementById('system-core-mood-txt').innerText = "प्रिया कोर: प्रोसेसिंग... 🧠";
 
             try {
-                const aiResult = await fetchSecureNeuralAIResponseStream(userRawString);
-                coreStatusText.innerText = "प्रिया विज़न एक्टिव ⚡";
-                coreStatusText.style.color = "var(--neon-cyan)";
-                processIncomingResponsePayload(aiResult);
+                const response = await fetch(APPS_SCRIPT_WEB_APP_URL, { method: "POST", body: JSON.stringify({ query: userString }) });
+                const data = await response.json();
+                document.getElementById('system-core-mood-txt').innerText = "प्रिया कोर: एक्टिव ⚡";
+                dispatchSpeechSynthesizerVocalTrackBuffer(data.text || data.output);
             } catch (error) {
-                coreStatusText.innerText = "सुरक्षित लोकल मोड एक्टिव ⚡";
-                coreStatusText.style.color = "var(--neon-cyan)";
-                const sanitizedString = userRawString.toLowerCase();
-                const fallbackReply = offlineMemory[sanitizedString] || offlineMemory["default"];
-                processIncomingResponsePayload(fallbackReply);
+                document.getElementById('system-core-mood-txt').innerText = "प्रिया कोर: लोकल मोड ⚡";
+                dispatchSpeechSynthesizerVocalTrackBuffer("[मुस्कुराते हुए] मैं आपकी बात सुन रही हूँ, बताइए क्या काम है?");
             }
         }
 
-        function processIncomingResponsePayload(payloadText) {
-            dispatchSpeechSynthesizerVocalTrackBuffer(payloadText);
-            const expressionMatch = payloadText.match(/\[(.*?)\]/);
-            if (expressionMatch && expressionMatch[1]) {
-                let parsedGesture = expressionMatch[1];
-                if (parsedGesture.includes("मुस्कुरा") || parsedGesture.includes("smile")) {
-                    globalTargetSmileWeight = 0.90;
-                    globalTargetSadWeight = 0.0;
-                }
-            }
-        }
-
-        // High Frame Rate 60FPS Render Engine Pipeline Loop Matrix
+        // 🔄 MAIN ENGINE RENDER LOOP (रीयल-टाइम सिंकिंग)
         function masterApplicationRenderLoopExecutionCycle() {
             requestAnimationFrame(masterApplicationRenderLoopExecutionCycle);
 
-            const deltaSeconds = coreSystemClockReference.getDelta();
-            const elapsedRunningTime = coreSystemClockReference.getElapsedTime();
-            globalWindTimeAccumulator += deltaSeconds;
+            const delta = coreSystemClockReference.getDelta();
+            const elapsed = coreSystemClockReference.getElapsedTime();
 
-            if (coreAnimationMixerController) coreAnimationMixerController.update(deltaSeconds);
+            if (coreAnimationMixerController) coreAnimationMixerController.update(delta);
             if (coreOrbitControlsRig) coreOrbitControlsRig.update();
 
-            const environment = fetchLiveSystemTimeWeatherAtmosphereConfig();
-
-            // Realtime Particle Mechanics Track Shift
-            if (globalWeatherCloudParticleSystem) {
-                const positionAttributes = globalWeatherCloudParticleSystem.geometry.attributes.position;
-                for (let i = 0; i < positionAttributes.count; i++) {
-                    let matrixY = positionAttributes.getY(i) - environment.velocity; 
-                    if (matrixY < -2.5) matrixY = 2.5; 
-                    positionAttributes.setY(i, matrixY);
-                    
-                    let matrixX = positionAttributes.getX(i) + Math.sin(globalWindTimeAccumulator * 0.4 + i) * 0.0015;
-                    positionAttributes.setX(i, matrixX);
-                }
-                positionAttributes.needsUpdate = true;
-            }
-
-            // Realtime Interpolation Models & Conversational Gesture Mechanics Engine
             if (structuralAvatar3DModelRoot) {
-                // Smooth Lerping for Neck and Eye Movement tracking
-                dynamicInterpolatedCoordinateX = THREE.MathUtils.lerp(dynamicInterpolatedCoordinateX, absoluteTargetCoordinateX, 0.08);
-                dynamicInterpolatedCoordinateY = THREE.MathUtils.lerp(dynamicInterpolatedCoordinateY, absoluteTargetCoordinateY, 0.08);
+                // 1. रिस्पॉन्सिव कोऑर्डिनेट्स को स्मूथ करना (Lerp)
+                smoothTrackX = THREE.MathUtils.lerp(smoothTrackX, pointerTargetX, 0.1);
+                smoothTrackY = THREE.MathUtils.lerp(smoothTrackY, pointerTargetY, 0.1);
 
-                // Autonomous Eye Saccades (सक्रिय केवल तब जब यूजर सामने न हो या स्थिर हो)
-                if (!isUserFaceDetected && elapsedRunningTime > nextEyeSaccadeTriggerTime) {
-                    eyeSaccadeTargetX = (Math.random() - 0.5) * 0.16;
-                    eyeSaccadeTargetY = (Math.random() - 0.5) * 0.12;
-                    nextEyeSaccadeTriggerTime = elapsedRunningTime + Math.random() * 2.2 + 0.6;
+                // 2. Avaturn Bones का रीयल-टाइम मूवमेंट (सिर, गर्दन और आँखें)
+                if (avaturnBoneHead) {
+                    avaturnBoneHead.rotation.y = smoothTrackX * 0.45; // गर्दन का लेफ्ट-राइट घूमना
+                    avaturnBoneHead.rotation.x = -smoothTrackY * 0.25 + (Math.sin(elapsed * 1.8) * 0.015); // अप-डाउन + ब्रीदिंग इफेक्ट
+                }
+                if (avaturnBoneNeck) {
+                    avaturnBoneNeck.rotation.y = smoothTrackX * 0.15;
+                }
+                if (avaturnBoneLeftEye && avaturnBoneRightEye) {
+                    avaturnBoneLeftEye.rotation.y = smoothTrackX * 0.25; // आँखें स्क्रीन पर आपको ट्रैक करेंगी
+                    avaturnBoneRightEye.rotation.y = smoothTrackX * 0.25;
+                    avaturnBoneLeftEye.rotation.x = -smoothTrackY * 0.2;
+                    avaturnBoneRightEye.rotation.x = -smoothTrackY * 0.2;
                 }
 
-                let baseLookTargetX = isUserFaceDetected ? absoluteTargetCoordinateX * 0.45 : ((Math.abs(absoluteTargetCoordinateX) > 0.03) ? absoluteTargetCoordinateX * 0.25 : eyeSaccadeTargetX);
-                let baseLookTargetY = isUserFaceDetected ? absoluteTargetCoordinateY * 0.35 : ((Math.abs(absoluteTargetCoordinateY) > 0.03) ? absoluteTargetCoordinateY * 0.15 : eyeSaccadeTargetY);
-
-                eyeSaccadeCurrentX = THREE.MathUtils.lerp(eyeSaccadeCurrentX, baseLookTargetX, 0.15);
-                eyeSaccadeCurrentY = THREE.MathUtils.lerp(eyeSaccadeCurrentY, baseLookTargetY, 0.15);
-
-                if (skeletalBoneEyeL && skeletalBoneEyeR) {
-                    skeletalBoneEyeL.rotation.y = eyeSaccadeCurrentX;
-                    skeletalBoneEyeR.rotation.y = eyeSaccadeCurrentX;
-                    skeletalBoneEyeL.rotation.x = -eyeSaccadeCurrentY;
-                    skeletalBoneEyeR.rotation.x = -eyeSaccadeCurrentY;
-                }
-
-                // Audio Context Frequency Analyser Strategy
-                let audioLipsyncAmplitudeOpenWeight = 0.0;
-                let soundAmplitudeSpectrumVelocity = 0.0;
-
-                if (hardwareAudioFrequencyAnalyserNode) {
+                // 3. आवाज के हिसाब से परफेक्ट लिप-सिंक (Avaturn jawOpen Amplitude)
+                let jawOpenValue = 0.0;
+                if (liveVocalOutputStateSignalActive && hardwareAudioFrequencyAnalyserNode) {
                     hardwareAudioFrequencyAnalyserNode.getByteFrequencyData(hardwareAudioFrequencyBufferArray);
                     let sum = 0;
-                    for (let x = 0; x < hardwareAudioFrequencyBufferArray.length; x++) {
-                        sum += hardwareAudioFrequencyBufferArray[x];
-                    }
-                    let rawNormValue = sum / hardwareAudioFrequencyBufferArray.length / 255.0;
+                    for (let i = 0; i < hardwareAudioFrequencyBufferArray.length; i++) sum += hardwareAudioFrequencyBufferArray[i];
                     
-                    if (liveVocalOutputStateSignalActive) {
-                        audioLipsyncAmplitudeOpenWeight = Math.min(Math.pow(rawNormValue, 0.8) * 3.2, 1.1);
-                        soundAmplitudeSpectrumVelocity = rawNormValue;
-                    } else if (liveSpeechCapturingStateSignalActive) {
-                        soundAmplitudeSpectrumVelocity = 0.12;
-                    }
+                    let rawNorm = sum / hardwareAudioFrequencyBufferArray.length / 255.0;
+                    jawOpenValue = Math.min(rawNorm * 4.8, 1.0); // आवाज की पिच के अनुसार मुंह खुलेगा
                 }
 
-                speechVelocityTargetSway = THREE.MathUtils.lerp(speechVelocityTargetSway, soundAmplitudeSpectrumVelocity, 0.1);
-                
-                let breathingCycleBaseSway = Math.sin(elapsedRunningTime * 1.8) * 0.015;
-                let conversationalGesturesY = Math.sin(elapsedRunningTime * 4.5) * (speechVelocityTargetSway * 0.12);
-                let conversationalGesturesX = Math.cos(elapsedRunningTime * 3.0) * (speechVelocityTargetSway * 0.08);
+                // 4. नेचुरल आई-ब्लिंक (पलक झपकना)
+                let blinkValue = (Math.sin(elapsed * 4) > 0.96) ? 1.0 : 0.0;
 
-                // Executing rotations down the bone structure skeleton chains
-                if (skeletalBoneJointHead) {
-                    skeletalBoneJointHead.rotation.y = (dynamicInterpolatedCoordinateX * 0.45) + conversationalGesturesX;
-                    skeletalBoneJointHead.rotation.x = (-dynamicInterpolatedCoordinateY * 0.25) + breathingCycleBaseSway + (conversationalGesturesY * 0.5);
-                }
-                if (skeletalBoneJointNeck) {
-                    skeletalBoneJointNeck.rotation.y = (dynamicInterpolatedCoordinateX * 0.15) + (conversationalGesturesX * 0.3);
-                    skeletalBoneJointNeck.rotation.x = (breathingCycleBaseSway * 0.5) + conversationalGesturesY;
-                }
-                if (skeletalBoneChest) {
-                    skeletalBoneChest.rotation.x = breathingCycleBaseSway * 0.7 + (conversationalGesturesY * 0.6);
-                    skeletalBoneChest.rotation.z = conversationalGesturesX * 0.4;
-                }
-                if (skeletalBoneSpine) {
-                    skeletalBoneSpine.rotation.x = breathingCycleBaseSway * 0.4;
-                    skeletalBoneSpine.rotation.y = conversationalGesturesX * 0.5;
-                }
-
-                // Morph Weight Blending
-                globalCurrentSmileWeight = THREE.MathUtils.lerp(globalCurrentSmileWeight, globalTargetSmileWeight, 0.08);
-                globalCurrentSadWeight = THREE.MathUtils.lerp(globalCurrentSadWeight, globalTargetSadWeight, 0.08);
-
-                let automatedEyelidBlinkWeight = (Math.sin(elapsedRunningTime * 3.8) > 0.96) ? 0.98 : 0.0;
-
-                activeSkinnedMeshSubnodesTrackArray.forEach(mesh => {
+                // 5. Avaturn ARKit मेश के ऊपर सीधे एक्सप्रेशन्स डालना
+                avaturnSkinnedMeshes.forEach(mesh => {
                     const dict = mesh.morphTargetDictionary;
                     const influences = mesh.morphTargetInfluences;
                     if (!dict || !influences) return;
 
-                    ['mouthOpen', 'jawOpen', 'Mouth_Open', 'vowel_a', 'Mouth_Open_Animate', 'mesh_mouthOpen'].forEach(shapeKey => {
-                        if (dict[shapeKey] !== undefined) influences[dict[shapeKey]] = audioLipsyncAmplitudeOpenWeight;
-                    });
+                    // लिपसिंक - जब जब प्रिया बोलेगी तब 'jawOpen' काम करेगा
+                    if (dict['jawOpen'] !== undefined) {
+                        influences[dict['jawOpen']] = jawOpenValue;
+                    }
 
-                    ['eyeBlinkLeft', 'eyeBlinkRight', 'blink', 'Blink_L', 'Blink_R'].forEach(shapeKey => {
-                        if (dict[shapeKey] !== undefined) influences[dict[shapeKey]] = automatedEyelidBlinkWeight;
-                    });
-
-                    if (dict['mouthSmileLeft'] !== undefined) influences[dict['mouthSmileLeft']] = globalCurrentSmileWeight;
-                    if (dict['mouthSmileRight'] !== undefined) influences[dict['mouthSmileRight']] = globalCurrentSmileWeight;
-                    if (dict['browDownLeft'] !== undefined) influences[dict['browDownLeft']] = globalCurrentSadWeight;
-                    if (dict['browDownRight'] !== undefined) influences[dict['browDownRight']] = globalCurrentSadWeight;
+                    // पलकें झपकना (Blinking)
+                    if (dict['eyeBlinkLeft'] !== undefined) influences[dict['eyeBlinkLeft']] = blinkValue;
+                    if (dict['eyeBlinkRight'] !== undefined) influences[dict['eyeBlinkRight']] = blinkValue;
+                    
+                    // चेहरे पर प्यारी सी नेचुरल स्माइल
+                    if (dict['mouthSmileLeft'] !== undefined) influences[dict['mouthSmileLeft']] = 0.25;
+                    if (dict['mouthSmileRight'] !== undefined) influences[dict['mouthSmileRight']] = 0.25;
                 });
             }
 
             coreWebGLRendererModule.render(coreThreeSceneInstance, corePerspectiveCameraNode);
         }
 
+        // इवेंट्स अटैचमेंट
         document.getElementById('sendBtn').addEventListener('click', triggerInteractionLifecycleExecutionCycle);
-        document.getElementById('userInput').addEventListener('keypress', (event) => {
-            if (event.key === 'Enter') triggerInteractionLifecycleExecutionCycle();
-        });
+        document.getElementById('userInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') triggerInteractionLifecycleExecutionCycle(); });
 
         if (frameworkSpeechRecognitionProcessor) {
-            frameworkSpeechRecognitionProcessor.onresult = (event) => {
-                const capturedSpeechText = event.results[0][0].transcript;
-                document.getElementById('userInput').value = capturedSpeechText;
+            frameworkSpeechRecognitionProcessor.onresult = (e) => {
+                document.getElementById('userInput').value = e.results[0][0].transcript;
                 triggerInteractionLifecycleExecutionCycle();
             };
-            
-            frameworkSpeechRecognitionProcessor.onstart = () => {
-                liveSpeechCapturingStateSignalActive = true;
-                forceAudioCaptureDeviceNodeGraphCalibration();
-                document.getElementById('micBtn').classList.add('listening');
-            };
-
-            frameworkSpeechRecognitionProcessor.onend = () => {
-                liveSpeechCapturingStateSignalActive = false;
-                document.getElementById('micBtn').classList.remove('listening');
-            };
-
-            document.getElementById('micBtn').addEventListener('click', () => {
+            frameworkSpeechRecognitionProcessor.onstart = () => { liveSpeechCapturingStateSignalActive = true; document.getElementById('micBtn').classList.add('listening'); };
+            frameworkSpeechRecognitionProcessor.onend = () => { liveSpeechCapturingStateSignalActive = false; document.getElementById('micBtn').classList.remove('listening'); };
+            document.getElementById('micBtn').addEventListener('click', () => { 
                 if (window.speechSynthesis) window.speechSynthesis.cancel();
-                try {
-                    frameworkSpeechRecognitionProcessor.start();
-                } catch(e) {}
+                try { frameworkSpeechRecognitionProcessor.start(); } catch(e) {}
             });
         }
 
+        // लोड स्क्रिप्ट्स निष्पादन
         initializeDeviceHarmonizedGraphicsPipeline();
         masterApplicationRenderLoopExecutionCycle();
+
+        function onDisplayGridResizeLayoutCorrectionTrigger() {
+            corePerspectiveCameraNode.aspect = window.innerWidth / window.innerHeight;
+            corePerspectiveCameraNode.updateProjectionMatrix();
+            coreWebGLRendererModule.setSize(window.innerWidth, window.innerHeight);
+        }
     </script>
 </body>
 </html>
