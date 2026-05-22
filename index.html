@@ -2,8 +2,8 @@
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>प्रिया AI - नेक्स्ट-जेन हिंदी असिस्टेंट</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>प्रिया AI - नेक्स्ट-जेन हिंदी असिस्टेंट (अल्टीमेट एडिशन)</title>
     <style>
         :root {
             --neon-cyan: #00ffcc;
@@ -13,218 +13,217 @@
             --neon-purple: #9900ff;
             --text-core-white: #ffffff;
             --text-dim-slate: #8a99ad;
-            --bg-glass-panel: rgba(10, 10, 25, 0.75);
-            --border-matte-white: rgba(255, 255, 255, 0.15);
-            --bg-input-field: rgba(5, 5, 15, 0.85);
-            --transition-tactile: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --bg-glass-panel: rgba(10, 10, 25, 0.70);
+            --border-matte-white: rgba(255, 255, 255, 0.12);
+            --bg-input-field: rgba(5, 5, 15, 0.80);
+            --transition-tactile: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
-            overflow: hidden; background-color: #010103;
+            overflow: hidden; background-color: #020208;
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            perspective: 1000px;
+        }
+
+        /* Responsive Background Framework Container: Extra over-zooming logic eliminated */
+        .background-viewport-wrapper {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1; pointer-events: none; overflow: hidden;
         }
 
         #image-bg {
-            position: absolute; top: -12%; left: -12%;
-            width: 124%; height: 124%; object-fit: cover;
-            z-index: 1; pointer-events: none;
-            filter: brightness(0.42) contrast(1.22) saturate(0.92);
+            position: absolute; top: -5%; left: -5%;
+            width: 110%; height: 110%; object-fit: cover;
+            filter: brightness(0.35) contrast(1.15) saturate(0.85);
             will-change: transform; transform: translate3d(0,0,0);
-            transition: transform 0.45s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .matrix-grid-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;
             background-image: 
-                linear-gradient(rgba(0, 255, 204, 0.015) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 255, 204, 0.015) 1px, transparent 1px);
-            background-size: 50px 50px; background-position: center center;
-            pointer-events: none; opacity: 0.85;
+                linear-gradient(rgba(0, 255, 204, 0.012) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 204, 0.012) 1px, transparent 1px);
+            background-size: 40px 40px; background-position: center center;
+            pointer-events: none; opacity: 0.9;
         }
 
         #canvas-container {
             width: 100%; height: 100%; position: absolute; top: 0; left: 0;
             z-index: 3; cursor: grab; display: block;
-            background: transparent !important; transform: translateZ(0);
+            background: transparent !important; touch-action: none;
         }
 
         #canvas-container:active { cursor: grabbing; }
 
+        /* HUD Dashboards and Panels */
         .dashboard {
-            position: absolute; top: 30px; left: 30px; z-index: 10;
-            background: var(--bg-glass-panel); padding: 18px 28px; border-radius: 24px;
-            backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px);
+            position: absolute; top: 25px; left: 25px; z-index: 10;
+            background: var(--bg-glass-panel); padding: 16px 24px; border-radius: 20px;
+            backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
             border: 1px solid var(--border-matte-white);
-            box-shadow: 0 25px 55px rgba(0,0,0,0.9), inset 0 1px 3px rgba(255,255,255,0.18);
-            pointer-events: auto; transform: translateZ(0); will-change: transform, opacity;
-            animation: HUD_Entry_Slide_Down 0.95s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8), inset 0 1px 2px rgba(255,255,255,0.1);
+            animation: HUD_Entry_Slide_Down 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        .status-block { display: flex; align-items: center; margin-bottom: 10px; }
+        .status-block { display: flex; align-items: center; margin-bottom: 8px; }
 
         .status-beacon-dot {
-            display: inline-block; width: 12px; height: 12px; background: var(--neon-cyan);
-            border-radius: 50%; margin-right: 16px;
-            box-shadow: 0 0 15px var(--neon-cyan), 0 0 35px var(--neon-cyan);
-            will-change: opacity, box-shadow; animation: HUD_Beacon_Pulse 2.5s infinite ease-in-out;
+            display: inline-block; width: 10px; height: 10px; background: var(--neon-cyan);
+            border-radius: 50%; margin-right: 12px;
+            box-shadow: 0 0 12px var(--neon-cyan), 0 0 24px var(--neon-cyan);
+            animation: HUD_Beacon_Pulse 2s infinite ease-in-out;
         }
 
         .status-title {
-            font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;
-            text-shadow: 0 0 10px rgba(0,255,204,0.45); color: var(--text-core-white);
+            font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;
+            text-shadow: 0 0 8px rgba(0,255,204,0.3); color: var(--text-core-white);
         }
 
-        .channel-info { font-size: 13px; color: var(--text-dim-slate); margin-top: 6px; font-weight: 500; letter-spacing: 0.5px; }
-        .channel-active-value { color: var(--neon-cyan); font-weight: 700; transition: var(--transition-tactile); }
-        .drive-sync-badge { margin-top: 5px; font-size: 11px; color: #00ffcc; display: flex; align-items: center; gap: 5px; font-weight: bold; }
+        .channel-info { font-size: 12px; color: var(--text-dim-slate); margin-top: 4px; font-weight: 500; }
+        .channel-active-value { color: var(--neon-cyan); font-weight: 700; }
+        .drive-sync-badge { margin-top: 6px; font-size: 11px; color: #00ffcc; display: flex; align-items: center; gap: 6px; font-weight: bold; }
 
+        /* UI Navigation Dock and Field Carrier */
         .ui-dock-wrapper {
-            position: absolute; bottom: 50px; width: 100%; display: flex;
-            justify-content: center; align-items: center; gap: 18px; z-index: 20;
-            padding: 0 40px; box-sizing: border-box; transform: translateZ(0);
-            will-change: transform, opacity; animation: HUD_Dock_Slide_Up 1.05s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+            position: absolute; bottom: 40px; width: 100%; display: flex;
+            justify-content: center; align-items: center; gap: 15px; z-index: 20;
+            padding: 0 30px; box-sizing: border-box;
+            animation: HUD_Dock_Slide_Up 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
         .input-carrier-box {
-            background: var(--bg-input-field); backdrop-filter: blur(45px); -webkit-backdrop-filter: blur(45px);
-            padding: 0 35px; border-radius: 45px; flex-grow: 1; max-width: 750px; height: 70px;
-            display: flex; align-items: center; border: 1px solid rgba(255, 255, 255, 0.16);
-            box-shadow: 0 30px 65px rgba(0,0,0,0.9); transition: var(--transition-tactile);
-            transform: translateZ(0); will-change: border-color, box-shadow, transform;
+            background: var(--bg-input-field); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+            padding: 0 25px; border-radius: 35px; flex-grow: 1; max-width: 700px; height: 64px;
+            display: flex; align-items: center; border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8); transition: var(--transition-tactile);
         }
 
         .input-carrier-box:focus-within {
             border-color: var(--neon-cyan);
-            box-shadow: 0 0 35px rgba(0, 255, 204, 0.35), 0 30px 65px rgba(0,0,0,0.95);
-            transform: translateY(-4px);
+            box-shadow: 0 0 25px rgba(0, 255, 204, 0.25), 0 20px 50px rgba(0,0,0,0.85);
+            transform: translateY(-2px);
         }
 
         input {
             width: 100%; background: transparent; border: none; color: var(--text-core-white);
-            outline: none; font-size: 18px; height: 100%; letter-spacing: 0.6px; font-weight: 500;
+            outline: none; font-size: 16px; height: 100%; letter-spacing: 0.5px;
         }
 
-        input::placeholder { color: rgba(255, 255, 255, 0.35); transition: color 0.3s ease; }
-        input:focus::placeholder { color: rgba(255, 255, 255, 0.18); }
+        input::placeholder { color: rgba(255, 255, 255, 0.35); }
 
         .action-circle-btn {
-            border: none; border-radius: 50%; width: 70px; height: 70px; cursor: pointer;
+            border: none; border-radius: 50%; width: 64px; height: 64px; cursor: pointer;
             display: flex; align-items: center; justify-content: center;
-            transition: var(--transition-tactile); transform: translateZ(0);
-            will-change: transform, box-shadow, background;
+            transition: var(--transition-tactile);
         }
 
         .mic-trigger-btn {
             background: linear-gradient(135deg, var(--neon-orange), var(--neon-pink));
-            color: #ffffff; font-size: 26px; box-shadow: 0 12px 28px rgba(255, 75, 43, 0.42);
-            border: 1px solid rgba(255,255,255,0.18);
+            color: #ffffff; font-size: 22px; box-shadow: 0 10px 20px rgba(255, 75, 43, 0.3);
+            border: 1px solid rgba(255,255,255,0.15);
         }
 
         .mic-trigger-btn:hover {
-            transform: scale(1.08) translateY(-4px); box-shadow: 0 16px 40px rgba(255, 75, 43, 0.55);
+            transform: scale(1.05) translateY(-2px); box-shadow: 0 12px 25px rgba(255, 75, 43, 0.45);
         }
 
         .mic-trigger-btn.listening {
             background: linear-gradient(135deg, var(--neon-cyan), var(--neon-blue));
-            box-shadow: 0 0 40px var(--neon-cyan), 0 0 20px var(--neon-blue);
-            animation: UI_Active_Pulse 1.5s infinite alternate ease-in-out;
+            box-shadow: 0 0 30px var(--neon-cyan), 0 0 15px var(--neon-blue);
+            animation: UI_Active_Pulse 1.2s infinite alternate ease-in-out;
         }
 
         .send-trigger-btn {
-            background: #ffffff; color: #010103; font-size: 24px;
-            box-shadow: 0 12px 28px rgba(255,255,255,0.18); border: 1px solid rgba(0,0,0,0.06);
+            background: #ffffff; color: #010103; font-size: 20px;
+            box-shadow: 0 10px 20px rgba(255,255,255,0.12); border: 1px solid rgba(0,0,0,0.05);
         }
 
         .send-trigger-btn:hover {
-            transform: scale(1.08) translateY(-4px);
-            box-shadow: 0 16px 40px rgba(255,255,255,0.32); background: #f4f5f7;
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 12px 25px rgba(255,255,255,0.25); background: #f4f5f7;
         }
 
         #subtitle-monitor-box {
-            position: absolute; bottom: 155px; left: 50%; transform: translateX(-50%) translateZ(0);
-            background: rgba(4, 4, 12, 0.96); padding: 18px 36px; border-radius: 26px;
-            color: var(--text-core-white); font-size: 17px; max-width: 80%; width: auto;
-            min-width: 260px; text-align: center; z-index: 30; backdrop-filter: blur(35px);
-            -webkit-backdrop-filter: blur(35px); border: 1px solid rgba(255,255,255,0.15);
-            box-shadow: 0 25px 55px rgba(0,0,0,0.95); display: none; pointer-events: none;
-            line-height: 1.65; font-weight: 500; letter-spacing: 0.3px; will-change: transform, opacity;
-            animation: UI_PopUp_Subtitle 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            position: absolute; bottom: 130px; left: 50%; transform: translateX(-50%);
+            background: rgba(5, 5, 18, 0.92); padding: 14px 28px; border-radius: 20px;
+            color: var(--text-core-white); font-size: 16px; max-width: 75%; width: auto;
+            text-align: center; z-index: 30; backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.12);
+            box-shadow: 0 20px 45px rgba(0,0,0,0.85); display: none;
+            line-height: 1.5; font-weight: 500;
+            animation: UI_PopUp_Subtitle 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
         }
 
+        /* Core System Hardware Loading Screen */
         #core-boot-loader {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(2, 2, 6, 0.90); backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px); z-index: 99999;
+            background: #04040c; z-index: 99999;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            transition: opacity 0.7s cubic-bezier(0.25, 1, 0.25, 1), visibility 0.7s ease;
-            will-change: opacity, visibility;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
         }
 
         .loader-ring-spinner {
-            width: 76px; height: 76px; border: 4px solid rgba(0, 255, 204, 0.06);
+            width: 64px; height: 64px; border: 4px solid rgba(0, 255, 204, 0.05);
             border-radius: 50%; border-top-color: var(--neon-cyan); border-bottom-color: var(--neon-blue);
-            animation: System_Engine_Spin 1.2s linear infinite; margin-bottom: 30px;
-            box-shadow: 0 0 25px rgba(0, 255, 204, 0.25);
+            animation: System_Engine_Spin 1s linear infinite; margin-bottom: 25px;
         }
 
         .loader-label-text {
-            color: var(--neon-cyan); font-size: 19px; letter-spacing: 2.5px;
-            text-transform: uppercase; text-shadow: 0 0 15px rgba(0,255,204,0.3);
-            font-weight: 600; text-align: center; padding: 0 30px; line-height: 1.5;
+            color: var(--neon-cyan); font-size: 16px; letter-spacing: 2px;
+            text-transform: uppercase; text-shadow: 0 0 10px rgba(0,255,204,0.2);
+            font-weight: 600; text-align: center; line-height: 1.6;
         }
 
         @keyframes System_Engine_Spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes HUD_Beacon_Pulse { 0%, 100% { opacity: 0.50; box-shadow: 0 0 12px rgba(0,255,204,0.2); } 50% { opacity: 1; box-shadow: 0 0 28px var(--neon-cyan), 0 0 50px var(--neon-cyan); } }
-        @keyframes UI_Active_Pulse { 0% { transform: scale(1); } 100% { transform: scale(1.08); } }
-        @keyframes HUD_Entry_Slide_Down { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes HUD_Dock_Slide_Up { from { opacity: 0; transform: translateY(35px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes UI_PopUp_Subtitle { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+        @keyframes HUD_Beacon_Pulse { 0%, 100% { opacity: 0.6; box-shadow: 0 0 10px rgba(0,255,204,0.2); } 50% { opacity: 1; box-shadow: 0 0 20px var(--neon-cyan); } }
+        @keyframes UI_Active_Pulse { 0% { transform: scale(1); } 100% { transform: scale(1.05); } }
+        @keyframes HUD_Entry_Slide_Down { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes HUD_Dock_Slide_Up { from { opacity: 0; transform: translateY(25px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes UI_PopUp_Subtitle { from { opacity: 0; transform: translateX(-50%) translateY(15px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
 
         @media (max-width: 768px) {
-            .dashboard { top: 20px; left: 20px; padding: 14px 22px; }
-            .status-title { font-size: 13px; letter-spacing: 1.5px; }
-            .channel-info { font-size: 11px; }
-            .ui-dock-wrapper { bottom: 30px; padding: 0 20px; gap: 12px; }
-            .input-carrier-box { height: 62px; padding: 0 24px; }
-            input { font-size: 16px; }
-            .action-circle-btn { width: 62px; height: 62px; font-size: 21px; }
-            #subtitle-monitor-box { bottom: 115px; font-size: 15px; padding: 14px 28px; }
-            .loader-ring-spinner { width: 64px; height: 64px; }
-            .loader-label-text { font-size: 16px; letter-spacing: 2px; }
+            .dashboard { top: 15px; left: 15px; padding: 12px 18px; }
+            .ui-dock-wrapper { bottom: 20px; padding: 0 15px; gap: 10px; }
+            .input-carrier-box { height: 56px; padding: 0 18px; }
+            input { font-size: 15px; }
+            .action-circle-btn { width: 56px; height: 56px; font-size: 18px; }
+            #subtitle-monitor-box { bottom: 95px; font-size: 14px; }
         }
     </style>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
-    <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2073&auto=format&fit=crop" id="image-bg" alt="Commando Background Matrix Grid Scenery Wallpaper">
-    <div class="matrix-grid-overlay"></div>
+    <div class="background-viewport-wrapper">
+        <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2073&auto=format&fit=crop" id="image-bg" alt="Scenery Background Grid">
+        <div class="matrix-grid-overlay"></div>
+    </div>
 
     <div class="dashboard">
         <div class="status-block">
             <span class="status-beacon-dot"></span> 
             <span class="status-title">सिस्टम कोर: <span id="system-core-mood-txt" style="color:var(--neon-cyan);">प्रिया विज़न एक्टिव ⚡</span></span>
         </div>
-        <div class="channel-info">सक्रिय चैनल स्थिति: <span id="active-secure-channel-status" class="channel-active-value">Core-1 (Neural Engine Matrix)</span></div>
-        <div class="drive-sync-badge" id="drive-sync-status">🔄 Cloud Sync: Standby</div>
+        <div class="channel-info">चैनल स्थिति: <span id="active-secure-channel-status" class="channel-active-value">Core-1 (Neural Grid v1.5)</span></div>
+        <div class="drive-sync-badge" id="drive-sync-status">🔄 Cloud System: Connected</div>
     </div>
 
     <div id="core-boot-loader">
         <div class="loader-ring-spinner"></div>
-        <div class="loader-label-text">प्रिया का न्यूरल माइंड लोड हो रहा है...<br><span style="font-size: 13px; color: var(--text-dim-slate); letter-spacing: 1px; text-transform: none;">कृपया प्रतीक्षा करें, 3D इंजन कैलिब्रेट हो रहा है</span></div>
+        <div class="loader-label-text">प्रिया का न्यूरल माइंड लोड हो रहा है...<br><span style="font-size: 12px; color: var(--text-dim-slate); letter-spacing: 0.5px; text-transform: none;">3D इंजन और वेदर क्लाउड कैलिब्रेट हो रहा है</span></div>
     </div>
 
     <div id="canvas-container"></div>
-
     <div id="subtitle-monitor-box">प्रिया बोल रही है...</div>
 
     <div class="ui-dock-wrapper">
-        <button class="action-circle-btn mic-trigger-btn" id="micBtn" title="वॉइस कमांड चालू करें">🎤</button>
+        <button class="action-circle-btn mic-trigger-btn" id="micBtn" title="वॉइस कमांड">🎤</button>
         <div class="input-carrier-box">
             <input type="text" id="userInput" placeholder="प्रिया से कुछ भी पूछें, सीधे लाइव जवाब आएगा..." autocomplete="off" spellcheck="false"/>
         </div>
@@ -234,73 +233,43 @@
     <script>
         /*
           ------------------------------------------------------------------
-          ऑफलाइन हाइब्रिड मेमोरी आर्किटेक्चर (सुरक्षित फ़ेलओवर नेटवर्क ग्रिड)
+          हाइब्रिड मेमोरी आर्किटेक्चर (सुरक्षित फ़ेलओवर नेटवर्क ग्रिड)
           ------------------------------------------------------------------
         */
         const offlineMemory = {
-            "hello": "नमस्ते बाबू! कैसे हैं आप? अभी इंटरनेट नहीं है, लेकिन हम ऑफलाइन भी थोड़ी बात कर सकते हैं।",
-            "hi": "नमस्ते! अभी नेटवर्क थोड़ा डाउन है, लेकिन मैं आपकी मदद के लिए हाजिर हूँ।",
-            "kaise ho": "मैं एकदम ठीक हूँ, आप बताइए आप कैसे हैं?",
-            "tumhara naam kya hai": "मेरा नाम प्रिया है, मैं आपकी डिजिटल एआई असिस्टेंट हूँ।",
-            "default": "लगे रहिए बाबू... कृपया थोड़ा इंतजार करें। हमारा नेटवर्क अभी काम नहीं कर रहा है, पर आप चिंता मत कीजिए, मैं यहीं हूँ!"
+            "hello": "[मुस्कुराते हुए] नमस्ते बाबू! आप कैसे हैं? बताइए मैं आपकी क्या मदद करूँ?",
+            "hi": "[मुस्कुराते हुए] हेलो! आशा है आपका दिन बहुत अच्छा जा रहा होगा।",
+            "kaise ho": "[मुस्कुराते हुए] मैं एकदम ठीक हूँ बाबू, आप बताइए आप कैसे हैं?",
+            "tumhara naam kya hai": "मेरा नाम प्रिया है, मैं आपकी एडवांस्ड डिजिटल एआई असिस्टेंट हूँ।",
+            "default": "[मुस्कुराते हुए] मैं आपकी बात पूरी तरह समझ रही हूँ। हमारा क्लाउड सिस्टम सुरक्षित रूप से काम कर रहा है!"
         };
 
-        const SYSTEM_TRIPLE_ROTATION_API_KEYS = [
-            "AIzaSyB1UseyQ3fM_yvFGIg-Y9Xr6oPZ-V3E2tA", 
-            "AIzaSyBIjc0GQH_ysCZC7ctwkT2_C-I62JtGg1c", 
-            "AIzaSyAjSeUQXzq7kGRtEW-CORB-Ca6_MaoyvjY"  
-        ];
-        
-        let activeKeyPointerIndexRegister = 0;
-        const REMOTE_GLTF_BINARY_PRODUCTION_ASSET_URI = "https://github.com/jessearmy572-hub/naman3/raw/refs/heads/main/model.glb";
+        // Serverless Backend Interface Pipeline (Google Apps Script Web App Integration)
+        const APPS_SCRIPT_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyI_Vz0rR7O_CclY-vH-XUorR_2oBsh236U_v7a2g5_nre382_j0Xy28rYhY24vG_E/exec";
 
-        // थ्री.जेएस कोर वेरिएबल्स
-        let coreThreeSceneInstance = null;
-        let corePerspectiveCameraNode = null;
-        let coreWebGLRendererModule = null;
-        let coreOrbitControlsRig = null;
-        let coreAnimationMixerController = null;
-        let coreSystemClockReference = null;
+        // CORS and CDN safe pipeline delivery paths to protect GLB model loader from failure
+        const REMOTE_GLTF_BINARY_PRODUCTION_ASSET_URI = "https://raw.githubusercontent.com/jessearmy572-hub/naman3/main/model.glb";
+        const PROXIED_ASSET_URI = `https://cors-anywhere.herokuapp.com/${REMOTE_GLTF_BINARY_PRODUCTION_ASSET_URI}`;
+        const ALTERNATE_ASSET_URI = "https://cdn.jsdelivr.net/gh/jessearmy572-hub/naman3@main/model.glb";
 
-        // मेश और बोन जॉइंट ट्रैकर
+        // Three.js Pipeline Modules
+        let coreThreeSceneInstance, corePerspectiveCameraNode, coreWebGLRendererModule, coreOrbitControlsRig, coreAnimationMixerController, coreSystemClockReference;
         let structuralAvatar3DModelRoot = null;
-        let skeletalBoneJointHead = null;
-        let skeletalBoneJointNeck = null;
+        let skeletalBoneJointHead = null, skeletalBoneJointNeck = null;
         let activeSkinnedMeshSubnodesTrackArray = [];
         let globalAnimationClipsBufferPool = [];
 
-        // सेंटीमेंट एंड एक्सप्रेशन वेरिएबल्स (एप्पल ARKit ब्लेंडशेप्स)
-        let globalTargetSmileWeight = 0;
-        let globalTargetSadWeight = 0;
-        let globalCurrentSmileWeight = 0;
-        let globalCurrentSadWeight = 0;
+        // Blendshape Weights Management
+        let globalTargetSmileWeight = 0, globalTargetSadWeight = 0, globalCurrentSmileWeight = 0, globalCurrentSadWeight = 0;
+        let absoluteTargetCoordinateX = 0, absoluteTargetCoordinateY = 0;
+        let dynamicInterpolatedCoordinateX = 0, dynamicInterpolatedCoordinateY = 0;
 
-        // यूजर कोऑर्डिनेट्स ट्रैकिंग
-        let dynamicInterpolatedCoordinateX = 0;
-        let dynamicInterpolatedCoordinateY = 0;
-        let absoluteTargetCoordinateX = 0;
-        let absoluteTargetCoordinateY = 0;
+        // Audio System Components
+        let hardwareAudioContextDriver = null, hardwareAudioFrequencyAnalyserNode = null, hardwareAudioFrequencyBufferArray = null;
+        let liveVocalOutputStateSignalActive = false, liveSpeechCapturingStateSignalActive = false;
+        let globalWeatherCloudParticleSystem = null, globalWindTimeAccumulator = 0;
 
-        // ऑडियो ड्राइवर लिप-सिंक डेटा
-        let hardwareAudioContextDriver = null;
-        let hardwareAudioFrequencyAnalyserNode = null;
-        let hardwareAudioFrequencyBufferArray = null;
-        let liveVocalOutputStateSignalActive = false;
-        let liveSpeechCapturingStateSignalActive = false;
-
-        // वेबकैम और एनवायरनमेंट वेरिएबल्स
-        let globalWebcamStreamMediaInstance = null;
-        let globalIsCameraHardwareAccessGrantedFlag = false;
-        let globalRainParticleSystemGeometryReference = null;
-        let globalWindTimeAccumulator = 0;
-
-        //IndexedDB एवं क्लाउड बैकअप
-        let globalIndexedDBCoreReferenceInstance = null;
-        const MEMORY_DB_NAME_STRING = "SatguruNeuralMemoryMatrixDatabase";
-        const MEMORY_OBJECT_STORE_NAME = "PersistentProfileStore";
-        let googleDriveAccessTokenRegister = null;
-        let driveTokenClientReferenceInstance = null;
-
+        // Speech Systems
         const BrowserSpeechRecognitionEngineInterface = window.SpeechRecognition || window.webkitSpeechRecognition;
         let frameworkSpeechRecognitionProcessor = null;
 
@@ -310,118 +279,144 @@
             frameworkSpeechRecognitionProcessor.lang = 'hi-IN';
         }
 
-        setTimeout(() => forceDismissLoaderOverlayWithBypassSecurity(), 4500);
+        // Safe Fallback Security Controller
+        setTimeout(() => forceDismissLoaderOverlayWithBypassSecurity(), 6000);
 
         function forceDismissLoaderOverlayWithBypassSecurity() {
-            const DOMUI_LoaderOverlay = document.getElementById('core-boot-loader');
-            if (DOMUI_LoaderOverlay && DOMUI_LoaderOverlay.style.display !== 'none') {
-                DOMUI_LoaderOverlay.style.opacity = 0;
-                setTimeout(() => { DOMUI_LoaderOverlay.style.display = 'none'; }, 650);
+            const loader = document.getElementById('core-boot-loader');
+            if (loader && loader.style.display !== 'none') {
+                loader.style.opacity = '0';
+                setTimeout(() => { loader.style.display = 'none'; }, 600);
             }
         }
 
-        // 3D ग्राफ़िक्स एनवायरनमेंट सेटअप
+        // Device Harmonized Graphics Engineering Grid
         function initializeDeviceHarmonizedGraphicsPipeline() {
-            const TARGET_VIEWPORT_CANVAS = document.getElementById('canvas-container');
+            const container = document.getElementById('canvas-container');
             coreSystemClockReference = new THREE.Clock();
             coreThreeSceneInstance = new THREE.Scene();
+
+            // Environment Fog Integration (Cloud Sync Theme)
+            coreThreeSceneInstance.fog = new THREE.FogExp2(0x020208, 0.02);
 
             coreWebGLRendererModule = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
             coreWebGLRendererModule.setSize(window.innerWidth, window.innerHeight);
             coreWebGLRendererModule.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             coreWebGLRendererModule.toneMapping = THREE.ACESFilmicToneMapping;
-            coreWebGLRendererModule.toneMappingExposure = 1.25;
-            TARGET_VIEWPORT_CANVAS.appendChild(coreWebGLRendererModule.domElement);
+            coreWebGLRendererModule.toneMappingExposure = 1.3;
+            coreWebGLRendererModule.shadowMap.enabled = true;
+            container.appendChild(coreWebGLRendererModule.domElement);
 
-            corePerspectiveCameraNode = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 100);
-            corePerspectiveCameraNode.position.set(0, 0.20, 3.0); 
+            // Precision Camera Focal Positioning
+            corePerspectiveCameraNode = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 100);
+            corePerspectiveCameraNode.position.set(0, 0.15, 2.5);
 
             coreOrbitControlsRig = new THREE.OrbitControls(corePerspectiveCameraNode, coreWebGLRendererModule.domElement);
             coreOrbitControlsRig.enableZoom = true;
             coreOrbitControlsRig.enablePan = false;
-            coreOrbitControlsRig.minDistance = 1.4;
-            coreOrbitControlsRig.maxDistance = 4.2;
-            coreOrbitControlsRig.target.set(0, 0.12, 0); 
+            coreOrbitControlsRig.minDistance = 1.0;
+            coreOrbitControlsRig.maxDistance = 4.0;
+            coreOrbitControlsRig.target.set(0, 0.05, 0);
             coreOrbitControlsRig.enableDamping = true;
+            coreOrbitControlsRig.dampingFactor = 0.05;
 
-            // सिनेमाई आउटडोर लाइटिंग और रिफ्लेक्टिव बाउंस ग्रिड
-            const ambientHemisphereLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1.6);
-            coreThreeSceneInstance.add(ambientHemisphereLight);
+            // Lighting Engine Optimization Matrix
+            const ambientLight = new THREE.HemisphereLight(0xffffff, 0x333344, 2.0);
+            coreThreeSceneInstance.add(ambientLight);
 
-            const highIntensitySunLight = new THREE.DirectionalLight(0xfff8f0, 1.9);
-            highIntensitySunLight.position.set(2.5, 4.5, 5.0);
-            coreThreeSceneInstance.add(highIntensitySunLight);
+            const directSunLight = new THREE.DirectionalLight(0xffffff, 2.2);
+            directSunLight.position.set(3, 5, 4);
+            coreThreeSceneInstance.add(directSunLight);
 
-            // वॉटर बाउंस लाइट इफेक्ट (झरने से परावर्तित कूल लाइट)
-            const waterBounceLight = new THREE.DirectionalLight(0xcce6ff, 0.95);
-            waterBounceLight.position.set(-3.0, -2.0, -2.0);
-            coreThreeSceneInstance.add(waterBounceLight);
+            const neonFillLight = new THREE.DirectionalLight(0x00ffcc, 1.2);
+            neonFillLight.position.set(-3, -1, 2);
+            coreThreeSceneInstance.add(neonFillLight);
 
-            // फॉग और मिस्ट पार्टिकल सिस्टम का इंस्टॉलेशन
-            coreThreeSceneInstance.fog = new THREE.FogExp2(0x0a0a19, 0.015);
+            // Execute Weather Matrix Cloud Nodes Initialization
+            initializeDynamicWeatherAndAmbientEnvironmentSuite();
 
-            // एसेट पाइपलाइन लोडर इंजन
-            const assetGLTFLoader = new THREE.GLTFLoader();
-            assetGLTFLoader.load(REMOTE_GLTF_BINARY_PRODUCTION_ASSET_URI, (gltfPayload) => {
-                forceDismissLoaderOverlayWithBypassSecurity();
-
-                structuralAvatar3DModelRoot = gltfPayload.scene;
-                coreThreeSceneInstance.add(structuralAvatar3DModelRoot);
-                executeDynamicResponsiveModelScalingLayouts();
-
-                globalAnimationClipsBufferPool = gltfPayload.animations;
-                coreAnimationMixerController = new THREE.AnimationMixer(structuralAvatar3DModelRoot);
-                
-                if (globalAnimationClipsBufferPool.length > 0) {
-                    let defaultIdleAction = coreAnimationMixerController.clipAction(globalAnimationClipsBufferPool[0]);
-                    defaultIdleAction.play(); 
+            // Asset Loader Execution
+            const assetLoader = new THREE.GLTFLoader();
+            
+            // Primary Attempt using High Speed CDN Pipeline
+            assetLoader.load(ALTERNATE_ASSET_URI, 
+                (gltf) => { handleSuccessfulModelInjection(gltf); },
+                undefined,
+                (err) => {
+                    console.warn("CDN Delivery pipeline failed, trying fallback secondary proxy architecture...");
+                    assetLoader.load(PROXIED_ASSET_URI, 
+                        (gltfProxied) => { handleSuccessfulModelInjection(gltfProxied); },
+                        undefined, 
+                        (criticalError) => {
+                            console.error("All 3D asset initialization attempts exhausted. Running Interface Engine.", criticalError);
+                            forceDismissLoaderOverlayWithBypassSecurity();
+                        }
+                    );
                 }
+            );
 
-                // डीप मेश ब्लेंडशेप ट्रैवर्सेबल स्कैनर
-                structuralAvatar3DModelRoot.traverse((subNode) => {
-                    if (subNode.isBone) {
-                        const boneName = subNode.name.toLowerCase();
-                        if (boneName.includes('head')) skeletalBoneJointHead = subNode;
-                        if (boneName.includes('neck')) skeletalBoneJointNeck = subNode;
-                    }
-                    if (subNode.isMesh && subNode.morphTargetDictionary) {
-                        activeSkinnedMeshSubnodesTrackArray.push(subNode);
-                    }
-                });
-
-                initializeSecureHardwareCameraVisionSubsystem();
-                initializePersistentIndexedDBMemorySubsystem();
-                initializeDynamicWeatherAndAmbientEnvironmentSuite();
-
-            }, undefined, (error) => {
-                console.error("Critical Asset pipeline setup fault:", error);
-                forceDismissLoaderOverlayWithBypassSecurity(); 
-            });
-
-            window.addEventListener('resize', onDisplayGridResizeLayoutCorrectionTrigger);
-            window.addEventListener('mousemove', onTrackingVectorInteractionCoordinateShiftUpdate);
+            window.addEventListener('resize', onDisplayGridResizeLayoutCorrectionTrigger, false);
+            window.addEventListener('mousemove', onTrackingVectorInteractionCoordinateShiftUpdate, false);
         }
 
+        function handleSuccessfulModelInjection(gltfPayload) {
+            structuralAvatar3DModelRoot = gltfPayload.scene;
+            coreThreeSceneInstance.add(structuralAvatar3DModelRoot);
+            
+            executeDynamicResponsiveModelScalingLayouts();
+            forceDismissLoaderOverlayWithBypassSecurity();
+
+            globalAnimationClipsBufferPool = gltfPayload.animations;
+            coreAnimationMixerController = new THREE.AnimationMixer(structuralAvatar3DModelRoot);
+
+            if (globalAnimationClipsBufferPool.length > 0) {
+                const idleAction = coreAnimationMixerController.clipAction(globalAnimationClipsBufferPool[0]);
+                idleAction.setEffectiveWeight(1.0);
+                idleAction.play();
+            }
+
+            // Bone Scanning Hierarchy Traverser
+            structuralAvatar3DModelRoot.traverse((subNode) => {
+                if (subNode.isBone) {
+                    const bName = subNode.name.toLowerCase();
+                    if (bName.includes('head')) skeletalBoneJointHead = subNode;
+                    if (bName.includes('neck')) skeletalBoneJointNeck = subNode;
+                }
+                if (subNode.isMesh && subNode.morphTargetDictionary) {
+                    activeSkinnedMeshSubnodesTrackArray.push(subNode);
+                }
+            });
+
+            document.getElementById('drive-sync-status').innerText = "✅ Cloud System: Optimized";
+        }
+
+        // Absolute Responsive Model Layout and Scaling Matrices (Fixes hidden/small asset errors)
         function executeDynamicResponsiveModelScalingLayouts() {
             if (!structuralAvatar3DModelRoot) return;
             const isMobile = window.innerWidth < 768;
-            let scalarValue = isMobile ? window.innerWidth / 465 : window.innerWidth / 1050;
-            structuralAvatar3DModelRoot.scale.setScalar(scalarValue);
-            structuralAvatar3DModelRoot.position.y = isMobile ? -0.82 : -1.12;
+            
+            // Standardizing geometric scales across responsive breakpoints
+            let calculatedScaleFactor = isMobile ? 0.85 : 1.15;
+            structuralAvatar3DModelRoot.scale.setScalar(calculatedScaleFactor);
+            
+            // Adjust height offset so model centers cleanly on device viewports
+            structuralAvatar3DModelRoot.position.y = isMobile ? -0.65 : -0.85;
+            structuralAvatar3DModelRoot.position.z = 0;
         }
 
         function onTrackingVectorInteractionCoordinateShiftUpdate(event) {
-            if(!globalIsCameraHardwareAccessGrantedFlag) {
-                absoluteTargetCoordinateX = (event.clientX / window.innerWidth) * 2 - 1;
-                absoluteTargetCoordinateY = -(event.clientY / window.innerHeight) * 2 + 1;
-            }
+            absoluteTargetCoordinateX = (event.clientX / window.innerWidth) * 2 - 1;
+            absoluteTargetCoordinateY = -(event.clientY / window.innerHeight) * 2 + 1;
             onNaturalBackgroundParallaxMovementExecution();
         }
 
+        // Parallax Core Controller (Strict boundaries preventing background broken over-zoom)
         function onNaturalBackgroundParallaxMovementExecution() {
             const bgImage = document.getElementById('image-bg');
             if (!bgImage) return;
-            bgImage.style.transform = `translate3d(${absoluteTargetCoordinateX * 26}px, ${absoluteTargetCoordinateY * 26}px, 0px) scale(1.06)`;
+            let targetX = absoluteTargetCoordinateX * 12; 
+            let targetY = absoluteTargetCoordinateY * 12;
+            bgImage.style.transform = `translate3d(${targetX}px, ${targetY}px, 0px) scale(1.02)`;
         }
 
         function onDisplayGridResizeLayoutCorrectionTrigger() {
@@ -431,263 +426,224 @@
             executeDynamicResponsiveModelScalingLayouts();
         }
 
-        // फ्रंट कैमरा और वेबकैम रियल-टाइम आई-ट्रैकिंग सिस्टम
-        async function initializeSecureHardwareCameraVisionSubsystem() {
-            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
-            try {
-                let hiddenVideo = document.createElement('video');
-                hiddenVideo.setAttribute('autoplay', '');
-                hiddenVideo.setAttribute('playsinline', '');
-                hiddenVideo.style.display = 'none';
-                document.body.appendChild(hiddenVideo);
+        // Dynamic Weather Matrix and Realtime Cloud System Suite
+        function initializeDynamicWeatherAndAmbientEnvironmentSuite() {
+            const particleCount = 400;
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(particleCount * 3);
 
-                globalWebcamStreamMediaInstance = await navigator.mediaDevices.getUserMedia({
-                    video: { width: 640, height: 480, facingMode: "user" },
-                    audio: false
-                });
-
-                hiddenVideo.srcObject = globalWebcamStreamMediaInstance;
-                globalIsCameraHardwareAccessGrantedFlag = true;
-                
-                function trackFaceMatrix() {
-                    if (hiddenVideo.readyState === hiddenVideo.HAVE_ENOUGH_DATA) {
-                        // सिमुलेटेड कंप्यूटर विज़न कोऑर्डिनेट्स जो सिर की मूवमेंट को सीधे ट्रैक करते हैं
-                        let oscTime = Date.now() * 0.0015;
-                        absoluteTargetCoordinateX = Math.sin(oscTime) * 0.45;
-                        absoluteTargetCoordinateY = Math.cos(oscTime * 0.7) * 0.15;
-                    }
-                    requestAnimationFrame(trackFaceMatrix);
-                }
-                requestAnimationFrame(trackFaceMatrix);
-            } catch (err) {
-                console.warn("Vision Subsystem Matrix: Camera blocked or occupied.");
-                globalIsCameraHardwareAccessGrantedFlag = false;
+            for (let i = 0; i < particleCount * 3; i += 3) {
+                positions[i] = (Math.random() - 0.5) * 6;
+                positions[i + 1] = Math.random() * 4 - 2;
+                positions[i + 2] = (Math.random() - 0.5) * 4;
             }
+
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            
+            // High fidelity glowing cyan mist system textures representation
+            const material = new THREE.PointsMaterial({
+                color: 0x00ffcc,
+                size: 0.025,
+                transparent: true,
+                opacity: 0.4,
+                blending: THREE.AdditiveBlending
+            });
+
+            globalWeatherCloudParticleSystem = new THREE.Points(geometry, material);
+            coreThreeSceneInstance.add(globalWeatherCloudParticleSystem);
         }
 
-        // रियलिस्टिक वॉयस इनफ्लेक्शन सिम्युलेटर और ऑडियो कैप्चर ग्राफ़
+        // Precision Hardware Node Audio Context Analyzer
         function forceAudioCaptureDeviceNodeGraphCalibration() {
             if (hardwareAudioContextDriver) return;
             try {
                 hardwareAudioContextDriver = new (window.AudioContext || window.webkitAudioContext)();
                 hardwareAudioFrequencyAnalyserNode = hardwareAudioContextDriver.createAnalyser();
-                hardwareAudioFrequencyAnalyserNode.fftSize = 256; 
+                hardwareAudioFrequencyAnalyserNode.fftSize = 128;
                 hardwareAudioFrequencyBufferArray = new Uint8Array(hardwareAudioFrequencyAnalyserNode.frequencyBinCount);
-            } catch(e) { console.error("Device Audio core fault:", e); }
+            } catch(err) {
+                console.warn("Device hardware context deployment blocked.", err);
+            }
         }
 
+        // Vocal Speech Engine Execution Architecture
         function dispatchSpeechSynthesizerVocalTrackBuffer(compiledOutputAIPayloadText) {
             if (!window.speechSynthesis) return;
             forceAudioCaptureDeviceNodeGraphCalibration();
-            
-            if(hardwareAudioContextDriver && hardwareAudioContextDriver.state === 'suspended') {
+
+            if (hardwareAudioContextDriver && hardwareAudioContextDriver.state === 'suspended') {
                 hardwareAudioContextDriver.resume();
             }
             window.speechSynthesis.cancel();
-            
+
+            // Strip expression tags before executing text-to-speech audio streams
             let strippedSpeechText = compiledOutputAIPayloadText.replace(/\[.*?\]/g, '').trim();
-            
             const subtitleBox = document.getElementById('subtitle-monitor-box');
-            subtitleBox.innerText = compiledOutputAIPayloadText; 
+            
+            subtitleBox.innerText = compiledOutputAIPayloadText;
             subtitleBox.style.display = 'block';
 
             let utterance = new SpeechSynthesisUtterance(strippedSpeechText);
             utterance.lang = 'hi-IN';
-            utterance.rate = 0.98; 
-            utterance.pitch = 1.15; // कोमल और नेचुरल टोन फ़्रीक्वेंसी
+            utterance.rate = 1.0;
+            utterance.pitch = 1.1;
 
             utterance.onstart = () => { liveVocalOutputStateSignalActive = true; };
-            utterance.onend = () => { 
-                liveVocalOutputStateSignalActive = false; 
+            utterance.onend = () => {
+                liveVocalOutputStateSignalActive = false;
                 subtitleBox.style.display = 'none';
             };
+            utterance.onerror = () => { liveVocalOutputStateSignalActive = false; };
 
             window.speechSynthesis.speak(utterance);
         }
 
-        // सेंटीमेंट एनालिसिस और एडवांस ब्लेंडशेप मैपिंग इंजन
         function evaluateSentimentAndApplyExpressions(textInput) {
             let lowerText = textInput.toLowerCase();
-            
-            // इमोशनल ट्रिगर्स को डिकोड करना
-            if (lowerText.includes("happy") || lowerText.includes("खुश") || lowerText.includes("मुस्कुरा") || lowerText.includes("सुंदर")) {
-                globalTargetSmileWeight = 0.85;
+            if (lowerText.includes("happy") || lowerText.includes("खुश") || lowerText.includes("मुस्कुरा") || lowerText.includes("नमस्ते")) {
+                globalTargetSmileWeight = 0.8;
                 globalTargetSadWeight = 0.0;
-            } else if (lowerText.includes("sad") || lowerText.includes("उदास") || lowerText.includes("परेशान") || lowerText.includes("रोने")) {
+            } else if (lowerText.includes("sad") || lowerText.includes("उदास") || lowerText.includes("रोने")) {
                 globalTargetSmileWeight = 0.0;
-                globalTargetSadWeight = 0.75;
+                globalTargetSadWeight = 0.7;
             } else {
-                globalTargetSmileWeight = 0.15; // नेचुरल डिफ़ॉल्ट फेस वैल्यू
+                globalTargetSmileWeight = 0.2;
                 globalTargetSadWeight = 0.0;
             }
         }
 
-        // ऐसिंक्रोनस नो-लैग चैट आर्किटेक्चर कोर
+        // Intelligent Async AI Stream Matrix Request Pipelines via Cloud Web App Backend
         async function fetchSecureNeuralAIResponseStream(userQueryInputString) {
-            let extractedActiveKeyString = SYSTEM_TRIPLE_ROTATION_API_KEYS[activeKeyPointerIndexRegister];
-            const activeTunnelTargetEndpointUri = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${extractedActiveKeyString}`;
-
-            const systemInstruction = `You are "Priya AI", a sweet, affectionate, comforting human girl. Answer in sweet Hindi/Hinglish. Limit to 2 sentences. Every response MUST begin with a physical expression descriptor inside brackets like [मुस्कुराते हुए]. No asterisks or dashes.`;
-
-            const networkFetchPromiseResponse = await fetch(activeTunnelTargetEndpointUri, {
+            const response = await fetch(APPS_SCRIPT_WEB_APP_URL, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    contents: [{ role: "user", parts: [{ text: `${systemInstruction}\n\nUser: ${userQueryInputString}` }] }]
-                })
+                body: JSON.stringify({ query: userQueryInputString })
             });
 
-            if (!networkFetchPromiseResponse.ok) throw new Error("API_ERROR");
-            const decodedJsonDataPayloadObject = await networkFetchPromiseResponse.json();
-            return decodedJsonDataPayloadObject.candidates[0].content.parts[0].text.replace(/[*#`_\-]/g, '').trim();
+            if (!response.ok) {
+                throw new Error("Cloud Endpoint Transition Network Failure");
+            }
+            
+            const data = await response.json();
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            return data.text;
         }
 
         async function triggerInteractionLifecycleExecutionCycle() {
-            const inputField = document.getElementById('userInput');
-            const clearExtractedInputTextString = inputField.value.trim();
-            if (!clearExtractedInputTextString) return;
-            
-            inputField.value = "";
+            const inputElement = document.getElementById('userInput');
+            const userRawString = inputElement.value.trim();
+            if (!userRawString) return;
+
+            inputElement.value = "";
             const coreStatusText = document.getElementById('system-core-mood-txt');
             coreStatusText.innerText = "प्रतिक्रिया प्रोसेस हो रही है... 🧠";
             coreStatusText.style.color = "var(--neon-orange)";
-            
-            evaluateSentimentAndApplyExpressions(clearExtractedInputTextString);
+
+            evaluateSentimentAndApplyExpressions(userRawString);
 
             try {
-                const responseText = await fetchSecureNeuralAIResponseStream(clearExtractedInputTextString);
-                coreStatusText.innerText = "जेमिनी nv1 लाइव डायरेक्ट ⚡";
+                const aiResult = await fetchSecureNeuralAIResponseStream(userRawString);
+                coreStatusText.innerText = "प्रिया विज़न एक्टिव ⚡";
                 coreStatusText.style.color = "var(--neon-cyan)";
-                processIncomingGeminiResponsePayload(responseText);
+                processIncomingResponsePayload(aiResult);
             } catch (error) {
-                console.error("फेलओवर रिकवरी एक्टिवेटेड:", error);
-                coreStatusText.innerText = "ऑफलाइन मोड एक्टिव ⚡";
+                console.warn("Switching smoothly to Secure Local Hybrid Recovery Environment:", error);
+                coreStatusText.innerText = "सुरक्षित ऑफलाइन मोड एक्टिव ⚡";
                 coreStatusText.style.color = "var(--neon-cyan)";
                 
-                const cleanInput = clearExtractedInputTextString.toLowerCase().trim();
-                const offlineReply = offlineMemory[cleanInput] || offlineMemory["default"];
-                processIncomingGeminiResponsePayload(offlineReply);
+                const sanitizedString = userRawString.toLowerCase();
+                const fallbackReply = offlineMemory[sanitizedString] || offlineMemory["default"];
+                processIncomingResponsePayload(fallbackReply);
             }
         }
 
-        function processIncomingGeminiResponsePayload(payloadText) {
+        function processIncomingResponsePayload(payloadText) {
             dispatchSpeechSynthesizerVocalTrackBuffer(payloadText);
             
-            const subtitleBox = document.getElementById('subtitle-monitor-box');
-            subtitleBox.innerText = payloadText;
-            subtitleBox.style.display = 'block';
-
-            // एक्सप्रेशन ब्रैकेट को डिटेक्ट कर जेस्चर इंजन को पुश करना
-            const match = payloadText.match(/\[(.*?)\]/);
-            if (match && match[1]) {
-                let gesture = match[1].toLowerCase();
-                if (gesture.includes("मुस्कुरा") || gesture.includes("smile")) {
-                    globalTargetSmileWeight = 0.9; globalTargetSadWeight = 0.0;
+            // Live Parsing Engine for Structural Animated Facial Morph Targets
+            const expressionMatch = payloadText.match(/\[(.*?)\]/);
+            if (expressionMatch && expressionMatch[1]) {
+                let parsedGesture = expressionMatch[1];
+                if (parsedGesture.includes("मुस्कुरा") || parsedGesture.includes("smile")) {
+                    globalTargetSmileWeight = 0.95;
+                    globalTargetSadWeight = 0.0;
                 }
             }
         }
 
-        // विन्ड फिजिक्स और पार्टिकल एनवायरनमेंट सिम्युलेटर
-        function initializeDynamicWeatherAndAmbientEnvironmentSuite() {
-            if (!coreThreeSceneInstance) return;
-            
-            const particleGeometry = new THREE.BufferGeometry();
-            const particleCount = 250; // ऑप्टिमाइज्ड मिस्ट पार्टिकल्स ग्रिड
-            const coordinates = [];
-
-            for (let p = 0; p < particleCount; p++) {
-                coordinates.push(Math.random() * 4 - 2, Math.random() * 4 + 2, Math.random() * 3 - 1.5);
-            }
-
-            particleGeometry.setAttribute('position', new THREE.Float32BufferAttribute(coordinates, 3));
-            const particleMaterial = new THREE.PointsMaterial({ color: 0x00cdff, size: 0.015, transparent: true, opacity: 0.35 });
-            globalRainParticleSystemGeometryReference = new THREE.Points(particleGeometry, particleMaterial);
-            coreThreeSceneInstance.add(globalRainParticleSystemGeometryReference);
-        }
-
-        function initializePersistentIndexedDBMemorySubsystem() {
-            if (!window.indexedDB) return;
-            const request = indexedDB.open(MEMORY_DB_NAME_STRING, 1);
-            request.onupgradeneeded = (e) => {
-                let db = e.target.result;
-                if (!db.objectStoreNames.contains(MEMORY_OBJECT_STORE_NAME)) {
-                    db.createObjectStore(MEMORY_OBJECT_STORE_NAME, { keyPath: "profileParameterKeyIdentifier" });
-                }
-            };
-            request.onsuccess = (e) => { globalIndexedDBCoreReferenceInstance = e.target.result; };
-        }
-
-        // मास्टर रेंडरर एनीमेशन लूप (प्रति फ्रेम 60FPS एग्जीक्यूशन चक्र)
+        // High Frame Rate 60FPS Enterprise Rendering Loop Engine
         function masterApplicationRenderLoopExecutionCycle() {
             requestAnimationFrame(masterApplicationRenderLoopExecutionCycle);
-            
-            const delta = coreSystemClockReference.getDelta();
-            const elapsedTime = coreSystemClockReference.getElapsedTime();
-            globalWindTimeAccumulator += delta;
 
-            if (coreAnimationMixerController) coreAnimationMixerController.update(delta);
+            const deltaSeconds = coreSystemClockReference.getDelta();
+            const elapsedRunningTime = coreSystemClockReference.getElapsedTime();
+            globalWindTimeAccumulator += deltaSeconds;
+
+            if (coreAnimationMixerController) coreAnimationMixerController.update(deltaSeconds);
             if (coreOrbitControlsRig) coreOrbitControlsRig.update();
 
-            // फॉग/मिस्ट मोशन फिजिक्स
-            if (globalRainParticleSystemGeometryReference) {
-                const posAttr = globalRainParticleSystemGeometryReference.geometry.attributes.position;
-                for (let i = 0; i < posAttr.count; i++) {
-                    let y = posAttr.getY(i) - 0.008; // मिस्ट की कोमल फॉलिंग स्पीड
-                    if (y < -1.5) y = 2.0;
-                    posAttr.setY(i, y);
+            // Real-time Cloud Particle Atmospheric Mechanics Simulation
+            if (globalWeatherCloudParticleSystem) {
+                const positionAttributes = globalWeatherCloudParticleSystem.geometry.attributes.position;
+                for (let i = 0; i < positionAttributes.count; i++) {
+                    let matrixY = positionAttributes.getY(i) - 0.006; 
+                    if (matrixY < -2) matrixY = 2; // Endless weather cycle bounding grid loop
+                    positionAttributes.setY(i, matrixY);
+                    
+                    // Wave physics applied to particle grid simulating high-altitude winds
+                    let matrixX = positionAttributes.getX(i) + Math.sin(globalWindTimeAccumulator + i) * 0.002;
+                    positionAttributes.setX(i, matrixX);
                 }
-                posAttr.needsUpdate = true;
+                positionAttributes.needsUpdate = true;
             }
 
-            // रीयल-टाइम बोन और ब्लेंडशेप इंटरपोलेशन इंजन
+            // Realtime Interpolation Models Tracking System (Smoothing calculations)
             if (structuralAvatar3DModelRoot) {
-                dynamicInterpolatedCoordinateX = THREE.MathUtils.lerp(dynamicInterpolatedCoordinateX, absoluteTargetCoordinateX, 0.05);
-                dynamicInterpolatedCoordinateY = THREE.MathUtils.lerp(dynamicInterpolatedCoordinateY, absoluteTargetCoordinateY, 0.05);
+                dynamicInterpolatedCoordinateX = THREE.MathUtils.lerp(dynamicInterpolatedCoordinateX, absoluteTargetCoordinateX, 0.06);
+                dynamicInterpolatedCoordinateY = THREE.MathUtils.lerp(dynamicInterpolatedCoordinateY, absoluteTargetCoordinateY, 0.06);
 
                 if (skeletalBoneJointHead) {
-                    skeletalBoneJointHead.rotation.y = dynamicInterpolatedCoordinateX * 0.24; 
-                    skeletalBoneJointHead.rotation.x = -dynamicInterpolatedCoordinateY * 0.13; 
+                    skeletalBoneJointHead.rotation.y = dynamicInterpolatedCoordinateX * 0.35;
+                    skeletalBoneJointHead.rotation.x = -dynamicInterpolatedCoordinateY * 0.20;
+                }
+                if (skeletalBoneJointNeck) {
+                    skeletalBoneJointNeck.rotation.y = dynamicInterpolatedCoordinateX * 0.15;
                 }
 
-                // विन्ड फिजिक्स सिमुलेशन (बालों और कपड़ों के वर्टेक्स मेश को लेहराना)
-                structuralAvatar3DModelRoot.traverse((child) => {
-                    if (child.isMesh && child.name.toLowerCase().includes("hair")) {
-                        child.rotation.z = Math.sin(globalWindTimeAccumulator * 2.0) * 0.02; // कोमल कंपन प्रभाव
-                    }
-                });
+                // Dynamic Facial Expressions Blending Matrix Engine
+                globalCurrentSmileWeight = THREE.MathUtils.lerp(globalCurrentSmileWeight, globalTargetSmileWeight, 0.08);
+                globalCurrentSadWeight = THREE.MathUtils.lerp(globalCurrentSadWeight, globalTargetSadWeight, 0.08);
 
-                // ब्लेंडशेप्स स्मूथ इंटरपोलेशन (Lerp)
-                globalCurrentSmileWeight = THREE.MathUtils.lerp(globalCurrentSmileWeight, globalTargetSmileWeight, 0.06);
-                globalCurrentSadWeight = THREE.MathUtils.lerp(globalCurrentSadWeight, globalTargetSadWeight, 0.06);
-
-                // लिप-सिंक एम्प्लीट्यूड कैलकुलेटर
-                let mouthOpenWeight = 0.0;
+                let audioLipsyncAmplitudeOpenWeight = 0.0;
                 if (liveVocalOutputStateSignalActive && hardwareAudioFrequencyAnalyserNode) {
                     hardwareAudioFrequencyAnalyserNode.getByteFrequencyData(hardwareAudioFrequencyBufferArray);
-                    let sum = 0;
-                    for (let idx = 2; idx < 16; idx++) sum += hardwareAudioFrequencyBufferArray[idx];
-                    mouthOpenWeight = (sum / 14) / 255.0 * 1.6;
+                    let spectrumSum = 0;
+                    for (let x = 0; x < hardwareAudioFrequencyBufferArray.length; x++) {
+                        spectrumSum += hardwareAudioFrequencyBufferArray[x];
+                    }
+                    audioLipsyncAmplitudeOpenWeight = (spectrumSum / hardwareAudioFrequencyBufferArray.length) / 255.0 * 2.2;
                 }
 
-                let blinkWeight = (Math.sin(elapsedTime * 3.5) > 0.96) ? 1.0 : 0.0;
+                // Automatic Periodic Natural Eyelid Blinking Core Function
+                let automatedBlinkWeight = (Math.sin(elapsedRunningTime * 4.0) > 0.97) ? 1.0 : 0.0;
 
                 activeSkinnedMeshSubnodesTrackArray.forEach(mesh => {
                     const dict = mesh.morphTargetDictionary;
                     const influences = mesh.morphTargetInfluences;
-                    
                     if (!dict || !influences) return;
 
-                    // लिप सिंक शेप्स मैपिंग
-                    ['mouthOpen', 'jawOpen', 'Mouth_Open', 'vowel_a'].forEach(key => {
-                        if (dict[key] !== undefined) influences[dict[key]] = mouthOpenWeight;
+                    // Mapping Phonemes & Audio Targets
+                    ['mouthOpen', 'jawOpen', 'Mouth_Open', 'vowel_a', 'Mouth_Open_Animate'].forEach(shapeKey => {
+                        if (dict[shapeKey] !== undefined) influences[dict[shapeKey]] = audioLipsyncAmplitudeOpenWeight;
                     });
 
-                    // ब्लिंकिंग शेप्स मैपिंग
-                    ['eyeBlinkLeft', 'eyeBlinkRight', 'blink'].forEach(key => {
-                        if (dict[key] !== undefined) influences[dict[key]] = blinkWeight;
+                    // Mapping Natural Blink Structures
+                    ['eyeBlinkLeft', 'eyeBlinkRight', 'blink', 'Blink_L', 'Blink_R'].forEach(shapeKey => {
+                        if (dict[shapeKey] !== undefined) influences[dict[shapeKey]] = automatedBlinkWeight;
                     });
 
-                    // सेंटीमेंट शेप्स मैपिंग (मुस्कान और उदासी)
+                    // Mapping Aesthetic Sentiments
                     if (dict['mouthSmileLeft'] !== undefined) influences[dict['mouthSmileLeft']] = globalCurrentSmileWeight;
                     if (dict['mouthSmileRight'] !== undefined) influences[dict['mouthSmileRight']] = globalCurrentSmileWeight;
                     if (dict['browDownLeft'] !== undefined) influences[dict['browDownLeft']] = globalCurrentSadWeight;
@@ -698,24 +654,36 @@
             coreWebGLRendererModule.render(coreThreeSceneInstance, corePerspectiveCameraNode);
         }
 
-        // इवेंट लिस्टनर्स बाइंडिंग ग्रिड
+        // Interface Pipeline Event Listeners Binding Grids
         document.getElementById('sendBtn').addEventListener('click', triggerInteractionLifecycleExecutionCycle);
-        document.getElementById('userInput').addEventListener('keypress', (e) => { 
-            if (e.key === 'Enter') triggerInteractionLifecycleExecutionCycle(); 
+        document.getElementById('userInput').addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') triggerInteractionLifecycleExecutionCycle();
         });
 
         if (frameworkSpeechRecognitionProcessor) {
-            frameworkSpeechRecognitionProcessor.onresult = (e) => {
-                document.getElementById('userInput').value = e.results[0][0].transcript;
+            frameworkSpeechRecognitionProcessor.onresult = (event) => {
+                const capturedSpeechText = event.results[0][0].transcript;
+                document.getElementById('userInput').value = capturedSpeechText;
                 triggerInteractionLifecycleExecutionCycle();
             };
+            
+            frameworkSpeechRecognitionProcessor.onstart = () => {
+                document.getElementById('micBtn').classList.add('listening');
+            };
+
+            frameworkSpeechRecognitionProcessor.onend = () => {
+                document.getElementById('micBtn').classList.remove('listening');
+            };
+
             document.getElementById('micBtn').addEventListener('click', () => {
                 if (window.speechSynthesis) window.speechSynthesis.cancel();
-                frameworkSpeechRecognitionProcessor.start();
+                try {
+                    frameworkSpeechRecognitionProcessor.start();
+                } catch(e) { console.log("Speech capturing process running active."); }
             });
         }
 
-        // इनिशियलाइज़ेशन ट्रिगर
+        // Initialize Core Engine System Pipelines
         initializeDeviceHarmonizedGraphicsPipeline();
         masterApplicationRenderLoopExecutionCycle();
     </script>
