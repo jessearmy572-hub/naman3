@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>प्रिया AI - प्रोडक्शन रेडी v7.5</title>
+    <title>प्रिया AI - प्रोडक्शन रेडी v7.6</title>
     <style>
         :root {
             --neon-cyan: #00ffcc;
@@ -107,7 +107,7 @@
     <div class="dashboard">
         <div class="status-block">
             <span class="status-beacon-dot"></span> 
-            <span class="status-title" id="system-core-mood-txt">प्रिया कोर v7.5</span>
+            <span class="status-title" id="system-core-mood-txt">प्रिया कोर v7.6</span>
         </div>
         <div class="channel-info">सिस्टम मोड: <span style="color:#00ffcc;" id="dynamic-device-ui">सिंक हो रहा है...</span></div>
         <div class="badge">🛡️ एरर फ्री कमांड आर्किटेक्चर</div>
@@ -149,12 +149,13 @@
         let activeEmotionalState = 'idle';
         let stateStartTime = 0;
 
+        // 🎯 FIXED ANATOMICAL RESTING POSTURE (Zeroing Shrug & Dropping Shoulders Naturally)
         const boneTargets = {
             spine: { x: 0, y: 0, z: 0 },
-            leftArm: { x: 0.15, y: 0, z: -Math.PI / 2.3 }, 
-            rightArm: { x: 0.15, y: 0, z: Math.PI / 2.3 },
-            leftForeArm: { x: 0.1, y: 0.2, z: 0 },
-            rightForeArm: { x: 0.1, y: -0.2, z: 0 }
+            leftArm: { x: 0.0, y: 0.0, z: -Math.PI / 2.1 }, 
+            rightArm: { x: 0.0, y: 0.0, z: Math.PI / 2.1 },
+            leftForeArm: { x: 0.0, y: 0.1, z: 0 },
+            rightForeArm: { x: 0.0, y: -0.1, z: 0 }
         };
 
         const SpeechEngine = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -277,10 +278,10 @@
 
         function enforceAnatomicalBaselines() {
             boneTargets.spine = { x: 0, y: 0, z: 0 };
-            boneTargets.leftArm = { x: 0.15, y: 0, z: -Math.PI / 2.3 }; 
-            boneTargets.rightArm = { x: 0.15, y: 0, z: Math.PI / 2.3 };
-            boneTargets.leftForeArm = { x: 0.1, y: 0.2, z: 0 };
-            boneTargets.rightForeArm = { x: 0.1, y: -0.2, z: 0 };
+            boneTargets.leftArm = { x: 0.0, y: 0.0, z: -Math.PI / 2.1 }; 
+            boneTargets.rightArm = { x: 0.0, y: 0.0, z: Math.PI / 2.1 };
+            boneTargets.leftForeArm = { x: 0.0, y: 0.1, z: 0 };
+            boneTargets.rightForeArm = { x: 0.0, y: -0.1, z: 0 };
         }
 
         function parseTouchRaycastTrigger(event) {
@@ -424,8 +425,8 @@
                     if (stateElapsed > 2.5) triggerStateMatrix('idle');
 
                 } else if (activeEmotionalState === 'touch_hand') {
-                    boneTargets.leftArm = { x: 0.25, y: 0.1, z: -Math.PI / 3.2 };
-                    boneTargets.rightArm = { x: 0.25, y: -0.1, z: Math.PI / 3.2 };
+                    boneTargets.leftArm = { x: 0.15, y: 0.1, z: -Math.PI / 2.5 };
+                    boneTargets.rightArm = { x: 0.15, y: -0.1, z: Math.PI / 2.5 };
                     morphTarget = 'mouthSmileRight'; morphIntensity = 0.5;
                     if (stateElapsed > 3.0) triggerStateMatrix('idle');
 
@@ -435,16 +436,16 @@
                     if (stateElapsed > 2.5) triggerStateMatrix('idle');
 
                 } else if (activeEmotionalState === 'greet') {
-                    boneTargets.rightArm = { x: -0.2, y: -0.1, z: Math.PI / 3.5 };
-                    boneTargets.rightForeArm = { x: 0.3, y: Math.sin(stateElapsed * 4) * 0.1, z: 0 };
+                    boneTargets.rightArm = { x: -0.1, y: -0.1, z: Math.PI / 2.8 };
+                    boneTargets.rightForeArm = { x: 0.2, y: Math.sin(stateElapsed * 4) * 0.1, z: 0 };
                     morphTarget = 'mouthSmileLeft'; morphIntensity = 0.5;
                     if (stateElapsed > 3.0) triggerStateMatrix('idle');
 
                 } else if (activeEmotionalState === 'dance') {
                     const wave = Math.sin(stateElapsed * 3.0);
                     boneTargets.spine = { x: 0, y: wave * 0.06, z: wave * 0.03 };
-                    boneTargets.leftArm = { x: 0.1, y: 0, z: -Math.PI / 2.3 + (wave * 0.05) };
-                    boneTargets.rightArm = { x: 0.1, y: 0, z: Math.PI / 2.3 - (wave * 0.05) };
+                    boneTargets.leftArm = { x: 0.0, y: 0, z: -Math.PI / 2.1 + (wave * 0.05) };
+                    boneTargets.rightArm = { x: 0.0, y: 0, z: Math.PI / 2.1 - (wave * 0.05) };
                     if (stateElapsed > 5.5) triggerStateMatrix('idle');
 
                 } else if (activeEmotionalState === 'smile') {
@@ -480,7 +481,10 @@
                     boneHead.rotation.y = THREE.MathUtils.lerp(boneHead.rotation.y, smoothTrackX * lookModifier, 0.08);
                     boneHead.rotation.x = THREE.MathUtils.lerp(boneHead.rotation.x, -smoothTrackY * 0.18 + (breathWave * 0.003), 0.08);
                 }
-                if (boneNeck) boneNeck.rotation.y = THREE.MathUtils.lerp(boneNeck.rotation.y, smoothTrackX * 0.08, 0.08);
+                if (boneNeck) {
+                    boneNeck.rotation.y = THREE.MathUtils.lerp(boneNeck.rotation.y, smoothTrackX * 0.08, 0.08);
+                    boneNeck.position.y = THREE.MathUtils.lerp(boneNeck.position.y, boneNeck.position.y, speed);
+                }
 
                 if (liveVocalOutputStateSignalActive) {
                     syntheticAudioAmplitudeWave = (Math.sin(elapsed * 25) * Math.cos(elapsed * 14) * 0.35) + 0.3;
