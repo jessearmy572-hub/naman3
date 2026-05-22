@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>प्रिया AI - फुल बॉडी कमांड मैट्रिक्स v4.5</title>
+    <title>प्रिया AI - फुल बॉडी कमांड एंड वॉयस ऑटोमेशन v4.4</title>
     <style>
         :root {
             --neon-cyan: #00ffcc;
@@ -12,9 +12,9 @@
             --neon-pink: #ff007f;
             --text-core-white: #ffffff;
             --text-dim-slate: #8a99ad;
-            --bg-glass-panel: rgba(10, 10, 25, 0.75);
-            --border-matte-white: rgba(255, 255, 255, 0.15);
-            --bg-input-field: rgba(5, 5, 15, 0.9);
+            --bg-glass-panel: rgba(10, 10, 25, 0.65);
+            --border-matte-white: rgba(255, 255, 255, 0.12);
+            --bg-input-field: rgba(5, 5, 15, 0.85);
         }
 
         body, html {
@@ -57,14 +57,6 @@
         .status-title { font-size: 13px; font-weight: 700; text-transform: uppercase; color: var(--text-core-white); letter-spacing: 1px; }
         .channel-info { font-size: 11px; color: var(--text-dim-slate); margin-bottom: 2px; }
         .badge { font-size: 11px; margin-top: 4px; font-weight: bold; }
-
-        /* Real-time State Debug Overlay */
-        .live-debug-panel {
-            position: absolute; top: 20px; right: 20px; z-index: 10;
-            background: rgba(255, 0, 127, 0.15); border: 1px solid var(--neon-pink);
-            padding: 10px 15px; border-radius: 10px; color: #fff; font-size: 12px;
-            backdrop-filter: blur(10px); text-transform: uppercase;
-        }
 
         .ui-dock-wrapper {
             position: absolute; bottom: 30px; width: 100%; display: flex;
@@ -136,21 +128,17 @@
     <div class="dashboard">
         <div class="status-block">
             <span class="status-beacon-dot"></span> 
-            <span class="status-title" id="system-core-mood-txt">प्रिया कोर v4.5</span>
+            <span class="status-title" id="system-core-mood-txt">प्रिया कोर v4.4</span>
         </div>
         <div class="channel-info">लाइव मौसम: <span id="weather-status-ui" style="color:#ffaa00; font-weight:bold;">सिंक हो रहा है...</span></div>
         <div class="channel-info">व्यूपोर्ट मोड: <span style="color:#00ffcc; font-weight:bold;" id="dynamic-device-ui">डिटेक्टिंग...</span></div>
-        <div class="badge" id="drive-sync-status" style="color: #00ffcc;">🎯 मोशन मोड: वॉयस + चैट सिंक्रनाइज़्ड</div>
+        <div class="badge" id="drive-sync-status" style="color: #00ffcc;">🎯 कमांड इंजन: सिंक रिस्पॉन्स एक्टिव</div>
         <div class="badge" id="face-tracker-badge" style="color: #ffaa00;">📷 विज़न इंजन: चेकिंग...</div>
-    </div>
-
-    <div class="live-debug-panel">
-        एक्टिव एक्शन: <span id="active-action-label" style="color: var(--neon-cyan); font-weight: bold;">IDLE</span>
     </div>
 
     <div id="core-boot-loader">
         <div class="loader-ring-spinner"></div>
-        <div class="loader-label-text">प्रिया मास्टर फ़्रेमवर्क लोड हो रहा है...<br><span style="font-size:11px; color:#888;">मैट्रिक्स ओवरराइड और एक्टिव वेलोसिटी ब्लेंडर इनिशियलाइज्ड</span></div>
+        <div class="loader-label-text">प्रिया मास्टर फ़्रेमवर्क लोड हो रहा है...<br><span style="font-size:11px; color:#888;">AI वॉयस कमांड और फुल बॉडी गेस्चर मैट्रिक्स रेडी</span></div>
     </div>
 
     <div id="canvas-container"></div>
@@ -159,7 +147,7 @@
     <div class="ui-dock-wrapper">
         <button class="action-circle-btn mic-trigger-btn" id="micBtn">🎤</button>
         <div class="input-carrier-box">
-            <input type="text" id="userInput" placeholder="कमांड दें या बोलें (उदा. नमस्ते, डांस करो, मुस्कुराओ)..." autocomplete="off"/>
+            <input type="text" id="userInput" placeholder="कमांड दें (उदा. मुस्कुराओ, डांस करो, गुस्सा हो)..." autocomplete="off"/>
         </div>
         <button class="action-circle-btn send-trigger-btn" id="sendBtn">➔</button>
     </div>
@@ -172,7 +160,7 @@
         let structuralAvatar3DModelRoot = null;
         let directSunLight, groundShadowPlaneMesh;
         
-        // Skeletal Structure Variables Map
+        // Avaturn Riggings Mapping
         let avaturnBoneHead = null, avaturnBoneNeck = null, avaturnBoneLeftEye = null, avaturnBoneRightEye = null;
         let avaturnBoneSpine = null, avaturnBoneSpine1 = null, avaturnBoneSpine2 = null;
         let avaturnBoneLeftShoulder = null, avaturnBoneRightShoulder = null;
@@ -189,19 +177,9 @@
 
         let liveVocalOutputStateSignalActive = false, syntheticAudioAmplitudeWave = 0;
         
-        // 🛠️ Advanced Coordinated Movement Engine States
-        let currentBodyEmotionalState = 'idle'; 
+        // 🛠️ AI Full Body State Machine Engine Variables
+        let currentBodyEmotionalState = 'idle'; // state list: idle, greeting, smiling, angry, sad, dancing, shy, thinking
         let stateAnimationStartTimeStamp = 0;
-
-        // Bone Target Rotations for Symmetrical Interpolation Layer
-        const targetBoneRotations = {
-            spine: { x: 0, y: 0, z: 0 },
-            spine1: { x: 0, y: 0, z: 0 },
-            leftArm: { x: 0, y: 0, z: -Math.PI/4 },
-            rightArm: { x: 0, y: 0, z: Math.PI/4 },
-            leftForeArm: { x: 0, y: Math.PI/6, 0 },
-            rightForeArm: { x: 0, y: -Math.PI/6, 0 }
-        };
 
         const BrowserSpeechRecognitionEngineInterface = window.SpeechRecognition || window.webkitSpeechRecognition;
         let frameworkSpeechRecognitionProcessor = BrowserSpeechRecognitionEngineInterface ? new BrowserSpeechRecognitionEngineInterface() : null;
@@ -211,7 +189,7 @@
             frameworkSpeechRecognitionProcessor.lang = 'hi-IN';
         }
 
-        // Live Environment Matrix Loader
+        // Live Weather Matrix Engine
         async function fetchLiveWeatherAndInjectEnvironment() {
             try {
                 navigator.geolocation.getCurrentPosition(async (position) => {
@@ -257,6 +235,7 @@
             document.body.style.backgroundImage = `url('${bgImageUrl}')`;
         }
 
+        // Viewport Auto-Calibration Setup
         function runAutomaticViewportCalibration() {
             const width = window.innerWidth;
             const deviceStatusText = document.getElementById('dynamic-device-ui');
@@ -284,7 +263,7 @@
             coreOrbitControlsRig.update();
         }
 
-        // Raycaster Symmetrical Touch Mechanism
+        // Raycaster Structural Touch Integration
         function handleBodyTouchTrigger(event) {
             let clientX = event.clientX || (event.touches && event.touches[0].clientX);
             let clientY = event.clientY || (event.touches && event.touches[0].clientY);
@@ -306,7 +285,7 @@
 
         function triggerBoneSpecificReaction(height) {
             if (height > 0.2) {
-                triggerCommandStateMatrix("shy");
+                triggerCommandStateMatrix("shiyan");
                 dispatchSpeechSynthesizerVocalTrackBuffer("[शर्माते हुए] अरे! चेहरे पर टच मत कीजिए ना, सीधे बात बताइए क्या काम है?");
             } else if (height <= 0.2 && height > -0.3) {
                 triggerCommandStateMatrix("smile");
@@ -407,7 +386,7 @@
 
             coreAnimationMixerController = new THREE.AnimationMixer(structuralAvatar3DModelRoot);
 
-            // Complete Structural Skeleton Extraction Mapping
+            // Skeleton Structural Mapping
             structuralAvatar3DModelRoot.traverse((node) => {
                 if (node.isBone) {
                     const name = node.name.toLowerCase();
@@ -436,15 +415,13 @@
         }
 
         function enforceNaturalRestingPoseConstraints() {
-            targetBoneRotations.spine = { x: 0, y: 0, z: 0 };
-            targetBoneRotations.spine1 = { x: 0, y: 0, z: 0 };
-            targetBoneRotations.leftArm = { x: 0, y: 0, z: -Math.PI / 3.8 };
-            targetBoneRotations.rightArm = { x: 0, y: 0, z: Math.PI / 3.8 };
-            targetBoneRotations.leftForeArm = { x: 0, y: Math.PI / 6, z: 0 };
-            targetBoneRotations.rightForeArm = { x: 0, y: -Math.PI / 6, z: 0 };
+            if(avaturnBoneLeftArm) avaturnBoneLeftArm.rotation.set(0, 0, -Math.PI / 4);
+            if(avaturnBoneRightArm) avaturnBoneRightArm.rotation.set(0, 0, Math.PI / 4);
+            if(avaturnBoneLeftForeArm) avaturnBoneLeftForeArm.rotation.set(0, Math.PI / 6, 0);
+            if(avaturnBoneRightForeArm) avaturnBoneRightForeArm.rotation.set(0, -Math.PI / 6, 0);
         }
 
-        // Camera Biometric Framework Mode
+        // Camera Vision Tracker Setup
         async function activateSecureWebcamBiometricGrid() {
             const streamVideoElement = document.getElementById('webcam-raw-stream');
             try {
@@ -480,32 +457,33 @@
             requestAnimationFrame(processLiveCameraFramesMatrix);
         }
 
-        // 🧠 STRICT COMMAND ROUTER ENGINE
+        // 🧠 COMMAND DECODER ENGINE (Voice aur Chat Dono Ke Liye Parsing Logic)
         function parseAndRouteAICommands(rawString) {
             const text = rawString.toLowerCase();
             
-            if (text.includes("नमस्ते") || text.includes("hello") || text.includes("hi") || text.includes("राम राम")) {
+            if (text.includes("नमस्ते") || text.includes("hello") || text.includes("hi") || text.includes("welcome")) {
                 triggerCommandStateMatrix("greeting");
-                dispatchSpeechSynthesizerVocalTrackBuffer("नमस्ते! मैं प्रिया हूँ। आपसे जुड़कर बहुत अच्छा लगा!");
+                dispatchSpeechSynthesizerVocalTrackBuffer("नमस्ते! मैं प्रिया हूँ। आपसे मिलकर बहुत ख़ुशी हुई!");
             } else if (text.includes("मुस्कुरा") || text.includes("smile") || text.includes("हँसो")) {
                 triggerCommandStateMatrix("smile");
-                dispatchSpeechSynthesizerVocalTrackBuffer("आपकी बातें हमेशा बहुत प्यारी होती हैं, थैंक यू!");
+                dispatchSpeechSynthesizerVocalTrackBuffer("आपकी बात सुनकर मुझे बहुत प्यारी मुस्कान आ गई!");
             } else if (text.includes("गुस्सा") || text.includes("angry") || text.includes("नाराज")) {
                 triggerCommandStateMatrix("angry");
-                dispatchSpeechSynthesizerVocalTrackBuffer("मुझे बिलकुल परेशान मत कीजिए, मैं गुस्सा हो जाऊँगी!");
+                dispatchSpeechSynthesizerVocalTrackBuffer("मुझे गुस्सा मत दिलाओ, वरना मैं किसी से बात नहीं करूँगी!");
             } else if (text.includes("डांस") || text.includes("dance") || text.includes("नाचो")) {
                 triggerCommandStateMatrix("dance");
-                dispatchSpeechSynthesizerVocalTrackBuffer("हाँ ज़रूर! देखिए मेरे फुल बॉडी डांस मूवमेंट्स!");
+                dispatchSpeechSynthesizerVocalTrackBuffer("चलिए ठीक है, मैं आपके लिए थोड़ा सा डांस मूवमेंट करके दिखाती हूँ!");
             } else if (text.includes("उदास") || text.includes("sad") || text.includes("रो")) {
                 triggerCommandStateMatrix("sad");
-                dispatchSpeechSynthesizerVocalTrackBuffer("ऐसा मत बोलिए, मेरा मन थोड़ा उदास हो गया है...");
-            } else if (text.includes("शर्मा") || text.includes("shy")) {
-                triggerCommandStateMatrix("shy");
-                dispatchSpeechSynthesizerVocalTrackBuffer("आप ऐसा बोलेंगे तो मैं सच में शर्मा जाऊँगी!");
+                dispatchSpeechSynthesizerVocalTrackBuffer("क्या हुआ? आपकी ऐसी बातें सुनकर मेरा दिल उदास हो गया...");
+            } else if (text.includes("शर्मा") || text.includes("shy") || text.includes("प्यारी")) {
+                triggerCommandStateMatrix("shiyan");
+                dispatchSpeechSynthesizerVocalTrackBuffer("आप ऐसे बोलेंगे तो मुझे बहुत शर्म आ जाएगी!");
             } else if (text.includes("सोचो") || text.includes("think") || text.includes("सवाल")) {
                 triggerCommandStateMatrix("thinking");
-                dispatchSpeechSynthesizerVocalTrackBuffer("हम्म... मैं इसके बारे में बहुत गहराई से सोच रही हूँ।");
+                dispatchSpeechSynthesizerVocalTrackBuffer("हम्म... मैं इसके बारे में गहराई से सोच रही हूँ।");
             } else {
+                // Agar koi explicit gesture nahi mila to default AI pipeline par bhej de
                 triggerServerInteractionFramework(rawString);
             }
         }
@@ -513,13 +491,7 @@
         function triggerCommandStateMatrix(stateName) {
             currentBodyEmotionalState = stateName;
             stateAnimationStartTimeStamp = coreSystemClockReference.getElapsedTime();
-            document.getElementById('active-action-label').innerText = stateName;
             document.getElementById('system-core-mood-txt').innerText = `प्रिया मोड: ${stateName.toUpperCase()}`;
-            
-            // Forcibly clear any old frozen matrices
-            if(structuralAvatar3DModelRoot) {
-                structuralAvatar3DModelRoot.updateMatrixWorld(true);
-            }
         }
 
         function dispatchSpeechSynthesizerVocalTrackBuffer(text) {
@@ -548,19 +520,17 @@
             try {
                 const response = await fetch(APPS_SCRIPT_WEB_APP_URL, { method: "POST", body: JSON.stringify({ query: userString }) });
                 const data = await response.json();
-                document.getElementById('system-core-mood-txt').innerText = "प्रिया कोर v4.5";
+                document.getElementById('system-core-mood-txt').innerText = "प्रिया कोर v4.4";
                 
-                if(data.text && (data.text.includes("हाँ") || data.text.includes("अच्छा") || data.text.includes("मुस्कान"))) {
-                    triggerCommandStateMatrix("smile");
-                } else {
-                    triggerCommandStateMatrix("idle");
-                }
+                // Server response ke context par expression automatic guess karega
+                if(data.text && (data.text.includes("हाँ") || data.text.includes("अच्छा"))) triggerCommandStateMatrix("smile");
+                else triggerCommandStateMatrix("idle");
 
                 dispatchSpeechSynthesizerVocalTrackBuffer(data.text || data.output);
             } catch (error) {
                 document.getElementById('system-core-mood-txt').innerText = "प्रिया: लोकल मोड";
                 triggerCommandStateMatrix("smile");
-                dispatchSpeechSynthesizerVocalTrackBuffer("मैं सुन रही हूँ, आपका सर्वर सिंक कमांड पूरी तरह एक्टिव है!");
+                dispatchSpeechSynthesizerVocalTrackBuffer("मैं सुन रही हूँ, आपका कमांड पूरी तरह से सिंक हो चुका है!");
             }
         }
 
@@ -572,7 +542,7 @@
             parseAndRouteAICommands(commandStr);
         }
 
-        // 🔄 MASTER ANIMATION BLOCK: Explicit Matrix Override & Linear Interp Interpolation Loop
+        // 🔄 MASTER ENGINE LOOP: Procedural AI Commands & Humanoid Body Movements
         function masterApplicationRenderLoopExecutionCycle() {
             requestAnimationFrame(masterApplicationRenderLoopExecutionCycle);
 
@@ -586,155 +556,158 @@
                 smoothTrackX = THREE.MathUtils.lerp(smoothTrackX, pointerTargetX, 0.1);
                 smoothTrackY = THREE.MathUtils.lerp(smoothTrackY, pointerTargetY, 0.1);
 
-                // 🫁 Procedural Human Idle Sway Base Waves
+                // 🫁 1. Base Sine-Wave Breathing Pattern
                 const breathCycle = Math.sin(elapsed * 1.6);
-                const fineSway = Math.cos(elapsed * 0.8);
+                const generalSway = Math.cos(elapsed * 0.7);
 
-                // Initialize Baseline Pose Values
-                enforceNaturalRestingPoseConstraints();
+                // Default idle breathing skeleton adjustments
+                if (avaturnBoneSpine) avaturnBoneSpine.rotation.set(breathCycle * 0.008 + generalSway * 0.003, 0, generalSway * 0.004);
+                if (avaturnBoneSpine1) avaturnBoneSpine1.rotation.set(breathCycle * 0.006, generalSway * 0.003, 0);
+                
+                // Reset/Default Bone Angles before state modifier
+                if(avaturnBoneLeftArm) avaturnBoneLeftArm.rotation.set(0, 0, -Math.PI / 4.5 + (generalSway * 0.01));
+                if(avaturnBoneRightArm) avaturnBoneRightArm.rotation.set(0, 0, Math.PI / 4.5 - (generalSway * 0.01));
+                if(avaturnBoneLeftShoulder) avaturnBoneLeftShoulder.rotation.set(0, 0, -Math.PI/12);
+                if(avaturnBoneRightShoulder) avaturnBoneRightShoulder.rotation.set(0, 0, Math.PI/12);
+                if(avaturnBoneLeftForeArm) avaturnBoneLeftForeArm.rotation.set(0, Math.PI / 6, 0);
+                if(avaturnBoneRightForeArm) avaturnBoneRightForeArm.rotation.set(0, -Math.PI / 6, 0);
 
-                // 🎭 STATE MACHINE TRANSLATOR: Forcing Coordinated Targets Explicitly
+                // 🎭 2. STATE MACHINE: PROCEDURAL FULL BODY GESTURE COMMANDS MATRIX
                 const stateElapsed = elapsed - stateAnimationStartTimeStamp;
                 let activeMorphTargetName = null;
                 let activeMorphTargetIntensity = 0;
 
-                if (currentBodyEmotionalState === 'greeting') {
-                    // Right hand completely waving in structural limits
-                    targetBoneRotations.rightArm = { x: -0.5, y: 0, z: Math.PI / 2.2 };
-                    targetBoneRotations.rightForeArm = { x: 0.2, y: Math.sin(stateElapsed * 6.5) * 0.4, z: 0 };
-                    targetBoneRotations.spine1 = { x: 0, y: 0, z: -0.03 };
-                    activeMorphTargetName = 'mouthSmileLeft';
-                    activeMorphTargetIntensity = 0.6;
-                    if(stateElapsed > 4.0) triggerCommandStateMatrix('idle');
+                switch (currentBodyEmotionalState) {
+                    case 'greeting': // Ek haath upar uthakar wave karna (Symmetrical Hello)
+                        if (avaturnBoneRightArm) {
+                            avaturnBoneRightArm.rotation.z = Math.PI / 2.2; 
+                            avaturnBoneRightArm.rotation.x = -Math.PI / 4 + Math.sin(stateElapsed * 5) * 0.15;
+                        }
+                        if (avaturnBoneLeftArm) avaturnBoneLeftArm.rotation.z = -Math.PI / 3.5;
+                        activeMorphTargetName = 'mouthSmileLeft';
+                        activeMorphTargetIntensity = 0.5;
+                        if(stateElapsed > 4.5) currentBodyEmotionalState = 'idle';
+                        break;
 
-                } else if (currentBodyEmotionalState === 'smile') {
-                    // Body leaning back slightly with open hands
-                    targetBoneRotations.spine = { x: -0.06, y: 0, z: 0 };
-                    targetBoneRotations.leftArm = { x: 0.1, y: 0, z: -Math.PI / 3.2 };
-                    targetBoneRotations.rightArm = { x: 0.1, y: 0, z: Math.PI / 3.2 };
-                    activeMorphTargetName = 'mouthSmileLeft';
-                    activeMorphTargetIntensity = 0.85;
-                    if(stateElapsed > 5.0) triggerCommandStateMatrix('idle');
+                    case 'smile': // Pura sharir piche halka sa jhukega aur haath failenge
+                        if (avaturnBoneSpine) avaturnBoneSpine.rotation.x = -0.05 + (breathCycle * 0.005);
+                        if (avaturnBoneLeftArm) avaturnBoneLeftArm.rotation.z = -Math.PI / 3.8 - (Math.sin(stateElapsed * 2) * 0.05);
+                        if (avaturnBoneRightArm) avaturnBoneRightArm.rotation.z = Math.PI / 3.8 + (Math.sin(stateElapsed * 2) * 0.05);
+                        activeMorphTargetName = 'mouthSmileLeft';
+                        activeMorphTargetIntensity = 0.8;
+                        if(stateElapsed > 5.0) currentBodyEmotionalState = 'idle';
+                        break;
 
-                } else if (currentBodyEmotionalState === 'angry') {
-                    // Stiff torso, forward head, tense closed arms
-                    targetBoneRotations.spine = { x: 0.08, y: 0, z: 0 };
-                    targetBoneRotations.leftArm = { x: -0.2, y: 0, z: -Math.PI / 6 };
-                    targetBoneRotations.rightArm = { x: -0.2, y: 0, z: Math.PI / 6 };
-                    activeMorphTargetName = 'mouthFrownLeft';
-                    activeMorphTargetIntensity = 0.8;
-                    if(stateElapsed > 4.0) triggerCommandStateMatrix('idle');
+                    case 'angry': // Dono haath jhatak kar aage aana aur garden tight hona
+                        if (avaturnBoneSpine) avaturnBoneSpine.rotation.x = 0.06;
+                        if (avaturnBoneLeftArm) avaturnBoneLeftArm.rotation.set(0, 0, -Math.PI / 6);
+                        if (avaturnBoneRightArm) avaturnBoneRightArm.rotation.set(0, 0, Math.PI / 6);
+                        if (avaturnBoneHead) avaturnBoneHead.rotation.x = 0.05;
+                        activeMorphTargetName = 'mouthFrownLeft';
+                        activeMorphTargetIntensity = 0.75;
+                        if(stateElapsed > 4.0) currentBodyEmotionalState = 'idle';
+                        break;
 
-                } else if (currentBodyEmotionalState === 'dance') {
-                    // Continuous Full Body Symmetrical Rhythmic Oscillation
-                    const loopWave = Math.sin(stateElapsed * 4.5);
-                    targetBoneRotations.spine = { x: 0, y: loopWave * 0.15, z: loopWave * 0.08 };
-                    targetBoneRotations.leftArm = { x: loopWave * 0.3, y: 0, z: -Math.PI / 3.2 };
-                    targetBoneRotations.rightArm = { x: -loopWave * 0.3, y: 0, z: Math.PI / 3.2 };
-                    activeMorphTargetName = 'mouthSmileRight';
-                    activeMorphTargetIntensity = 0.5;
-                    if(stateElapsed > 7.5) triggerCommandStateMatrix('idle');
+                    case 'dance': // Left to Right Full Body Swing (Continuous Movement)
+                        const danceWave = Math.sin(stateElapsed * 4.0);
+                        if (structuralAvatar3DModelRoot) {
+                            structuralAvatar3ModelRoot.rotation.y = danceWave * 0.12;
+                        }
+                        if (avaturnBoneLeftArm) avaturnBoneLeftArm.rotation.set(danceWave * 0.2, 0, -Math.PI / 3);
+                        if (avaturnBoneRightArm) avaturnBoneRightArm.rotation.set(-danceWave * 0.2, 0, Math.PI / 3);
+                        if (avaturnBoneSpine) avaturnBoneSpine.rotation.z = danceWave * 0.06;
+                        activeMorphTargetName = 'mouthSmileLeft';
+                        activeMorphTargetIntensity = 0.4;
+                        if(stateElapsed > 8.0) {
+                            currentBodyEmotionalState = 'idle';
+                            if (structuralAvatar3DModelRoot) structuralAvatar3DModelRoot.rotation.y = 0;
+                        }
+                        break;
 
-                } else if (currentBodyEmotionalState === 'sad') {
-                    // Dropped chest, hanging shoulders
-                    targetBoneRotations.spine = { x: 0.1, y: 0, z: 0 };
-                    targetBoneRotations.spine1 = { x: 0.05, y: 0, z: 0 };
-                    targetBoneRotations.leftArm = { x: 0, y: 0, z: -Math.PI / 5 };
-                    targetBoneRotations.rightArm = { x: 0, y: 0, z: Math.PI / 5 };
-                    activeMorphTargetName = 'mouthFrownRight';
-                    activeMorphTargetIntensity = 0.75;
-                    if(stateElapsed > 5.0) triggerCommandStateMatrix('idle');
+                    case 'sad': // Head down aur shoulders drop hona
+                        if (avaturnBoneSpine) avaturnBoneSpine.rotation.x = 0.08;
+                        if (avaturnBoneLeftShoulder) avaturnBoneLeftShoulder.rotation.z = -Math.PI/16;
+                        if (avaturnBoneRightShoulder) avaturnBoneRightShoulder.rotation.z = Math.PI/16;
+                        if (avaturnBoneHead) avaturnBoneHead.rotation.set(0.12, 0, 0);
+                        activeMorphTargetName = 'mouthFrownRight';
+                        activeMorphTargetIntensity = 0.8;
+                        if(stateElapsed > 6.0) currentBodyEmotionalState = 'idle';
+                        break;
 
-                } else if (currentBodyEmotionalState === 'shy') {
-                    // Twisted spine, hands brought extremely inward
-                    targetBoneRotations.spine = { x: 0.02, y: 0.08, z: 0.04 };
-                    targetBoneRotations.leftArm = { x: 0.1, y: 0, z: -Math.PI / 5.5 };
-                    targetBoneRotations.rightArm = { x: 0.1, y: 0, z: Math.PI / 5.5 };
-                    activeMorphTargetName = 'mouthSmileLeft';
-                    activeMorphTargetIntensity = 0.6;
-                    if(stateElapsed > 4.5) triggerCommandStateMatrix('idle');
+                    case 'shiyan': // Dono arms body ke close aana aur garden side me mudna
+                        if (avaturnBoneLeftArm) avaturnBoneLeftArm.rotation.z = -Math.PI / 6;
+                        if (avaturnBoneRightArm) avaturnBoneRightArm.rotation.z = Math.PI / 6;
+                        if (avaturnBoneHead) avaturnBoneHead.rotation.set(0.04, Math.sin(stateElapsed * 2) * 0.1, 0.05);
+                        activeMorphTargetName = 'mouthSmileRight';
+                        activeMorphTargetIntensity = 0.65;
+                        if(stateElapsed > 5.0) currentBodyEmotionalState = 'idle';
+                        break;
 
-                } else if (currentBodyEmotionalState === 'thinking') {
-                    // Lean spine slightly sideways, fold left arm
-                    targetBoneRotations.spine = { x: -0.02, y: -0.05, z: 0 };
-                    targetBoneRotations.leftArm = { x: 0.2, y: -0.4, z: -Math.PI / 4 };
-                    activeMorphTargetName = 'mouthPucker';
-                    activeMorphTargetIntensity = 0.4;
+                    case 'thinking': // Head up aur side tracking lock hona
+                        if (avaturnBoneHead) avaturnBoneHead.rotation.set(-0.08, -0.15, -0.02);
+                        if (avaturnBoneLeftForeArm) avaturnBoneLeftForeArm.rotation.x = -Math.PI / 5;
+                        activeMorphTargetName = 'mouthPucker';
+                        activeMorphTargetIntensity = 0.35;
+                        break;
+
+                    default: // Idle natural micro-sway
+                        break;
                 }
 
-                // 🔄 LERP TRANSFORM MATRIX OVERRIDE LAYER
-                // Forcing values on skeleton to ensure bones don't ignore coordinates
-                const interpSpeed = 0.08; // Symmetrical velocity dampener
-                if (avaturnBoneSpine) {
-                    avaturnBoneSpine.rotation.x = THREE.MathUtils.lerp(avaturnBoneSpine.rotation.x, targetBoneRotations.spine.x + (breathCycle * 0.008), interpSpeed);
-                    avaturnBoneSpine.rotation.y = THREE.MathUtils.lerp(avaturnBoneSpine.rotation.y, targetBoneRotations.spine.y, interpSpeed);
-                    avaturnBoneSpine.rotation.z = THREE.MathUtils.lerp(avaturnBoneSpine.rotation.z, targetBoneRotations.spine.z + (fineSway * 0.004), interpSpeed);
-                }
-                if (avaturnBoneSpine1) {
-                    avaturnBoneSpine1.rotation.x = THREE.MathUtils.lerp(avaturnBoneSpine1.rotation.x, targetBoneRotations.spine1.x + (breathCycle * 0.005), interpSpeed);
-                    avaturnBoneSpine1.rotation.z = THREE.MathUtils.lerp(avaturnBoneSpine1.rotation.z, targetBoneRotations.spine1.z, interpSpeed);
-                }
-                if (avaturnBoneLeftArm) {
-                    avaturnBoneLeftArm.rotation.x = THREE.MathUtils.lerp(avaturnBoneLeftArm.rotation.x, targetBoneRotations.leftArm.x, interpSpeed);
-                    avaturnBoneLeftArm.rotation.z = THREE.MathUtils.lerp(avaturnBoneLeftArm.rotation.z, targetBoneRotations.leftArm.z, interpSpeed);
-                }
-                if (avaturnBoneRightArm) {
-                    avaturnBoneRightArm.rotation.x = THREE.MathUtils.lerp(avaturnBoneRightArm.rotation.x, targetBoneRotations.rightArm.x, interpSpeed);
-                    avaturnBoneRightArm.rotation.z = THREE.MathUtils.lerp(avaturnBoneRightArm.rotation.z, targetBoneRotations.rightArm.z, interpSpeed);
-                }
-                if (avaturnBoneLeftForeArm) {
-                    avaturnBoneLeftForeArm.rotation.y = THREE.MathUtils.lerp(avaturnBoneLeftForeArm.rotation.y, targetBoneRotations.leftForeArm.y, interpSpeed);
-                }
-                if (avaturnBoneRightForeArm) {
-                    avaturnBoneRightForeArm.rotation.y = THREE.MathUtils.lerp(avaturnBoneRightForeArm.rotation.y, targetBoneRotations.rightForeArm.y, interpSpeed);
+                // 👤 3. Realistic Head, Neck & Eye Track Solver (Overridden by state if required)
+                if (currentBodyEmotionalState !== 'thinking' && currentBodyEmotionalState !== 'sad') {
+                    if (avaturnBoneHead) {
+                        avaturnBoneHead.rotation.y = smoothTrackX * 0.42; 
+                        avaturnBoneHead.rotation.x = -smoothTrackY * 0.22 + (breathCycle * 0.005); 
+                    }
+                    if (avaturnBoneNeck) {
+                        avaturnBoneNeck.rotation.y = smoothTrackX * 0.12;
+                        avaturnBoneNeck.rotation.x = -smoothTrackY * 0.08;
+                    }
+                    if (avaturnBoneLeftEye && avaturnBoneRightEye) {
+                        avaturnBoneLeftEye.rotation.y = smoothTrackX * 0.2; 
+                        avaturnBoneRightEye.rotation.y = smoothTrackX * 0.2;
+                    }
                 }
 
-                // 👤 Realistic Head Gaze LookAt Pipeline
-                if (avaturnBoneHead) {
-                    let lookHeadX = smoothTrackX * 0.45;
-                    let lookHeadY = -smoothTrackY * 0.25;
-                    // If sad, push head down explicitly
-                    if(currentBodyEmotionalState === 'sad') { lookHeadY = 0.25; lookHeadX = 0; }
-                    if(currentBodyEmotionalState === 'thinking') { lookHeadY = -0.15; lookHeadX = -0.2; }
-
-                    avaturnBoneHead.rotation.y = THREE.MathUtils.lerp(avaturnBoneHead.rotation.y, lookHeadX, 0.1);
-                    avaturnBoneHead.rotation.x = THREE.MathUtils.lerp(avaturnBoneHead.rotation.x, lookHeadY + (breathCycle * 0.006), 0.1);
-                }
-                if (avaturnBoneNeck) {
-                    avaturnBoneNeck.rotation.y = THREE.MathUtils.lerp(avaturnBoneNeck.rotation.y, smoothTrackX * 0.15, 0.1);
-                }
-
-                // 👄 Lip-Sync Wave Modulation Engine
+                // 👄 4. Fluid Lip-Sync Algorithm
                 if (liveVocalOutputStateSignalActive) {
-                    syntheticAudioAmplitudeWave = (Math.sin(elapsed * 30) * Math.cos(elapsed * 18) * 0.4) + 0.35;
-                    if (Math.sin(elapsed * 5) > 0.4) syntheticAudioAmplitudeWave += 0.15;
-                    syntheticAudioAmplitudeWave = Math.max(0, Math.min(syntheticAudioAmplitudeWave, 0.85));
+                    syntheticAudioAmplitudeWave = (Math.sin(elapsed * 28) * Math.cos(elapsed * 16) * 0.38) + 0.32;
+                    if (Math.sin(elapsed * 4) > 0.5) syntheticAudioAmplitudeWave += 0.18;
+                    syntheticAudioAmplitudeWave = Math.max(0, Math.min(syntheticAudioAmplitudeWave, 0.8));
                 } else {
-                    syntheticAudioAmplitudeWave = THREE.MathUtils.lerp(syntheticAudioAmplitudeWave, 0, 0.25);
+                    syntheticAudioAmplitudeWave = THREE.MathUtils.lerp(syntheticAudioAmplitudeWave, 0, 0.2);
                 }
 
-                let blinkValue = (Math.sin(elapsed * 4.5) > 0.98 || (elapsed % 7.0 > 6.7)) ? 1.0 : 0.0;
+                // Stochastic Eye Blink Engine
+                let blinkValue = (Math.sin(elapsed * 4.5) > 0.97 || (elapsed % 6.5 > 6.2)) ? 1.0 : 0.0;
 
-                // 🎭 Dynamic Face Morph Weight Execution
+                // Apply Morph Vectors on Meshes Safely
                 avaturnSkinnedMeshes.forEach(mesh => {
                     const dict = mesh.morphTargetDictionary;
                     const influences = mesh.morphTargetInfluences;
                     if (!dict || !influences) return;
 
-                    if (dict['jawOpen'] !== undefined) influences[dict['jawOpen']] = syntheticAudioAmplitudeWave;
+                    // Jaw movement execution
+                    if (dict['jawOpen'] !== undefined) {
+                        influences[dict['jawOpen']] = syntheticAudioAmplitudeWave;
+                    }
                     if (dict['mouthFunnel'] !== undefined && liveVocalOutputStateSignalActive) {
-                        influences[dict['mouthFunnel']] = syntheticAudioAmplitudeWave * 0.3;
+                        influences[dict['mouthFunnel']] = syntheticAudioAmplitudeWave * 0.25;
                     }
 
+                    // Eye blink synchronization
                     if (dict['eyeBlinkLeft'] !== undefined) influences[dict['eyeBlinkLeft']] = blinkValue;
                     if (dict['eyeBlinkRight'] !== undefined) influences[dict['eyeBlinkRight']] = blinkValue;
 
+                    // Apply command driven emotional facial expressions
                     if (activeMorphTargetName && dict[activeMorphTargetName] !== undefined) {
-                        influences[dict[activeMorphTargetName]] = THREE.MathUtils.lerp(influences[dict[activeMorphTargetName]], activeMorphTargetIntensity, 0.15);
+                        influences[dict[activeMorphTargetName]] = THREE.MathUtils.lerp(influences[dict[activeMorphTargetName]], activeMorphTargetIntensity, 0.1);
                     } else {
+                        // Slowly fade other facial blendshapes to baseline zero
                         Object.keys(dict).forEach(key => {
                             if (key !== 'jawOpen' && key !== 'mouthFunnel' && key !== 'eyeBlinkLeft' && key !== 'eyeBlinkRight') {
-                                influences[dict[key]] = THREE.MathUtils.lerp(influences[dict[key]], 0, 0.1);
+                                influences[dict[key]] = THREE.MathUtils.lerp(influences[dict[key]], 0, 0.08);
                             }
                         });
                     }
