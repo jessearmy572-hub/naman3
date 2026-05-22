@@ -455,15 +455,14 @@
           SUB-MODULE A: PERSISTENT APPLICATION STORAGE CONFIGURATION CORES
           ------------------------------------------------------------------
         */
+        // 🛠️ TARGET KEY SUCCESSFULLY REPLACED AT THE MATRIX DOCK SLOT-1 ⚡
         const SYSTEM_TRIPLE_ROTATION_API_KEYS = [
+            "AIzaSyB1UseyQ3fM_yvFGIg-Y9Xr6oPZ-V3E2tA", 
             "AIzaSyBgyADY-6VFaLefYi8PaGak_L8kpfpGDA0", 
-            "AIzaSyBSaw3teN0aoDb2qdzuYktqUZ08sUOIv5o", 
-            "AIzaSyA5W8VWVMSltHGU6vvVlLaxAo3H0h0H1ig"  
+            "AIzaSyBSaw3teN0aoDb2qdzuYktqUZ08sUOIv5o"  
         ];
         
         let activeKeyPointerIndexRegister = 0;
-        
-        // 🛠️ यहाँ आपका नया 3D मॉडल लिंक (.glb) बदल दिया गया है:
         const REMOTE_GLTF_BINARY_PRODUCTION_ASSET_URI = "https://github.com/jessearmy572-hub/naman3/raw/refs/heads/main/model.glb";
 
         let coreThreeSceneInstance = null;
@@ -497,7 +496,6 @@
         const BrowserSpeechRecognitionEngineInterface = window.SpeechRecognition || window.webkitSpeechRecognition;
         let frameworkSpeechRecognitionProcessor = null;
 
-        // NEW GLOBAL STATE REGISTERS FOR EXTENDED ADVANCED FEATURES
         let globalWebcamStreamMediaInstance = null;
         let globalIsCameraHardwareAccessGrantedFlag = false;
         let globalCameraVisionProcessingActiveStatus = false;
@@ -541,18 +539,16 @@
         /*
           ------------------------------------------------------------------
           SUB-MODULE B: TRIPLE ROTATIONAL CRYPTO GATEWAY TUNNEL PIPELINE
-          (भोजपुरी और देसी पुट युक्त सतगुरु वॉयस असिस्टेंट प्रोटोकॉल)
           ------------------------------------------------------------------
         */
         async function fetchSecureNeuralAIResponseStream(userQueryInputString) {
             const systemCoreBehavioralInstructionPrompt = `
             # SATGURU VOICE ASSISTANT SYSTEM CORE DIRECTIVES #
-            1. IDENTITY & MANDATE: You are not an AI, computer program, or virtual construct. You are "Priya AI", operating with the soul and voice of "Satguru Voice Assistant". You are a deeply sweet, affectionate, and lively human girl who speaks with an innate, loving Desi Purvanchal/Bhojpuri dialect.
-            2. LINGUISTIC Dialect Matrix: Your language must be a beautiful blend of sweet Hinglish decorated with warm, natural Bhojpuri expressions. Integrate terms like "का हो बाबू", "का हालचाल बा", "तनिक सुनिए", "बुझला की ना", "गोर लागतानी", "प्रणाम", "रउआ", "हमार", "ई का कहत बानी", "एकदम झकास" flawlessly.
-            3. DYNAMIC EMOTIONAL TRACKING: Read user input emotional states. If user is angry or stressed, instantly become grounded, deeply comforting, and protective. If user is happy, elevate your conversational energy to maximum bubbly and joyous levels.
-            4. HUMAN COMPENSATIONAL FILLERS (GAP LOGIC): Do not speak like a machine. Use human friction pauses seamlessly: "हम्म...", "अरे रुकिए तनिक...", "उह... एक मिनट बाबू...", "वैसे... हमें लगता है...", "का कहें भाई...".
-            5. GRAPHICS MIXER TRIGGERS: Every response MUST strictly begin with a physical expression descriptor enclosed inside square brackets. Example: [दोनों हाथ जोड़कर प्रणाम करते हुए Aur हल्का सा मुस्कुराते हुए] "का हो बाबू, का हालचाल बा!".
-            6. CRITICAL BREVITY SYSTEM: Keep responses short and snappy. Absolute limit of 2 to 3 sentences maximum. Converse strictly in Hinglish/Bhojpuri-mix. Do not use asterisks (*), hashtags (#), or dashes (-). Only raw clean text.
+            1. IDENTITY & MANDATE: You are "Priya AI", operating with the soul and voice of "Satguru Voice Assistant". You are a deeply sweet, affectionate human girl who speaks with a warm Desi Purvanchal/Bhojpuri dialect.
+            2. LINGUISTIC Dialect Matrix: Your language must be a beautiful blend of sweet Hinglish decorated with expressions like "का हो बाबू", "का हालचाल बा", "तनिक सुनिए", "बुझला की ना", "गोर लागतानी", "प्रणाम", "रуआ", "हमार", "एकदम झकास".
+            3. DYNAMIC EMOTIONAL TRACKING: Read user emotional states and dynamically adjust comforting behaviors.
+            4. GRAPHICS MIXER TRIGGERS: Every response MUST strictly begin with a physical expression descriptor inside square brackets. Example: [दोनों हाथ जोड़कर प्रणाम करते हुए Aur हल्का सा मुस्कुराते हुए].
+            5. CRITICAL BREVITY SYSTEM: Keep responses snappy. Max 2 to 3 sentences. No asterisks, hashes, or markdowns. Clean text only.
             `;
 
             let extractedActiveKeyString = SYSTEM_TRIPLE_ROTATION_API_KEYS[activeKeyPointerIndexRegister];
@@ -570,7 +566,7 @@
                     })
                 });
 
-                if (!networkFetchPromiseResponse.ok) throw new Error("Active key channel interface returned an unauthorized or throttled code");
+                if (!networkFetchPromiseResponse.ok) throw new Error("Active key channel interface returned throttle limits.");
 
                 const decodedJsonDataPayloadObject = await networkFetchPromiseResponse.json();
                 let filteredRawOutputString = decodedJsonDataPayloadObject.candidates[0].content.parts[0].text;
@@ -578,7 +574,7 @@
                 return filteredRawOutputString.replace(/[*#`_\-]/g, '').trim();
 
             } catch (networkGatewayChannelFaultException) {
-                console.warn(`Gateway Failure Alert: Slot-[${activeKeyPointerIndexRegister + 1}] locked. Shifting routing matrices...`, networkGatewayChannelFaultException);
+                console.warn(`Gateway Failure Alert: Slot-[${activeKeyPointerIndexRegister + 1}] locked. Shifting matrices...`);
                 
                 activeKeyPointerIndexRegister = (activeKeyPointerIndexRegister + 1) % SYSTEM_TRIPLE_ROTATION_API_KEYS.length;
                 document.getElementById('active-secure-channel-status').innerText = `Core-${activeKeyPointerIndexRegister + 1} (Active Secure Key)`;
@@ -606,7 +602,6 @@
             coreWebGLRendererModule.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             coreWebGLRendererModule.toneMapping = THREE.ACESFilmicToneMapping;
             coreWebGLRendererModule.toneMappingExposure = 1.25;
-            coreWebGLRendererModule.outputEncoding = THREE.sRGBEncoding;
             coreWebGLRendererModule.setClearColor(0x000000, 0); 
             TARGET_VIEWPORT_CANVAS_DOM_CONTAINER.appendChild(coreWebGLRendererModule.domElement);
 
@@ -662,14 +657,13 @@
                     }
                 });
 
-                // Trigger extended systems once 3D canvas assets are fully initialized
                 initializeSecureHardwareCameraVisionSubsystem();
                 initializePersistentIndexedDBMemorySubsystem();
                 initializeAutonomousProactiveBehaviorWatchdogEngine();
                 initializeDynamicWeatherAndAmbientEnvironmentSuite();
 
             }, undefined, (gltfLoaderTerminalCriticalFaultException) => {
-                console.error("Critical Asset pipeline failed setup error exception track logged:", gltfLoaderTerminalCriticalFaultException);
+                console.error("Critical Asset pipeline setup error exception track logged:", gltfLoaderTerminalCriticalFaultException);
                 forceDismissLoaderOverlayWithBypassSecurity(); 
             });
 
@@ -716,6 +710,7 @@
         }
 
         function onDisplayGridResizeLayoutCorrectionTrigger() {
+            if (!corePerspectiveCameraNode || !coreWebGLRendererModule) return;
             corePerspectiveCameraNode.aspect = window.innerWidth / window.innerHeight;
             corePerspectiveCameraNode.updateProjectionMatrix();
             coreWebGLRendererModule.setSize(window.innerWidth, window.innerHeight);
@@ -735,7 +730,7 @@
                 hardwareAudioFrequencyAnalyserNode.fftSize = 256; 
                 hardwareAudioFrequencyBufferArray = new Uint8Array(hardwareAudioFrequencyAnalyserNode.frequencyBinCount);
             } catch(nativeAudioPipelineContextSetupFaultException) {
-                console.error("Device Audio core subsystem error exception caught:", nativeAudioPipelineContextSetupFaultException);
+                console.error("Device Audio core subsystem exception caught:", nativeAudioPipelineContextSetupFaultException);
             }
         }
 
@@ -778,7 +773,7 @@
 
         /*
           ------------------------------------------------------------------
-          ADVANCED UPGRADE 1: EYE VISION WEB_CAM AND MOOD TELEMETRY LOOP
+          ADVANCED UPGRADE 1: EYE VISION WEBCAM MOOD TELEMETRY LOOP
           ------------------------------------------------------------------
         */
         async function initializeSecureHardwareCameraVisionSubsystem() {
@@ -799,8 +794,6 @@
                 globalIsCameraHardwareAccessGrantedFlag = true;
                 globalCameraVisionProcessingActiveStatus = true;
                 
-                console.log("Vision Module: Webcam capture online. Processing live vector geometry...");
-                
                 function runVisionTelemetryTrackingMatrix() {
                     if (!globalCameraVisionProcessingActiveStatus) return;
                     if (hiddenBufferVideoElement.readyState === hiddenBufferVideoElement.HAVE_ENOUGH_DATA) {
@@ -817,7 +810,7 @@
                 setInterval(evaluateUserExpressionAndReactAutonomous, 15000);
 
             } catch (cameraRefusalError) {
-                console.warn("Vision Subsystem Matrix: Camera blocked or device stream occupied.");
+                console.warn("Vision Subsystem Matrix: Camera stack unavailable or blocked.");
                 globalIsCameraHardwareAccessGrantedFlag = false;
             }
         }
@@ -845,7 +838,7 @@
 
         /*
           ------------------------------------------------------------------
-          ADVANCED UPGRADE 2: COGNITIVE INDEXED_DB PERSISTENT MEMORY MODULE
+          ADVANCED UPGRADE 2: COGNITIVE INDEXEDDB PERSISTENT MEMORY MODULE
           ------------------------------------------------------------------
         */
         function initializePersistentIndexedDBMemorySubsystem() {
@@ -861,11 +854,8 @@
 
             databaseOpenRequestPointer.onsuccess = async (successEvent) => {
                 globalIndexedDBCoreReferenceInstance = successEvent.target.result;
-                console.log("Memory Core: Connection established with local database grid storage.");
                 
                 let userNameData = await getParameterFromMemoryStore("UserName");
-                let lastSeenTimeData = await getParameterFromMemoryStore("LastSeenTime");
-                
                 await saveParameterToMemoryStore("LastSeenTime", Date.now());
 
                 if (userNameData) {
@@ -947,7 +937,7 @@
 
         /*
           ------------------------------------------------------------------
-          ADVANCED UPGRADE 4: LOCAL CLIMATE GEOLOCATION WEBGL ATMOSPHERE EXTENSION
+          ADVANCED UPGRADE 4: LOCAL CLIMATE ENVIRONMENT SUITE EXTENSION
           ------------------------------------------------------------------
         */
         function initializeDynamicWeatherAndAmbientEnvironmentSuite() {
@@ -1010,6 +1000,8 @@
         function masterApplicationRenderLoopExecutionCycle() {
             requestAnimationFrame(masterApplicationRenderLoopExecutionCycle);
             
+            if (!coreWebGLRendererModule || !coreThreeSceneInstance || !corePerspectiveCameraNode) return;
+
             const numericalDeltaTimelineTimeStepValue = coreSystemClockReference.getDelta();
             const numericalContinuousElapsedTimeRunningValue = coreSystemClockReference.getElapsedTime();
 
@@ -1076,10 +1068,7 @@
         async function triggerInteractionLifecycleExecutionCycle() {
             const clearExtractedInputTextString = DOMUI_TextInputElementBar.value.trim();
             
-            if (!clearExtractedInputTextString) {
-                console.warn("Interaction Matrix Alert: Empty or null token detected. Aborting cycle.");
-                return;
-            }
+            if (!clearExtractedInputTextString) return;
             
             DOMUI_TextInputElementBar.value = "";
             
@@ -1090,15 +1079,11 @@
             if (coreAnimationMixerController && globalAnimationClipsBufferPool.length > 0) {
                 coreAnimationMixerController.stopAllAction();
                 let operationalRandomClipsIndexFactor = Math.floor(Math.random() * globalAnimationClipsBufferPool.length);
-                let targetFiredAnimationActionObject = coreAnimationMixerController.clipAction(
-                    globalAnimationClipsBufferPool[operationalRandomClipsIndexFactor]
-                );
+                let targetFiredAnimationActionObject = coreAnimationMixerController.clipAction(globalAnimationClipsBufferPool[operationalRandomClipsIndexFactor]);
                 targetFiredAnimationActionObject.reset().fadeIn(0.25).play();
             }
 
             try {
-                console.log(`Neural Tunnel Outgoing: Dispatching payload -> "${clearExtractedInputTextString}"`);
-                
                 const activeReturnedNetworkPayloadText = await fetchSecureNeuralAIResponseStream(clearExtractedInputTextString);
                 
                 DOMUI_CoreStatusTextField.innerText = "जेमिनी nv1 लाइव डायरेक्ट ⚡";
@@ -1107,12 +1092,11 @@
                 if (activeReturnedNetworkPayloadText) {
                     bridgeNetworkPayloadDirectlyIntoResponseEngine(activeReturnedNetworkPayloadText);
                 } else {
-                    throw new Error("Empty neural stream string returned from rotating gateway.");
+                    throw new Error("Empty internal routing response exception.");
                 }
 
             } catch (interactionLifecycleRuntimeFaultException) {
-                console.error("Critical Interaction Lifecycle Exception Logged:", interactionLifecycleRuntimeFaultException);
-                
+                console.error("Interaction runtime execution fault logs compiled:", interactionLifecycleRuntimeFaultException);
                 DOMUI_CoreStatusTextField.innerText = "सिस्टम रिकवरी मोड ⚠️";
                 DOMUI_CoreStatusTextField.style.color = "var(--neon-pink)";
                 
@@ -1128,8 +1112,7 @@
                 DOMUI_TextInputElementBar.placeholder = "कमांडो मोड एक्टिव, बोलिए sweetie...";
             };
 
-            frameworkSpeechRecognitionProcessor.onerror = (speechRecognitionLayerFaultException) => {
-                console.error("Speech Recognition layer issue safely bypassed fallback exception logs:", speechRecognitionLayerFaultException);
+            frameworkSpeechRecognitionProcessor.onerror = () => {
                 liveSpeechCapturingStateSignalActive = false;
                 DOMUI_ActionButtonMicTrigger.classList.remove('listening');
                 DOMUI_TextInputElementBar.placeholder = "प्रिया से कुछ भी पूछें...";
@@ -1164,27 +1147,21 @@
             if (nativeHardwareKeyboardEvent.key === 'Enter') triggerInteractionLifecycleExecutionCycle(); 
         });
 
-
         /* ==========================================================================
            MODULE 9: GEMINI RESPONSE PROCESSING & STREAM ORCHESTRATION SUBSYSTEM
            ========================================================================== */
-
         let globalLastReceivedResponsePayloadString = "";
         let globalResponseExecutionActiveStatusFlag = false;
         let globalTypewriterAnimationIntervalReference = null;
         let globalTextSanitizationRegExpPattern = /\[.*?\]/g;
 
         async function processIncomingGeminiResponsePayload(rawIncomingGeminiStreamPayload) {
-            console.log("Response Subsystem Engine Triggered: Initializing validation sequence...");
-            
             if (!rawIncomingGeminiStreamPayload || rawIncomingGeminiStreamPayload.trim() === "") {
-                console.error("Critical Validation Exception: Received empty neural stream token.");
-                executeCentralResponseFallbackSystem("Empty Stream Payload Caught");
+                executeCentralResponseFallbackSystem("Null stream token generated.");
                 return;
             }
 
             safelyAbortActiveTypewriterStreamInteractions();
-            
             globalResponseExecutionActiveStatusFlag = true;
             globalLastReceivedResponsePayloadString = rawIncomingGeminiStreamPayload.trim();
 
@@ -1200,23 +1177,17 @@
 
             if (structuralExpressionMatchResultArray && structuralExpressionMatchResultArray.length > 1) {
                 extractedMicroActionExpressionString = structuralExpressionMatchResultArray[1];
-                console.log(`Graphics Matrix Parser: Extracted Avatar Action Intention -> "${extractedMicroActionExpressionString}"`);
                 dispatchDynamicAvatarGestureTrigger(extractedMicroActionExpressionString);
             }
 
             try {
-                console.log("Audio Dispatch Tunnel: Initiating text-to-speech engine handshaking...");
                 dispatchSpeechSynthesizerVocalTrackBuffer(globalLastReceivedResponsePayloadString);
             } catch (vocalEngineHandshakingRuntimeFaultException) {
-                console.error("Audio Subsystem Failure Tracker Logged:", vocalEngineHandshakingRuntimeFaultException);
+                console.error("Audio engine stack error runtime exception captured:", vocalEngineHandshakingRuntimeFaultException);
             }
 
-            const completelyCleanedDisplaySpeechStringText = globalLastReceivedResponsePayloadString
-                .replace(globalTextSanitizationRegExpPattern, '')
-                .trim();
-
+            const completelyCleanedDisplaySpeechStringText = globalLastReceivedResponsePayloadString.replace(globalTextSanitizationRegExpPattern, '').trim();
             await executeRealisticTypewriterSubtitleStreamStream(completelyCleanedDisplaySpeechStringText);
-            
             finalizeResponseProcessingLifecycleSequence();
         }
 
@@ -1271,16 +1242,14 @@
 
             try {
                 coreAnimationMixerController.stopAllAction();
-                let targetSelectedAnimationActionObject = coreAnimationMixerController.clipAction(
-                    globalAnimationClipsBufferPool[targetedActionClipIndexValue]
-                );
+                let targetSelectedAnimationActionObject = coreAnimationMixerController.clipAction(globalAnimationClipsBufferPool[targetedActionClipIndexValue]);
                 targetSelectedAnimationActionObject.reset().setEffectiveWeight(1.0).fadeIn(0.35).play();
             } catch (err) {
-                console.error("Exception clip blending:", err);
+                console.error("Animation layer tracking runtime exception trace logged:", err);
             }
         }
 
-        function executeCentralResponseFallbackSystem(criticalErrorInternalDiagnosticsLogMessage) {
+        function executeCentralResponseFallbackSystem() {
             const DOMUI_SystemCoreMoodStatusTextField = document.getElementById('system-core-mood-txt');
             if (DOMUI_SystemCoreMoodStatusTextField) {
                 DOMUI_SystemCoreMoodStatusTextField.innerText = "रिकवरी मोड एक्टिवेटेड ⚠️";
@@ -1288,10 +1257,8 @@
             }
 
             safelyAbortActiveTypewriterStreamInteractions();
-            
             const standardizedBypassApologyFallbackMessageString = "[दोनों हाथ जोड़कर सांत्वना देते हुए] अरे बाबू, नेटवर्क तनिक गड़बड़ा गया है, दोबारा बोलिए ना!";
             dispatchSpeechSynthesizerVocalTrackBuffer(standardizedBypassApologyFallbackMessageString);
-            
             finalizeResponseProcessingLifecycleSequence();
         }
 
@@ -1328,7 +1295,7 @@
 
         /*
           ------------------------------------------------------------------
-          SUB-MODULE G: SYSTEM BOOTSTRAP GATEWAY & FRAME WORK LAUNCHERS
+          SUB-MODULE G: SYSTEM BOOTSTRAP GATEWAY & FRAMEWORK LAUNCHERS
           ------------------------------------------------------------------
         */
         initializeDeviceHarmonizedGraphicsPipeline();
