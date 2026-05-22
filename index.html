@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>प्रिया AI - Avaturn आर्किटेक्चर इंजन v2.7 (फिक्स)</title>
+    <title>प्रिया AI - Avaturn आर्किटेक्चर इंजन v2.7 (कैमरा फिक्स)</title>
     <style>
         :root {
             --neon-cyan: #00ffcc;
@@ -193,16 +193,19 @@
             coreWebGLRendererModule.toneMappingExposure = 1.3;
             container.appendChild(coreWebGLRendererModule.domElement);
 
+            // 🛠️ कैमराव्यू एडजस्टमेंट: कैमरा को थोड़ा पीछे (Z=2.2) किया गया है ताकि पूरा चेहरा स्क्रीन फ्रेम में आए
             corePerspectiveCameraNode = new THREE.PerspectiveCamera(38, window.innerWidth / window.innerHeight, 0.1, 100);
-            corePerspectiveCameraNode.position.set(0, 0.15, 1.5);
+            corePerspectiveCameraNode.position.set(0, 0.45, 2.2);
 
             // OrbitControls कॉन्फ़िगरेशन
             coreOrbitControlsRig = new THREE.OrbitControls(corePerspectiveCameraNode, coreWebGLRendererModule.domElement);
             coreOrbitControlsRig.enableZoom = true;
             coreOrbitControlsRig.enablePan = false;
-            coreOrbitControlsRig.minDistance = 0.6;
-            coreOrbitControlsRig.maxDistance = 2.5;
-            coreOrbitControlsRig.target.set(0, 0.18, 0); 
+            coreOrbitControlsRig.minDistance = 0.5;
+            coreOrbitControlsRig.maxDistance = 4.0;
+            
+            // 🛠️ टारगेट अलाइनमेंट: OrbitControls का केंद्र बिंदु सीधे सिर/चेहरे की सटीक ऊँचाई (Y=0.45) पर फिक्स किया गया है
+            coreOrbitControlsRig.target.set(0, 0.45, 0); 
             coreOrbitControlsRig.enableDamping = true;
             coreOrbitControlsRig.dampingFactor = 0.05;
 
@@ -221,7 +224,7 @@
                 (err) => { console.error("मॉडल लोड एरर:", err); }
             );
 
-            // रीयल-टाइम माउस और मोबाइल टच रिस्पॉन्स बाइंडिंग्स (Error Free Execution)
+            // रीयल-टाइम माउस और मोबाइल टच रिस्पॉन्स बाइंडिंग्स
             window.addEventListener('mousemove', handleInteractionMove, false);
             window.addEventListener('touchmove', function(e) {
                 if(e.touches.length > 0) {
@@ -242,9 +245,10 @@
             structuralAvatar3DModelRoot = gltfPayload.scene;
             coreThreeSceneInstance.add(structuralAvatar3DModelRoot);
             
+            // 🛠️ मॉडल बेस पोजीशन री-ट्यूनिंग: मोबाइल पर मॉडल को थोड़ा और नीचे खिसकाया गया है ताकि चेहरा फ्रेम के सेंटर में रहे
             const isMobile = window.innerWidth < 768;
-            structuralAvatar3DModelRoot.scale.setScalar(isMobile ? 1.05 : 1.35);
-            structuralAvatar3DModelRoot.position.y = isMobile ? -0.58 : -0.78;
+            structuralAvatar3DModelRoot.scale.setScalar(isMobile ? 1.4 : 1.5);
+            structuralAvatar3DModelRoot.position.y = isMobile ? -0.95 : -1.05;
             structuralAvatar3DModelRoot.position.z = 0;
 
             document.getElementById('core-boot-loader').style.display = 'none';
@@ -254,7 +258,7 @@
                 coreAnimationMixerController.clipAction(gltfPayload.animations[0]).play();
             }
 
-            // 🎯 AVATURN RIG AND BLENDSHAPE HARD-MAPPING (Case Insensitive Safety Net)
+            // 🎯 AVATURN RIG AND BLENDSHAPE HARD-MAPPING
             structuralAvatar3DModelRoot.traverse((node) => {
                 if (node.isBone) {
                     const boneName = node.name.toLowerCase();
@@ -271,6 +275,9 @@
             });
 
             document.getElementById('drive-sync-status').innerText = "✅ Avaturn आर्किटेक्चर: 100% एक्टिव";
+            
+            // लोड होने के बाद कैमरा को अपडेट करने के लिए मजबूर करना
+            coreOrbitControlsRig.update();
         }
 
         // कैमरा ट्रैकर बायोमेट्रिक ग्रिड
@@ -287,7 +294,7 @@
                 document.getElementById('face-tracker-badge').innerText = "📷 विज़न: रीयल-टाइम ट्रैकिंग ऑन";
                 processLiveCameraFramesMatrix();
             } catch (err) {
-                document.getElementById('face-tracker-badge').innerText = "🖱️ मोड: माउस/टच ट्रैकिंग एक्टिव";
+                document.getElementById('face-tracker-badge').innerText = "鼠标 Mode: माउस/टच ट्रैकिंग एक्टिव";
             }
         }
 
@@ -361,7 +368,7 @@
             }
         }
 
-        // 🔄 MAIN GRAPHICS ENGINE RENDER LOOP (100% सिंकिंग मैकेनिज्म)
+        // 🔄 MAIN GRAPHICS ENGINE RENDER LOOP
         function masterApplicationRenderLoopExecutionCycle() {
             requestAnimationFrame(masterApplicationRenderLoopExecutionCycle);
 
@@ -372,11 +379,10 @@
             if (coreOrbitControlsRig) coreOrbitControlsRig.update();
 
             if (structuralAvatar3DModelRoot) {
-                // 1. रीयल-टाइम कोऑर्डिनेट्स इंटरपोलेशन (Lerp)
                 smoothTrackX = THREE.MathUtils.lerp(smoothTrackX, pointerTargetX, 0.1);
                 smoothTrackY = THREE.MathUtils.lerp(smoothTrackY, pointerTargetY, 0.1);
 
-                // 2. माउस/टच/कैमरा दिशा में हड्डियों का रीयल-टाइम रोटेशन
+                // माउस/टच दिशा में सिर और आँखें घूमेंगी
                 if (avaturnBoneHead) {
                     avaturnBoneHead.rotation.y = smoothTrackX * 0.45; 
                     avaturnBoneHead.rotation.x = -smoothTrackY * 0.25 + (Math.sin(elapsed * 1.8) * 0.015); 
@@ -391,35 +397,27 @@
                     avaturnBoneRightEye.rotation.x = -smoothTrackY * 0.2;
                 }
 
-                // 3. वोकल वेव सिमुलेटर (लिप-सिंक डेटा फ़ीड)
+                // लिप-सिंक वेव जनरेटर
                 if (liveVocalOutputStateSignalActive) {
-                    // प्राकृतिक भाषा की पिचों को सिमुलेट करने के लिए रैंडम साइन वेव हार्मोनिक्स
                     syntheticAudioAmplitudeWave = (Math.sin(elapsed * 25) * Math.cos(elapsed * 12) * 0.4) + 0.4;
-                    // सुनिश्चित करें कि मान सीमाओं के भीतर हो
                     syntheticAudioAmplitudeWave = Math.max(0, Math.min(syntheticAudioAmplitudeWave, 0.85));
                 } else {
                     syntheticAudioAmplitudeWave = THREE.MathUtils.lerp(syntheticAudioAmplitudeWave, 0, 0.2);
                 }
 
-                // 4. नेचुरल आई-ब्लिंक टाइमिंग जनरेटर
                 let blinkValue = (Math.sin(elapsed * 4) > 0.96) ? 1.0 : 0.0;
 
-                // 5. Avaturn ARKit मेशेस पर सीधे ब्लेंडशेप मैपिंग इंजेक्ट करना
+                // Avaturn ARKit ब्लेंडशेप्स इंजेक्शन
                 avaturnSkinnedMeshes.forEach(mesh => {
                     const dict = mesh.morphTargetDictionary;
                     const influences = mesh.morphTargetInfluences;
                     if (!dict || !influences) return;
 
-                    // रीयल-टाइम वोकल सिंक
                     if (dict['jawOpen'] !== undefined) {
                         influences[dict['jawOpen']] = syntheticAudioAmplitudeWave;
                     }
-
-                    // आई ब्लिंकिंग सिंक
                     if (dict['eyeBlinkLeft'] !== undefined) influences[dict['eyeBlinkLeft']] = blinkValue;
                     if (dict['eyeBlinkRight'] !== undefined) influences[dict['eyeBlinkRight']] = blinkValue;
-                    
-                    // डिफ़ॉल्ट न्यूट्रल स्माइल एक्सप्रेशन
                     if (dict['mouthSmileLeft'] !== undefined) influences[dict['mouthSmileLeft']] = 0.25;
                     if (dict['mouthSmileRight'] !== undefined) influences[dict['mouthSmileRight']] = 0.25;
                 });
@@ -428,7 +426,7 @@
             coreWebGLRendererModule.render(coreThreeSceneInstance, corePerspectiveCameraNode);
         }
 
-        // इवेंट्स अटैचमेंट डिक्लेरेशन
+        // इवेंट्स बाइंडिंग्स
         document.getElementById('sendBtn').addEventListener('click', triggerInteractionLifecycleExecutionCycle);
         document.getElementById('userInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') triggerInteractionLifecycleExecutionCycle(); });
 
@@ -445,7 +443,6 @@
             });
         }
 
-        // मुख्य कोर इंजन को निष्पादित करें
         initializeDeviceHarmonizedGraphicsPipeline();
         masterApplicationRenderLoopExecutionCycle();
 
