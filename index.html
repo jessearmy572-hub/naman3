@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>प्रिया AI - फुल बॉडी ऑटोमेशन प्रोडक्शन v4.3</title>
+    <title>प्रिया AI - फुल बॉडी कमांड एंड वॉयस ऑटोमेशन v4.4</title>
     <style>
         :root {
             --neon-cyan: #00ffcc;
@@ -128,17 +128,17 @@
     <div class="dashboard">
         <div class="status-block">
             <span class="status-beacon-dot"></span> 
-            <span class="status-title" id="system-core-mood-txt">प्रिया कोर v4.3</span>
+            <span class="status-title" id="system-core-mood-txt">प्रिया कोर v4.4</span>
         </div>
         <div class="channel-info">लाइव मौसम: <span id="weather-status-ui" style="color:#ffaa00; font-weight:bold;">सिंक हो रहा है...</span></div>
         <div class="channel-info">व्यूपोर्ट मोड: <span style="color:#00ffcc; font-weight:bold;" id="dynamic-device-ui">डिटेक्टिंग...</span></div>
-        <div class="badge" id="drive-sync-status" style="color: #00ffcc;">🎯 रेकास्टर टच ग्रिड: एक्टिव</div>
+        <div class="badge" id="drive-sync-status" style="color: #00ffcc;">🎯 कमांड इंजन: सिंक रिस्पॉन्स एक्टिव</div>
         <div class="badge" id="face-tracker-badge" style="color: #ffaa00;">📷 विज़न इंजन: चेकिंग...</div>
     </div>
 
     <div id="core-boot-loader">
         <div class="loader-ring-spinner"></div>
-        <div class="loader-label-text">प्रिया मास्टर फ़्रेमवर्क लोड हो रहा है...<br><span style="font-size:11px; color:#888;">Avaturn ह्युमनॉइड रिस्पॉन्स और सिमेट्रिकल ऑटोमेशन स्टेबलाइजर एक्टिवेटेड</span></div>
+        <div class="loader-label-text">प्रिया मास्टर फ़्रेमवर्क लोड हो रहा है...<br><span style="font-size:11px; color:#888;">AI वॉयस कमांड और फुल बॉडी गेस्चर मैट्रिक्स रेडी</span></div>
     </div>
 
     <div id="canvas-container"></div>
@@ -147,7 +147,7 @@
     <div class="ui-dock-wrapper">
         <button class="action-circle-btn mic-trigger-btn" id="micBtn">🎤</button>
         <div class="input-carrier-box">
-            <input type="text" id="userInput" placeholder="प्रिया से बात करें या कहीं टच करें..." autocomplete="off"/>
+            <input type="text" id="userInput" placeholder="कमांड दें (उदा. मुस्कुराओ, डांस करो, गुस्सा हो)..." autocomplete="off"/>
         </div>
         <button class="action-circle-btn send-trigger-btn" id="sendBtn">➔</button>
     </div>
@@ -160,7 +160,7 @@
         let structuralAvatar3DModelRoot = null;
         let directSunLight, groundShadowPlaneMesh;
         
-        // Avaturn Skeletal Rigging Bones
+        // Avaturn Riggings Mapping
         let avaturnBoneHead = null, avaturnBoneNeck = null, avaturnBoneLeftEye = null, avaturnBoneRightEye = null;
         let avaturnBoneSpine = null, avaturnBoneSpine1 = null, avaturnBoneSpine2 = null;
         let avaturnBoneLeftShoulder = null, avaturnBoneRightShoulder = null;
@@ -176,6 +176,10 @@
         let isWebcamHardwareActive = false, dynamicAIComputedFaceDetector = null;
 
         let liveVocalOutputStateSignalActive = false, syntheticAudioAmplitudeWave = 0;
+        
+        // 🛠️ AI Full Body State Machine Engine Variables
+        let currentBodyEmotionalState = 'idle'; // state list: idle, greeting, smiling, angry, sad, dancing, shy, thinking
+        let stateAnimationStartTimeStamp = 0;
 
         const BrowserSpeechRecognitionEngineInterface = window.SpeechRecognition || window.webkitSpeechRecognition;
         let frameworkSpeechRecognitionProcessor = BrowserSpeechRecognitionEngineInterface ? new BrowserSpeechRecognitionEngineInterface() : null;
@@ -231,7 +235,7 @@
             document.body.style.backgroundImage = `url('${bgImageUrl}')`;
         }
 
-        // Full Body Viewport Auto-Calibration Optimizer
+        // Viewport Auto-Calibration Setup
         function runAutomaticViewportCalibration() {
             const width = window.innerWidth;
             const deviceStatusText = document.getElementById('dynamic-device-ui');
@@ -259,7 +263,7 @@
             coreOrbitControlsRig.update();
         }
 
-        // Raycaster Full Body Structural Touch Interface
+        // Raycaster Structural Touch Integration
         function handleBodyTouchTrigger(event) {
             let clientX = event.clientX || (event.touches && event.touches[0].clientX);
             let clientY = event.clientY || (event.touches && event.touches[0].clientY);
@@ -280,27 +284,16 @@
         }
 
         function triggerBoneSpecificReaction(height) {
-            let replyText = "";
             if (height > 0.2) {
-                replyText = "[शर्माते हुए] अरे! चेहरे पर टच मत कीजिए ना, सीधे बात बताइए क्या काम है?";
-                triggerTemporaryExpression('mouthSmileLeft', 0.6);
+                triggerCommandStateMatrix("shiyan");
+                dispatchSpeechSynthesizerVocalTrackBuffer("[शर्माते हुए] अरे! चेहरे पर टच मत कीजिए ना, सीधे बात बताइए क्या काम है?");
             } else if (height <= 0.2 && height > -0.3) {
-                replyText = "[मुस्कुराते हुए] आप सीधे काम की बात बताइए ना, मैं सुन रही हूँ।";
-                triggerTemporaryExpression('eyeBlinkLeft', 0.8);
+                triggerCommandStateMatrix("smile");
+                dispatchSpeechSynthesizerVocalTrackBuffer("[मुस्कुराते हुए] आप सीधे काम की बात बताइए ना, मैं सुन रही हूँ।");
             } else {
-                replyText = "[हँसते हुए] नीचे कहाँ ध्यान है आपका? सीधे बात कीजिए।";
+                triggerCommandStateMatrix("angry");
+                dispatchSpeechSynthesizerVocalTrackBuffer("[गुस्सा होते हुए] नीचे कहाँ ध्यान है आपका? सीधे बात कीजिए।");
             }
-            dispatchSpeechSynthesizerVocalTrackBuffer(replyText);
-        }
-
-        function triggerTemporaryExpression(target, intensity) {
-            avaturnSkinnedMeshes.forEach(mesh => {
-                const dict = mesh.morphTargetDictionary;
-                if (dict && dict[target] !== undefined) {
-                    mesh.morphTargetInfluences[dict[target]] = intensity;
-                    setTimeout(() => { mesh.morphTargetInfluences[dict[target]] = 0; }, 1200);
-                }
-            });
         }
 
         function initializeDeviceHarmonizedGraphicsPipeline() {
@@ -341,7 +334,7 @@
             directSunLight = new THREE.DirectionalLight(0xffffff, 1.6);
             directSunLight.position.set(2, 5, 3);
             directSunLight.castShadow = true; 
-            directSunLight.shadow.mapSize.width = 2048; // High-res shadows
+            directSunLight.shadow.mapSize.width = 2048; 
             directSunLight.shadow.mapSize.height = 2048;
             directSunLight.shadow.camera.near = 0.5;
             directSunLight.shadow.camera.far = 12;
@@ -383,7 +376,6 @@
                 if (node.isMesh) {
                     node.castShadow = true;
                     node.receiveShadow = true;
-                    // Fix transparency artifacting if any
                     if(node.material) node.material.depthWrite = true;
                 }
             });
@@ -394,7 +386,7 @@
 
             coreAnimationMixerController = new THREE.AnimationMixer(structuralAvatar3DModelRoot);
 
-            // Avaturn Skeleton Extended Mapping Architecture
+            // Skeleton Structural Mapping
             structuralAvatar3DModelRoot.traverse((node) => {
                 if (node.isBone) {
                     const name = node.name.toLowerCase();
@@ -419,19 +411,17 @@
                 }
             });
 
-            // Stabilize Hand Constraints Default State
             enforceNaturalRestingPoseConstraints();
         }
 
-        // Fix overlapping arm/hands artifacting inside Avaturn models
         function enforceNaturalRestingPoseConstraints() {
-            if(avaturnBoneLeftArm) { avaturnBoneLeftArm.rotation.set(0, 0, -Math.PI/3.5); }
-            if(avaturnBoneRightArm) { avaturnBoneRightArm.rotation.set(0, 0, Math.PI/3.5); }
-            if(avaturnBoneLeftForeArm) { avaturnBoneLeftForeArm.rotation.set(0, Math.PI/6, 0); }
-            if(avaturnBoneRightForeArm) { avaturnBoneRightForeArm.rotation.set(0, -Math.PI/6, 0); }
+            if(avaturnBoneLeftArm) avaturnBoneLeftArm.rotation.set(0, 0, -Math.PI / 4);
+            if(avaturnBoneRightArm) avaturnBoneRightArm.rotation.set(0, 0, Math.PI / 4);
+            if(avaturnBoneLeftForeArm) avaturnBoneLeftForeArm.rotation.set(0, Math.PI / 6, 0);
+            if(avaturnBoneRightForeArm) avaturnBoneRightForeArm.rotation.set(0, -Math.PI / 6, 0);
         }
 
-        // Camera Vision Tracker Framework
+        // Camera Vision Tracker Setup
         async function activateSecureWebcamBiometricGrid() {
             const streamVideoElement = document.getElementById('webcam-raw-stream');
             try {
@@ -467,6 +457,43 @@
             requestAnimationFrame(processLiveCameraFramesMatrix);
         }
 
+        // 🧠 COMMAND DECODER ENGINE (Voice aur Chat Dono Ke Liye Parsing Logic)
+        function parseAndRouteAICommands(rawString) {
+            const text = rawString.toLowerCase();
+            
+            if (text.includes("नमस्ते") || text.includes("hello") || text.includes("hi") || text.includes("welcome")) {
+                triggerCommandStateMatrix("greeting");
+                dispatchSpeechSynthesizerVocalTrackBuffer("नमस्ते! मैं प्रिया हूँ। आपसे मिलकर बहुत ख़ुशी हुई!");
+            } else if (text.includes("मुस्कुरा") || text.includes("smile") || text.includes("हँसो")) {
+                triggerCommandStateMatrix("smile");
+                dispatchSpeechSynthesizerVocalTrackBuffer("आपकी बात सुनकर मुझे बहुत प्यारी मुस्कान आ गई!");
+            } else if (text.includes("गुस्सा") || text.includes("angry") || text.includes("नाराज")) {
+                triggerCommandStateMatrix("angry");
+                dispatchSpeechSynthesizerVocalTrackBuffer("मुझे गुस्सा मत दिलाओ, वरना मैं किसी से बात नहीं करूँगी!");
+            } else if (text.includes("डांस") || text.includes("dance") || text.includes("नाचो")) {
+                triggerCommandStateMatrix("dance");
+                dispatchSpeechSynthesizerVocalTrackBuffer("चलिए ठीक है, मैं आपके लिए थोड़ा सा डांस मूवमेंट करके दिखाती हूँ!");
+            } else if (text.includes("उदास") || text.includes("sad") || text.includes("रो")) {
+                triggerCommandStateMatrix("sad");
+                dispatchSpeechSynthesizerVocalTrackBuffer("क्या हुआ? आपकी ऐसी बातें सुनकर मेरा दिल उदास हो गया...");
+            } else if (text.includes("शर्मा") || text.includes("shy") || text.includes("प्यारी")) {
+                triggerCommandStateMatrix("shiyan");
+                dispatchSpeechSynthesizerVocalTrackBuffer("आप ऐसे बोलेंगे तो मुझे बहुत शर्म आ जाएगी!");
+            } else if (text.includes("सोचो") || text.includes("think") || text.includes("सवाल")) {
+                triggerCommandStateMatrix("thinking");
+                dispatchSpeechSynthesizerVocalTrackBuffer("हम्म... मैं इसके बारे में गहराई से सोच रही हूँ।");
+            } else {
+                // Agar koi explicit gesture nahi mila to default AI pipeline par bhej de
+                triggerServerInteractionFramework(rawString);
+            }
+        }
+
+        function triggerCommandStateMatrix(stateName) {
+            currentBodyEmotionalState = stateName;
+            stateAnimationStartTimeStamp = coreSystemClockReference.getElapsedTime();
+            document.getElementById('system-core-mood-txt').innerText = `प्रिया मोड: ${stateName.toUpperCase()}`;
+        }
+
         function dispatchSpeechSynthesizerVocalTrackBuffer(text) {
             if (!window.speechSynthesis) return;
             window.speechSynthesis.cancel();
@@ -486,26 +513,36 @@
             window.speechSynthesis.speak(utterance);
         }
 
-        async function triggerInteractionLifecycleExecutionCycle() {
-            const inputElement = document.getElementById('userInput');
-            const userString = inputElement.value.trim();
-            if (!userString) return;
-
-            inputElement.value = "";
+        async function triggerServerInteractionFramework(userString) {
             document.getElementById('system-core-mood-txt').innerText = "प्रिया: सोच रही हूँ... 🧠";
+            triggerCommandStateMatrix("thinking");
 
             try {
                 const response = await fetch(APPS_SCRIPT_WEB_APP_URL, { method: "POST", body: JSON.stringify({ query: userString }) });
                 const data = await response.json();
-                document.getElementById('system-core-mood-txt').innerText = "प्रिया कोर v4.3";
+                document.getElementById('system-core-mood-txt').innerText = "प्रिया कोर v4.4";
+                
+                // Server response ke context par expression automatic guess karega
+                if(data.text && (data.text.includes("हाँ") || data.text.includes("अच्छा"))) triggerCommandStateMatrix("smile");
+                else triggerCommandStateMatrix("idle");
+
                 dispatchSpeechSynthesizerVocalTrackBuffer(data.text || data.output);
             } catch (error) {
                 document.getElementById('system-core-mood-txt').innerText = "प्रिया: लोकल मोड";
-                dispatchSpeechSynthesizerVocalTrackBuffer("मैं बिल्कुल ठीक हूँ और आपकी बात सुन रही हूँ, बताइए क्या सहायता करूँ?");
+                triggerCommandStateMatrix("smile");
+                dispatchSpeechSynthesizerVocalTrackBuffer("मैं सुन रही हूँ, आपका कमांड पूरी तरह से सिंक हो चुका है!");
             }
         }
 
-        // 🔄 MASTER ENGINE LOOP: Humanoid IK Engine & Symmetrical Procedural Automation
+        function executeMainChatSubmission() {
+            const inputElement = document.getElementById('userInput');
+            const commandStr = inputElement.value.trim();
+            if (!commandStr) return;
+            inputElement.value = "";
+            parseAndRouteAICommands(commandStr);
+        }
+
+        // 🔄 MASTER ENGINE LOOP: Procedural AI Commands & Humanoid Body Movements
         function masterApplicationRenderLoopExecutionCycle() {
             requestAnimationFrame(masterApplicationRenderLoopExecutionCycle);
 
@@ -519,72 +556,139 @@
                 smoothTrackX = THREE.MathUtils.lerp(smoothTrackX, pointerTargetX, 0.1);
                 smoothTrackY = THREE.MathUtils.lerp(smoothTrackY, pointerTargetY, 0.1);
 
-                // 🫁 1. Sine-Wave Breathing & Symmetrical Micro Sway System
+                // 🫁 1. Base Sine-Wave Breathing Pattern
                 const breathCycle = Math.sin(elapsed * 1.6);
-                const spineSway = Math.cos(elapsed * 0.7);
+                const generalSway = Math.cos(elapsed * 0.7);
 
-                // Full Body Automation (Preventing Static Look)
-                if (avaturnBoneSpine) {
-                    avaturnBoneSpine.rotation.x = (breathCycle * 0.008) + (spineSway * 0.004);
-                    avaturnBoneSpine.rotation.z = (spineSway * 0.005);
-                }
-                if (avaturnBoneSpine1) {
-                    avaturnBoneSpine1.rotation.x = breathCycle * 0.006;
-                    avaturnBoneSpine1.rotation.y = (spineSway * 0.003);
-                }
-                if (avaturnBoneSpine2) {
-                    avaturnBoneSpine2.rotation.x = breathCycle * 0.004;
+                // Default idle breathing skeleton adjustments
+                if (avaturnBoneSpine) avaturnBoneSpine.rotation.set(breathCycle * 0.008 + generalSway * 0.003, 0, generalSway * 0.004);
+                if (avaturnBoneSpine1) avaturnBoneSpine1.rotation.set(breathCycle * 0.006, generalSway * 0.003, 0);
+                
+                // Reset/Default Bone Angles before state modifier
+                if(avaturnBoneLeftArm) avaturnBoneLeftArm.rotation.set(0, 0, -Math.PI / 4.5 + (generalSway * 0.01));
+                if(avaturnBoneRightArm) avaturnBoneRightArm.rotation.set(0, 0, Math.PI / 4.5 - (generalSway * 0.01));
+                if(avaturnBoneLeftShoulder) avaturnBoneLeftShoulder.rotation.set(0, 0, -Math.PI/12);
+                if(avaturnBoneRightShoulder) avaturnBoneRightShoulder.rotation.set(0, 0, Math.PI/12);
+                if(avaturnBoneLeftForeArm) avaturnBoneLeftForeArm.rotation.set(0, Math.PI / 6, 0);
+                if(avaturnBoneRightForeArm) avaturnBoneRightForeArm.rotation.set(0, -Math.PI / 6, 0);
+
+                // 🎭 2. STATE MACHINE: PROCEDURAL FULL BODY GESTURE COMMANDS MATRIX
+                const stateElapsed = elapsed - stateAnimationStartTimeStamp;
+                let activeMorphTargetName = null;
+                let activeMorphTargetIntensity = 0;
+
+                switch (currentBodyEmotionalState) {
+                    case 'greeting': // Ek haath upar uthakar wave karna (Symmetrical Hello)
+                        if (avaturnBoneRightArm) {
+                            avaturnBoneRightArm.rotation.z = Math.PI / 2.2; 
+                            avaturnBoneRightArm.rotation.x = -Math.PI / 4 + Math.sin(stateElapsed * 5) * 0.15;
+                        }
+                        if (avaturnBoneLeftArm) avaturnBoneLeftArm.rotation.z = -Math.PI / 3.5;
+                        activeMorphTargetName = 'mouthSmileLeft';
+                        activeMorphTargetIntensity = 0.5;
+                        if(stateElapsed > 4.5) currentBodyEmotionalState = 'idle';
+                        break;
+
+                    case 'smile': // Pura sharir piche halka sa jhukega aur haath failenge
+                        if (avaturnBoneSpine) avaturnBoneSpine.rotation.x = -0.05 + (breathCycle * 0.005);
+                        if (avaturnBoneLeftArm) avaturnBoneLeftArm.rotation.z = -Math.PI / 3.8 - (Math.sin(stateElapsed * 2) * 0.05);
+                        if (avaturnBoneRightArm) avaturnBoneRightArm.rotation.z = Math.PI / 3.8 + (Math.sin(stateElapsed * 2) * 0.05);
+                        activeMorphTargetName = 'mouthSmileLeft';
+                        activeMorphTargetIntensity = 0.8;
+                        if(stateElapsed > 5.0) currentBodyEmotionalState = 'idle';
+                        break;
+
+                    case 'angry': // Dono haath jhatak kar aage aana aur garden tight hona
+                        if (avaturnBoneSpine) avaturnBoneSpine.rotation.x = 0.06;
+                        if (avaturnBoneLeftArm) avaturnBoneLeftArm.rotation.set(0, 0, -Math.PI / 6);
+                        if (avaturnBoneRightArm) avaturnBoneRightArm.rotation.set(0, 0, Math.PI / 6);
+                        if (avaturnBoneHead) avaturnBoneHead.rotation.x = 0.05;
+                        activeMorphTargetName = 'mouthFrownLeft';
+                        activeMorphTargetIntensity = 0.75;
+                        if(stateElapsed > 4.0) currentBodyEmotionalState = 'idle';
+                        break;
+
+                    case 'dance': // Left to Right Full Body Swing (Continuous Movement)
+                        const danceWave = Math.sin(stateElapsed * 4.0);
+                        if (structuralAvatar3DModelRoot) {
+                            structuralAvatar3ModelRoot.rotation.y = danceWave * 0.12;
+                        }
+                        if (avaturnBoneLeftArm) avaturnBoneLeftArm.rotation.set(danceWave * 0.2, 0, -Math.PI / 3);
+                        if (avaturnBoneRightArm) avaturnBoneRightArm.rotation.set(-danceWave * 0.2, 0, Math.PI / 3);
+                        if (avaturnBoneSpine) avaturnBoneSpine.rotation.z = danceWave * 0.06;
+                        activeMorphTargetName = 'mouthSmileLeft';
+                        activeMorphTargetIntensity = 0.4;
+                        if(stateElapsed > 8.0) {
+                            currentBodyEmotionalState = 'idle';
+                            if (structuralAvatar3DModelRoot) structuralAvatar3DModelRoot.rotation.y = 0;
+                        }
+                        break;
+
+                    case 'sad': // Head down aur shoulders drop hona
+                        if (avaturnBoneSpine) avaturnBoneSpine.rotation.x = 0.08;
+                        if (avaturnBoneLeftShoulder) avaturnBoneLeftShoulder.rotation.z = -Math.PI/16;
+                        if (avaturnBoneRightShoulder) avaturnBoneRightShoulder.rotation.z = Math.PI/16;
+                        if (avaturnBoneHead) avaturnBoneHead.rotation.set(0.12, 0, 0);
+                        activeMorphTargetName = 'mouthFrownRight';
+                        activeMorphTargetIntensity = 0.8;
+                        if(stateElapsed > 6.0) currentBodyEmotionalState = 'idle';
+                        break;
+
+                    case 'shiyan': // Dono arms body ke close aana aur garden side me mudna
+                        if (avaturnBoneLeftArm) avaturnBoneLeftArm.rotation.z = -Math.PI / 6;
+                        if (avaturnBoneRightArm) avaturnBoneRightArm.rotation.z = Math.PI / 6;
+                        if (avaturnBoneHead) avaturnBoneHead.rotation.set(0.04, Math.sin(stateElapsed * 2) * 0.1, 0.05);
+                        activeMorphTargetName = 'mouthSmileRight';
+                        activeMorphTargetIntensity = 0.65;
+                        if(stateElapsed > 5.0) currentBodyEmotionalState = 'idle';
+                        break;
+
+                    case 'thinking': // Head up aur side tracking lock hona
+                        if (avaturnBoneHead) avaturnBoneHead.rotation.set(-0.08, -0.15, -0.02);
+                        if (avaturnBoneLeftForeArm) avaturnBoneLeftForeArm.rotation.x = -Math.PI / 5;
+                        activeMorphTargetName = 'mouthPucker';
+                        activeMorphTargetIntensity = 0.35;
+                        break;
+
+                    default: // Idle natural micro-sway
+                        break;
                 }
 
-                // Symmetrical Clavicle & Shoulder Adjuster (No Hand Collision/Overlap)
-                if (avaturnBoneLeftShoulder) {
-                    avaturnBoneLeftShoulder.rotation.z = -Math.PI/12 + (breathCycle * 0.005);
-                    avaturnBoneLeftShoulder.rotation.x = spineSway * 0.003;
-                }
-                if (avaturnBoneRightShoulder) {
-                    avaturnBoneRightShoulder.rotation.z = Math.PI/12 - (breathCycle * 0.005);
-                    avaturnBoneRightShoulder.rotation.x = -spineSway * 0.003;
-                }
-
-                // Arms & Forearms Inverse Kinematics Stabilization
-                if (avaturnBoneLeftArm) avaturnBoneLeftArm.rotation.z = -0.15 + (spineSway * 0.01);
-                if (avaturnBoneRightArm) avaturnBoneRightArm.rotation.z = 0.15 - (spineSway * 0.01);
-                if (avaturnBoneLeftForeArm) avaturnBoneLeftForeArm.rotation.y = 0.2 + (breathCycle * 0.005);
-                if (avaturnBoneRightForeArm) avaturnBoneRightForeArm.rotation.y = -0.2 - (breathCycle * 0.005);
-
-                // 👤 2. Realistic Head & Gaze Track Solver
-                if (avaturnBoneHead) {
-                    avaturnBoneHead.rotation.y = smoothTrackX * 0.42; 
-                    avaturnBoneHead.rotation.x = -smoothTrackY * 0.22 + (breathCycle * 0.005); 
-                }
-                if (avaturnBoneNeck) {
-                    avaturnBoneNeck.rotation.y = smoothTrackX * 0.12;
-                    avaturnBoneNeck.rotation.x = -smoothTrackY * 0.08;
-                }
-                if (avaturnBoneLeftEye && avaturnBoneRightEye) {
-                    avaturnBoneLeftEye.rotation.y = smoothTrackX * 0.2; 
-                    avaturnBoneRightEye.rotation.y = smoothTrackX * 0.2;
+                // 👤 3. Realistic Head, Neck & Eye Track Solver (Overridden by state if required)
+                if (currentBodyEmotionalState !== 'thinking' && currentBodyEmotionalState !== 'sad') {
+                    if (avaturnBoneHead) {
+                        avaturnBoneHead.rotation.y = smoothTrackX * 0.42; 
+                        avaturnBoneHead.rotation.x = -smoothTrackY * 0.22 + (breathCycle * 0.005); 
+                    }
+                    if (avaturnBoneNeck) {
+                        avaturnBoneNeck.rotation.y = smoothTrackX * 0.12;
+                        avaturnBoneNeck.rotation.x = -smoothTrackY * 0.08;
+                    }
+                    if (avaturnBoneLeftEye && avaturnBoneRightEye) {
+                        avaturnBoneLeftEye.rotation.y = smoothTrackX * 0.2; 
+                        avaturnBoneRightEye.rotation.y = smoothTrackX * 0.2;
+                    }
                 }
 
-                // 👄 3. High-Fidelity Lip Sync Modulation (Fluctuating Waves)
+                // 👄 4. Fluid Lip-Sync Algorithm
                 if (liveVocalOutputStateSignalActive) {
                     syntheticAudioAmplitudeWave = (Math.sin(elapsed * 28) * Math.cos(elapsed * 16) * 0.38) + 0.32;
-                    if (Math.sin(elapsed * 4) > 0.5) syntheticAudioAmplitudeWave += 0.18; // Phoneme variation emulation
+                    if (Math.sin(elapsed * 4) > 0.5) syntheticAudioAmplitudeWave += 0.18;
                     syntheticAudioAmplitudeWave = Math.max(0, Math.min(syntheticAudioAmplitudeWave, 0.8));
                 } else {
                     syntheticAudioAmplitudeWave = THREE.MathUtils.lerp(syntheticAudioAmplitudeWave, 0, 0.2);
                 }
 
-                // 👁️ 4. Stochastic Eyelid Blink Engine
+                // Stochastic Eye Blink Engine
                 let blinkValue = (Math.sin(elapsed * 4.5) > 0.97 || (elapsed % 6.5 > 6.2)) ? 1.0 : 0.0;
 
-                // Update Morph Targets Framework Safely
+                // Apply Morph Vectors on Meshes Safely
                 avaturnSkinnedMeshes.forEach(mesh => {
                     const dict = mesh.morphTargetDictionary;
                     const influences = mesh.morphTargetInfluences;
                     if (!dict || !influences) return;
 
-                    // Jaw & Mouth Open Automation
+                    // Jaw movement execution
                     if (dict['jawOpen'] !== undefined) {
                         influences[dict['jawOpen']] = syntheticAudioAmplitudeWave;
                     }
@@ -592,22 +696,35 @@
                         influences[dict['mouthFunnel']] = syntheticAudioAmplitudeWave * 0.25;
                     }
 
-                    // Eye Blink Symmetrical Execution
+                    // Eye blink synchronization
                     if (dict['eyeBlinkLeft'] !== undefined) influences[dict['eyeBlinkLeft']] = blinkValue;
                     if (dict['eyeBlinkRight'] !== undefined) influences[dict['eyeBlinkRight']] = blinkValue;
+
+                    // Apply command driven emotional facial expressions
+                    if (activeMorphTargetName && dict[activeMorphTargetName] !== undefined) {
+                        influences[dict[activeMorphTargetName]] = THREE.MathUtils.lerp(influences[dict[activeMorphTargetName]], activeMorphTargetIntensity, 0.1);
+                    } else {
+                        // Slowly fade other facial blendshapes to baseline zero
+                        Object.keys(dict).forEach(key => {
+                            if (key !== 'jawOpen' && key !== 'mouthFunnel' && key !== 'eyeBlinkLeft' && key !== 'eyeBlinkRight') {
+                                influences[dict[key]] = THREE.MathUtils.lerp(influences[dict[key]], 0, 0.08);
+                            }
+                        });
+                    }
                 });
             }
 
             coreWebGLRendererModule.render(coreThreeSceneInstance, corePerspectiveCameraNode);
         }
 
-        document.getElementById('sendBtn').addEventListener('click', triggerInteractionLifecycleExecutionCycle);
-        document.getElementById('userInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') triggerInteractionLifecycleExecutionCycle(); });
+        document.getElementById('sendBtn').addEventListener('click', executeMainChatSubmission);
+        document.getElementById('userInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') executeMainChatSubmission(); });
 
         if (frameworkSpeechRecognitionProcessor) {
             frameworkSpeechRecognitionProcessor.onresult = (e) => {
-                document.getElementById('userInput').value = e.results[0][0].transcript;
-                triggerInteractionLifecycleExecutionCycle();
+                const speechString = e.results[0][0].transcript;
+                document.getElementById('userInput').value = speechString;
+                parseAndRouteAICommands(speechString);
             };
             frameworkSpeechRecognitionProcessor.onstart = () => { document.getElementById('micBtn').classList.add('listening'); };
             frameworkSpeechRecognitionProcessor.onend = () => { document.getElementById('micBtn').classList.remove('listening'); };
