@@ -3,49 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>प्रिया AI - फुल बॉडी कमांड एंड वॉयस ऑटोमेशन v4.4</title>
+    <title>प्रिया AI - हाइपर-रियलिस्टिक ह्यूमनॉइड v5.0</title>
     <style>
         :root {
             --neon-cyan: #00ffcc;
             --neon-blue: #0077ff;
-            --neon-orange: #ff5500;
             --neon-pink: #ff007f;
             --text-core-white: #ffffff;
             --text-dim-slate: #8a99ad;
-            --bg-glass-panel: rgba(10, 10, 25, 0.65);
-            --border-matte-white: rgba(255, 255, 255, 0.12);
-            --bg-input-field: rgba(5, 5, 15, 0.85);
+            --bg-glass-panel: rgba(10, 10, 22, 0.7);
+            --border-matte-white: rgba(255, 255, 255, 0.1);
+            --bg-input-field: rgba(6, 6, 18, 0.85);
         }
 
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
             overflow: hidden; 
-            background: #020208 url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=1920') no-repeat center center;
+            background: #020206 url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1920') no-repeat center center;
             background-size: cover;
             font-family: 'Segoe UI', Roboto, sans-serif;
             -webkit-font-smoothing: antialiased;
-            transition: background 2.0s ease-in-out;
         }
 
         #canvas-container {
             width: 100%; height: 100%; position: absolute; top: 0; left: 0;
-            z-index: 3; cursor: pointer; display: block; touch-action: none;
-        }
-
-        .matrix-grid-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;
-            background-image: 
-                linear-gradient(rgba(0, 255, 204, 0.005) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 255, 204, 0.005) 1px, transparent 1px);
-            background-size: 50px 50px; pointer-events: none; opacity: 0.5;
+            z-index: 3; cursor: pointer; touch-action: none;
         }
 
         .dashboard {
             position: absolute; top: 20px; left: 20px; z-index: 10;
             background: var(--bg-glass-panel); padding: 14px 20px; border-radius: 16px;
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
             border: 1px solid var(--border-matte-white);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
 
         .status-block { display: flex; align-items: center; margin-bottom: 6px; }
@@ -54,9 +44,9 @@
             border-radius: 50%; margin-right: 10px;
             box-shadow: 0 0 10px var(--neon-cyan);
         }
-        .status-title { font-size: 13px; font-weight: 700; text-transform: uppercase; color: var(--text-core-white); letter-spacing: 1px; }
+        .status-title { font-size: 13px; font-weight: 700; text-transform: uppercase; color: var(--text-core-white); letter-spacing: 0.5px; }
         .channel-info { font-size: 11px; color: var(--text-dim-slate); margin-bottom: 2px; }
-        .badge { font-size: 11px; margin-top: 4px; font-weight: bold; }
+        .badge { font-size: 11px; margin-top: 4px; font-weight: bold; color: var(--neon-cyan); }
 
         .ui-dock-wrapper {
             position: absolute; bottom: 30px; width: 100%; display: flex;
@@ -66,8 +56,8 @@
 
         .input-carrier-box {
             background: var(--bg-input-field); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            padding: 0 20px; border-radius: 30px; flex-grow: 1; max-width: 600px; height: 56px;
-            display: flex; align-items: center; border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 0 20px; border-radius: 30px; flex-grow: 1; max-width: 550px; height: 54px;
+            display: flex; align-items: center; border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .input-carrier-box:focus-within { border-color: var(--neon-cyan); }
 
@@ -75,70 +65,57 @@
             width: 100%; background: transparent; border: none; color: var(--text-core-white);
             outline: none; font-size: 15px; height: 100%;
         }
-        input::placeholder { color: rgba(255, 255, 255, 0.35); }
+        input::placeholder { color: rgba(255, 255, 255, 0.3); }
 
         .action-circle-btn {
-            border: none; border-radius: 50%; width: 56px; height: 56px; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; font-size: 20px;
+            border: none; border-radius: 50%; width: 54px; height: 54px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; font-size: 18px;
             transition: transform 0.2s ease;
         }
-        .action-circle-btn:active { transform: scale(0.92); }
-        .mic-trigger-btn { background: linear-gradient(135deg, var(--neon-orange), var(--neon-pink)); color: white; }
+        .action-circle-btn:active { transform: scale(0.95); }
+        .mic-trigger-btn { background: linear-gradient(135deg, #ff5500, #ff007f); color: white; }
         .mic-trigger-btn.listening { background: var(--neon-cyan); animation: pulse 1s infinite alternate; }
         .send-trigger-btn { background: white; color: black; }
 
         #subtitle-monitor-box {
-            position: absolute; bottom: 105px; left: 50%; transform: translateX(-50%);
-            background: rgba(5, 5, 18, 0.95); padding: 12px 24px; border-radius: 16px;
-            color: white; font-size: 15px; max-width: 80%; text-align: center; z-index: 30;
-            border: 1px solid rgba(255,255,255,0.12); display: none;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%);
+            background: rgba(4, 4, 12, 0.9); padding: 12px 24px; border-radius: 14px;
+            color: white; font-size: 14px; max-width: 75%; text-align: center; z-index: 30;
+            border: 1px solid rgba(255,255,255,0.08); display: none;
         }
 
         #core-boot-loader {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: #04040c; z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            background: #030308; z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center;
         }
         .loader-ring-spinner {
-            width: 50px; height: 50px; border: 3px solid rgba(0, 255, 204, 0.1);
-            border-radius: 50%; border-top-color: var(--neon-cyan); animation: spin 1s linear infinite; margin-bottom: 20px;
+            width: 45px; height: 45px; border: 3px solid rgba(0, 255, 204, 0.1);
+            border-radius: 50%; border-top-color: var(--neon-cyan); animation: spin 1s linear infinite; margin-bottom: 15px;
         }
-        .loader-label-text { color: var(--neon-cyan); font-size: 14px; text-transform: uppercase; letter-spacing: 1px; text-align: center; line-height: 1.6; }
-
-        #webcam-raw-stream { display: none; }
+        .loader-label-text { color: #fff; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; text-align: center; }
 
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes pulse { 0% { transform: scale(1); } 100% { transform: scale(1.08); } }
+        @keyframes pulse { 0% { transform: scale(1); } 100% { transform: scale(1.05); } }
     </style>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-converter"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/face-landmarks-detection"></script>
 </head>
 <body>
-
-    <div class="matrix-grid-overlay"></div>
-    <video id="webcam-raw-stream" autoplay playsinline muted></video>
 
     <div class="dashboard">
         <div class="status-block">
             <span class="status-beacon-dot"></span> 
-            <span class="status-title" id="system-core-mood-txt">प्रिया कोर v4.4</span>
+            <span class="status-title" id="system-core-mood-txt">प्रिया कोर v5.0</span>
         </div>
-        <div class="channel-info">लाइव मौसम: <span id="weather-status-ui" style="color:#ffaa00; font-weight:bold;">सिंक हो रहा है...</span></div>
-        <div class="channel-info">व्यूपोर्ट मोड: <span style="color:#00ffcc; font-weight:bold;" id="dynamic-device-ui">डिटेक्टिंग...</span></div>
-        <div class="badge" id="drive-sync-status" style="color: #00ffcc;">🎯 कमांड इंजन: सिंक रिस्पॉन्स एक्टिव</div>
-        <div class="badge" id="face-tracker-badge" style="color: #ffaa00;">📷 विज़न इंजन: चेकिंग...</div>
+        <div class="channel-info">व्यूपोर्ट मोड: <span style="color:#00ffcc;" id="dynamic-device-ui">मोबाइल अलाइन...</span></div>
+        <div class="badge">💎 हाइपर-रियलिस्टिक नेचुरल स्टेबिलिटी एक्टिव</div>
     </div>
 
     <div id="core-boot-loader">
         <div class="loader-ring-spinner"></div>
-        <div class="loader-label-text">प्रिया मास्टर फ़्रेमवर्क लोड हो रहा है...<br><span style="font-size:11px; color:#888;">AI वॉयस कमांड और फुल बॉडी गेस्चर मैट्रिक्स रेडी</span></div>
+        <div class="loader-label-text">एंकरिंग ग्राउंड एंड जॉइंट्स सिंक...</div>
     </div>
 
     <div id="canvas-container"></div>
@@ -147,7 +124,7 @@
     <div class="ui-dock-wrapper">
         <button class="action-circle-btn mic-trigger-btn" id="micBtn">🎤</button>
         <div class="input-carrier-box">
-            <input type="text" id="userInput" placeholder="कमांड दें (उदा. मुस्कुराओ, डांस करो, गुस्सा हो)..." autocomplete="off"/>
+            <input type="text" id="userInput" placeholder="कमांड दें या बात करें..." autocomplete="off"/>
         </div>
         <button class="action-circle-btn send-trigger-btn" id="sendBtn">➔</button>
     </div>
@@ -156,557 +133,339 @@
         const APPS_SCRIPT_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyI_Vz0rR7O_CclY-vH-XUorR_2oBsh236U_v7a2g5_nre382_j0Xy28rYhY24vG_E/exec";
         const ALTERNATE_ASSET_URI = "https://cdn.jsdelivr.net/gh/jessearmy572-hub/naman3@main/model.glb";
 
-        let coreThreeSceneInstance, corePerspectiveCameraNode, coreWebGLRendererModule, coreOrbitControlsRig, coreAnimationMixerController, coreSystemClockReference;
+        let coreThreeSceneInstance, corePerspectiveCameraNode, coreWebGLRendererModule, coreOrbitControlsRig, coreSystemClockReference;
         let structuralAvatar3DModelRoot = null;
-        let directSunLight, groundShadowPlaneMesh;
+        let ambientDropShadowPlane = null;
         
-        // Avaturn Riggings Mapping
-        let avaturnBoneHead = null, avaturnBoneNeck = null, avaturnBoneLeftEye = null, avaturnBoneRightEye = null;
-        let avaturnBoneSpine = null, avaturnBoneSpine1 = null, avaturnBoneSpine2 = null;
-        let avaturnBoneLeftShoulder = null, avaturnBoneRightShoulder = null;
-        let avaturnBoneLeftArm = null, avaturnBoneRightArm = null;
-        let avaturnBoneLeftForeArm = null, avaturnBoneRightForeArm = null;
-        let avaturnBoneLeftHand = null, avaturnBoneRightHand = null;
+        // Bone Rig Targets for Natural Constraints
+        let boneHead = null, boneNeck = null, boneSpine = null, boneSpine1 = null;
+        let boneLeftArm = null, boneRightArm = null, boneLeftForeArm = null, boneRightForeArm = null;
         let avaturnSkinnedMeshes = [];
 
         const interactionRaycaster = new THREE.Raycaster();
         const pointerNormalizedCoordinates = new THREE.Vector2();
-
         let pointerTargetX = 0, pointerTargetY = 0, smoothTrackX = 0, smoothTrackY = 0;
-        let isWebcamHardwareActive = false, dynamicAIComputedFaceDetector = null;
 
         let liveVocalOutputStateSignalActive = false, syntheticAudioAmplitudeWave = 0;
-        
-        // 🛠️ AI Full Body State Machine Engine Variables
-        let currentBodyEmotionalState = 'idle'; // state list: idle, greeting, smiling, angry, sad, dancing, shy, thinking
-        let stateAnimationStartTimeStamp = 0;
+        let activeEmotionalState = 'idle';
+        let stateStartTime = 0;
 
-        const BrowserSpeechRecognitionEngineInterface = window.SpeechRecognition || window.webkitSpeechRecognition;
-        let frameworkSpeechRecognitionProcessor = BrowserSpeechRecognitionEngineInterface ? new BrowserSpeechRecognitionEngineInterface() : null;
+        // Strict Humanoid Bone Rotations (Prevents breaking of hands/joints)
+        const boneTargets = {
+            spine: { x: 0, y: 0, z: 0 },
+            leftArm: { x: 0.1, y: 0, z: -Math.PI / 14 }, // Hand stays naturally parallel to thighs
+            rightArm: { x: 0.1, y: 0, z: Math.PI / 14 },
+            leftForeArm: { x: 0, y: 0.1, z: 0 },
+            rightForeArm: { x: 0, y: -0.1, z: 0 }
+        };
 
-        if (frameworkSpeechRecognitionProcessor) {
-            frameworkSpeechRecognitionProcessor.continuous = false;
-            frameworkSpeechRecognitionProcessor.lang = 'hi-IN';
-        }
+        const SpeechEngine = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let speechProcessor = SpeechEngine ? new SpeechEngine() : null;
+        if (speechProcessor) { speechProcessor.continuous = false; speechProcessor.lang = 'hi-IN'; }
 
-        // Live Weather Matrix Engine
-        async function fetchLiveWeatherAndInjectEnvironment() {
-            try {
-                navigator.geolocation.getCurrentPosition(async (position) => {
-                    const lat = position.coords.latitude;
-                    const lon = position.coords.longitude;
-                    const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
-                    const data = await response.json();
-                    applyDynamicWeatherBackground(data.current_weather.weathercode, data.current_weather.temperature);
-                }, () => {
-                    applyDynamicWeatherBackground(0, 26);
-                });
-            } catch (e) {
-                applyDynamicWeatherBackground(0, 25);
-            }
-        }
-
-        function applyDynamicWeatherBackground(code, temp) {
-            const weatherUI = document.getElementById('weather-status-ui');
-            let bgImageUrl = "";
-
-            if (code >= 51 && code <= 67) {
-                weatherUI.innerText = `🌧️ बारिश (${temp}°C)`;
-                bgImageUrl = "https://images.unsplash.com/photo-1534274988757-a28bf1a57c17?q=80&w=1920";
-                if(directSunLight) directSunLight.intensity = 0.5;
-                coreThreeSceneInstance.fog.color.setHex(0x1a1a24);
-            } else if (code >= 1 && code <= 3) {
-                weatherUI.innerText = `☁️ बादल (${temp}°C)`;
-                bgImageUrl = "https://images.unsplash.com/photo-1534088568595-a066f410bcda?q=80&w=1920";
-                if(directSunLight) directSunLight.intensity = 0.9;
-                coreThreeSceneInstance.fog.color.setHex(0x22222b);
-            } else if (code >= 71 && code <= 77) {
-                weatherUI.innerText = `🌫️ कोहरा (${temp}°C)`;
-                bgImageUrl = "https://images.unsplash.com/photo-1491466424936-e304919aafd7?q=80&w=1920";
-                if(directSunLight) directSunLight.intensity = 0.7;
-                coreThreeSceneInstance.fog.color.setHex(0x33333a);
-            } else {
-                weatherUI.innerText = `☀️ साफ़ धूप (${temp}°C)`;
-                bgImageUrl = "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1920";
-                if(directSunLight) directSunLight.intensity = 1.6;
-                coreThreeSceneInstance.fog.color.setHex(0x050510);
-            }
-
-            document.body.style.backgroundImage = `url('${bgImageUrl}')`;
-        }
-
-        // Viewport Auto-Calibration Setup
-        function runAutomaticViewportCalibration() {
-            const width = window.innerWidth;
-            const deviceStatusText = document.getElementById('dynamic-device-ui');
-            if (!corePerspectiveCameraNode || !coreOrbitControlsRig) return;
-
-            if (width < 500) {
-                deviceStatusText.innerText = "स्मार्ट मोबाइल व्यू";
-                corePerspectiveCameraNode.position.set(0, 0.2, 1.85); 
-                coreOrbitControlsRig.target.set(0, 0.05, 0);
-                if (structuralAvatar3DModelRoot) {
-                    structuralAvatar3DModelRoot.scale.setScalar(1.18);
-                    structuralAvatar3DModelRoot.position.y = -0.92; 
-                }
-                if (groundShadowPlaneMesh) groundShadowPlaneMesh.position.y = -0.92;
-            } else {
-                deviceStatusText.innerText = "एचडी डेस्कटॉप व्यू";
-                corePerspectiveCameraNode.position.set(0, 0.25, 1.4);
-                coreOrbitControlsRig.target.set(0, 0.1, 0);
-                if (structuralAvatar3DModelRoot) {
-                    structuralAvatar3DModelRoot.scale.setScalar(1.22);
-                    structuralAvatar3DModelRoot.position.y = -0.92; 
-                }
-                if (groundShadowPlaneMesh) groundShadowPlaneMesh.position.y = -0.92;
-            }
-            coreOrbitControlsRig.update();
-        }
-
-        // Raycaster Structural Touch Integration
-        function handleBodyTouchTrigger(event) {
-            let clientX = event.clientX || (event.touches && event.touches[0].clientX);
-            let clientY = event.clientY || (event.touches && event.touches[0].clientY);
-            if (!clientX || !clientY) return;
-
-            pointerNormalizedCoordinates.x = (clientX / window.innerWidth) * 2 - 1;
-            pointerNormalizedCoordinates.y = -(clientY / window.innerHeight) * 2 + 1;
-
-            interactionRaycaster.setFromCamera(pointerNormalizedCoordinates, corePerspectiveCameraNode);
-            
-            if (structuralAvatar3DModelRoot) {
-                const intersects = interactionRaycaster.intersectObjects(structuralAvatar3DModelRoot.children, true);
-                if (intersects.length > 0) {
-                    const hitPointY = intersects[0].point.y; 
-                    triggerBoneSpecificReaction(hitPointY);
-                }
-            }
-        }
-
-        function triggerBoneSpecificReaction(height) {
-            if (height > 0.2) {
-                triggerCommandStateMatrix("shiyan");
-                dispatchSpeechSynthesizerVocalTrackBuffer("[शर्माते हुए] अरे! चेहरे पर टच मत कीजिए ना, सीधे बात बताइए क्या काम है?");
-            } else if (height <= 0.2 && height > -0.3) {
-                triggerCommandStateMatrix("smile");
-                dispatchSpeechSynthesizerVocalTrackBuffer("[मुस्कुराते हुए] आप सीधे काम की बात बताइए ना, मैं सुन रही हूँ।");
-            } else {
-                triggerCommandStateMatrix("angry");
-                dispatchSpeechSynthesizerVocalTrackBuffer("[गुस्सा होते हुए] नीचे कहाँ ध्यान है आपका? सीधे बात कीजिए।");
-            }
-        }
-
-        function initializeDeviceHarmonizedGraphicsPipeline() {
+        function initializeGraphicsPipeline() {
             const container = document.getElementById('canvas-container');
             coreSystemClockReference = new THREE.Clock();
             coreThreeSceneInstance = new THREE.Scene();
-            coreThreeSceneInstance.fog = new THREE.FogExp2(0x030307, 0.015);
+            
+            // Soft atmospheric lighting for realistic skin blending
+            coreThreeSceneInstance.fog = new THREE.FogExp2(0x0a0a14, 0.02);
 
             coreWebGLRendererModule = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
             coreWebGLRendererModule.setSize(window.innerWidth, window.innerHeight);
             coreWebGLRendererModule.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             coreWebGLRendererModule.toneMapping = THREE.ACESFilmicToneMapping;
-            coreWebGLRendererModule.toneMappingExposure = 1.25;
-            coreWebGLRendererModule.shadowMap.enabled = true; 
+            coreWebGLRendererModule.toneMappingExposure = 1.1;
+            coreWebGLRendererModule.shadowMap.enabled = true;
             coreWebGLRendererModule.shadowMap.type = THREE.PCFSoftShadowMap;
             container.appendChild(coreWebGLRendererModule.domElement);
 
-            corePerspectiveCameraNode = new THREE.PerspectiveCamera(36, window.innerWidth / window.innerHeight, 0.1, 100);
-
+            corePerspectiveCameraNode = new THREE.PerspectiveCamera(38, window.innerWidth / window.innerHeight, 0.1, 50);
+            
             coreOrbitControlsRig = new THREE.OrbitControls(corePerspectiveCameraNode, coreWebGLRendererModule.domElement);
             coreOrbitControlsRig.enableZoom = true;
             coreOrbitControlsRig.enablePan = false;
-            coreOrbitControlsRig.minDistance = 0.4;
-            coreOrbitControlsRig.maxDistance = 3.5;
+            coreOrbitControlsRig.minDistance = 0.5;
+            coreOrbitControlsRig.maxDistance = 4.0;
             coreOrbitControlsRig.enableDamping = true;
             coreOrbitControlsRig.dampingFactor = 0.05;
 
-            const groundGeometry = new THREE.PlaneGeometry(15, 15);
-            const groundMaterial = new THREE.ShadowMaterial({ opacity: 0.5 }); 
-            groundShadowPlaneMesh = new THREE.Mesh(groundGeometry, groundMaterial);
-            groundShadowPlaneMesh.rotation.x = -Math.PI / 2;
-            groundShadowPlaneMesh.receiveShadow = true;
-            coreThreeSceneInstance.add(groundShadowPlaneMesh);
+            // 👣 GROUNDING ANCHOR SYSTEM: Fixing the Floating Issue
+            const shadowPlaneGeo = new THREE.PlaneGeometry(4, 4);
+            const shadowPlaneMat = new THREE.ShadowMaterial({ opacity: 0.65 });
+            ambientDropShadowPlane = new THREE.Mesh(shadowPlaneGeo, shadowPlaneMat);
+            ambientDropShadowPlane.rotation.x = -Math.PI / 2;
+            ambientDropShadowPlane.position.y = -1.05; // Ground level lock
+            ambientDropShadowPlane.receiveShadow = true;
+            coreThreeSceneInstance.add(ambientDropShadowPlane);
 
-            const ambientLight = new THREE.HemisphereLight(0xffffff, 0x111122, 2.5);
-            coreThreeSceneInstance.add(ambientLight);
-            
-            directSunLight = new THREE.DirectionalLight(0xffffff, 1.6);
-            directSunLight.position.set(2, 5, 3);
-            directSunLight.castShadow = true; 
-            directSunLight.shadow.mapSize.width = 2048; 
-            directSunLight.shadow.mapSize.height = 2048;
-            directSunLight.shadow.camera.near = 0.5;
-            directSunLight.shadow.camera.far = 12;
-            directSunLight.shadow.bias = -0.0008;
-            coreThreeSceneInstance.add(directSunLight);
+            // Lighting Rig for Natural Depth
+            const hemiLight = new THREE.HemisphereLight(0xffffff, 0x333344, 2.2);
+            coreThreeSceneInstance.add(hemiLight);
 
-            runAutomaticViewportCalibration();
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1.4);
+            directionalLight.position.set(1.5, 4, 2.5);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 2048;
+            directionalLight.shadow.mapSize.height = 2048;
+            directionalLight.shadow.bias = -0.0005;
+            coreThreeSceneInstance.add(directionalLight);
 
-            const assetLoader = new THREE.GLTFLoader();
-            assetLoader.load(ALTERNATE_ASSET_URI, 
-                (gltf) => { handleSuccessfulModelInjection(gltf); },
-                undefined,
-                (err) => { console.error("मॉडल लोड एरर:", err); }
-            );
+            autoCalibrateViewport();
 
-            window.addEventListener('mousemove', handleInteractionMove, false);
-            window.addEventListener('touchmove', function(e) {
-                if(e.touches.length > 0) handleInteractionMove(e.touches[0]);
+            const gltfLoader = new THREE.GLTFLoader();
+            gltfLoader.load(ALTERNATE_ASSET_URI, (gltf) => {
+                structuralAvatar3DModelRoot = gltf.scene;
+                
+                structuralAvatar3DModelRoot.traverse((node) => {
+                    if (node.isMesh) {
+                        node.castShadow = true;
+                        node.receiveShadow = true;
+                    }
+                    if (node.isBone) {
+                        const boneName = node.name.toLowerCase();
+                        if (boneName.includes('head')) boneHead = node;
+                        else if (boneName.includes('neck')) boneNeck = node;
+                        else if (boneName === 'spine') boneSpine = node;
+                        else if (boneName === 'spine1') boneSpine1 = node;
+                        else if (boneName === 'leftarm') boneLeftArm = node;
+                        else if (boneName === 'rightarm') boneRightArm = node;
+                        else if (boneName === 'leftforearm') boneLeftForeArm = node;
+                        else if (boneName === 'rightforearm') boneRightForeArm = node;
+                    }
+                    if (node.isMesh && node.morphTargetDictionary) {
+                        avaturnSkinnedMeshes.push(node);
+                    }
+                });
+
+                // Perfect Foot Grounding Constraints
+                structuralAvatar3DModelRoot.position.set(0, -1.05, 0); 
+                structuralAvatar3DModelRoot.scale.setScalar(1.25);
+                coreThreeSceneInstance.add(structuralAvatar3DModelRoot);
+                
+                document.getElementById('core-boot-loader').style.display = 'none';
+                enforceAnatomicalBaselines();
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                pointerTargetX = (e.clientX / window.innerWidth) * 2 - 1;
+                pointerTargetY = -(e.clientY / window.innerHeight) * 2 + 1;
+            });
+
+            window.addEventListener('touchmove', (e) => {
+                if (e.touches.length > 0) {
+                    pointerTargetX = (e.touches[0].clientX / window.innerWidth) * 2 - 1;
+                    pointerTargetY = -(e.touches[0].clientY / window.innerHeight) * 2 + 1;
+                }
             }, { passive: true });
 
-            container.addEventListener('click', handleBodyTouchTrigger, false);
-            container.addEventListener('touchstart', handleBodyTouchTrigger, { passive: true });
-            
-            window.addEventListener('resize', onDisplayGridResizeLayoutCorrectionTrigger, false);
-
-            activateSecureWebcamBiometricGrid();
-            fetchLiveWeatherAndInjectEnvironment();
-        }
-
-        function handleInteractionMove(inputData) {
-            pointerTargetX = (inputData.clientX / window.innerWidth) * 2 - 1;
-            pointerTargetY = -(inputData.clientY / window.innerHeight) * 2 + 1;
-        }
-
-        function handleSuccessfulModelInjection(gltfPayload) {
-            structuralAvatar3DModelRoot = gltfPayload.scene;
-            
-            structuralAvatar3DModelRoot.traverse((node) => {
-                if (node.isMesh) {
-                    node.castShadow = true;
-                    node.receiveShadow = true;
-                    if(node.material) node.material.depthWrite = true;
-                }
+            container.addEventListener('click', parseTouchRaycastTrigger, false);
+            window.addEventListener('resize', () => {
+                corePerspectiveCameraNode.aspect = window.innerWidth / window.innerHeight;
+                corePerspectiveCameraNode.updateProjectionMatrix();
+                coreWebGLRendererModule.setSize(window.innerWidth, window.innerHeight);
+                autoCalibrateViewport();
             });
-
-            coreThreeSceneInstance.add(structuralAvatar3DModelRoot);
-            runAutomaticViewportCalibration();
-            document.getElementById('core-boot-loader').style.display = 'none';
-
-            coreAnimationMixerController = new THREE.AnimationMixer(structuralAvatar3DModelRoot);
-
-            // Skeleton Structural Mapping
-            structuralAvatar3DModelRoot.traverse((node) => {
-                if (node.isBone) {
-                    const name = node.name.toLowerCase();
-                    if (name.includes('head')) avaturnBoneHead = node;
-                    else if (name.includes('neck')) avaturnBoneNeck = node;
-                    else if (name.includes('lefteye')) avaturnBoneLeftEye = node;
-                    else if (name.includes('righteye')) avaturnBoneRightEye = node;
-                    else if (name === 'spine') avaturnBoneSpine = node;
-                    else if (name === 'spine1') avaturnBoneSpine1 = node;
-                    else if (name === 'spine2') avaturnBoneSpine2 = node;
-                    else if (name.includes('leftshoulder')) avaturnBoneLeftShoulder = node;
-                    else if (name.includes('rightshoulder')) avaturnBoneRightShoulder = node;
-                    else if (name === 'leftarm') avaturnBoneLeftArm = node;
-                    else if (name === 'rightarm') avaturnBoneRightArm = node;
-                    else if (name === 'leftforearm') avaturnBoneLeftForeArm = node;
-                    else if (name === 'rightforearm') avaturnBoneRightForeArm = node;
-                    else if (name === 'lefthand') avaturnBoneLeftHand = node;
-                    else if (name === 'righthand') avaturnBoneRightHand = node;
-                }
-                if (node.isMesh && node.morphTargetDictionary) {
-                    avaturnSkinnedMeshes.push(node);
-                }
-            });
-
-            enforceNaturalRestingPoseConstraints();
         }
 
-        function enforceNaturalRestingPoseConstraints() {
-            if(avaturnBoneLeftArm) avaturnBoneLeftArm.rotation.set(0, 0, -Math.PI / 4);
-            if(avaturnBoneRightArm) avaturnBoneRightArm.rotation.set(0, 0, Math.PI / 4);
-            if(avaturnBoneLeftForeArm) avaturnBoneLeftForeArm.rotation.set(0, Math.PI / 6, 0);
-            if(avaturnBoneRightForeArm) avaturnBoneRightForeArm.rotation.set(0, -Math.PI / 6, 0);
-        }
-
-        // Camera Vision Tracker Setup
-        async function activateSecureWebcamBiometricGrid() {
-            const streamVideoElement = document.getElementById('webcam-raw-stream');
-            try {
-                const hardwareCaptureMediaStream = await navigator.mediaDevices.getUserMedia({ video: { width: 320, height: 240 } });
-                streamVideoElement.srcObject = hardwareCaptureMediaStream;
-                dynamicAIComputedFaceDetector = await faceLandmarksDetection.createDetector(
-                    faceLandmarksDetection.SupportedModels.MediaPipeFaceMesh, { runtime: 'tfjs', maxFaces: 1 }
-                );
-                isWebcamHardwareActive = true;
-                document.getElementById('face-tracker-badge').innerText = "📷 विज़न: रियल-टाइम ट्रैकिंग एक्टिव";
-                processLiveCameraFramesMatrix();
-            } catch (err) {
-                document.getElementById('face-tracker-badge').innerText = "🖱️ मोड: माउस / फिंगर ट्रैकिंग एक्टिव";
-            }
-        }
-
-        async function processLiveCameraFramesMatrix() {
-            const streamVideoElement = document.getElementById('webcam-raw-stream');
-            if (!isWebcamHardwareActive || !dynamicAIComputedFaceDetector) return;
-            try {
-                if (streamVideoElement.readyState >= 2) {
-                    const detectedFacesArray = await dynamicAIComputedFaceDetector.estimateFaces(streamVideoElement);
-                    if (detectedFacesArray && detectedFacesArray.length > 0) {
-                        const kp = detectedFacesArray[0].keypoints;
-                        const nose = kp.find(p => p.name === 'noseTip') || kp[4];
-                        if (nose) {
-                            pointerTargetX = -((nose.x / 320) * 2 - 1) * 1.4;
-                            pointerTargetY = -((nose.y / 240) * 2 - 1) * 1.1;
-                        }
-                    }
-                }
-            } catch (e) {}
-            requestAnimationFrame(processLiveCameraFramesMatrix);
-        }
-
-        // 🧠 COMMAND DECODER ENGINE (Voice aur Chat Dono Ke Liye Parsing Logic)
-        function parseAndRouteAICommands(rawString) {
-            const text = rawString.toLowerCase();
-            
-            if (text.includes("नमस्ते") || text.includes("hello") || text.includes("hi") || text.includes("welcome")) {
-                triggerCommandStateMatrix("greeting");
-                dispatchSpeechSynthesizerVocalTrackBuffer("नमस्ते! मैं प्रिया हूँ। आपसे मिलकर बहुत ख़ुशी हुई!");
-            } else if (text.includes("मुस्कुरा") || text.includes("smile") || text.includes("हँसो")) {
-                triggerCommandStateMatrix("smile");
-                dispatchSpeechSynthesizerVocalTrackBuffer("आपकी बात सुनकर मुझे बहुत प्यारी मुस्कान आ गई!");
-            } else if (text.includes("गुस्सा") || text.includes("angry") || text.includes("नाराज")) {
-                triggerCommandStateMatrix("angry");
-                dispatchSpeechSynthesizerVocalTrackBuffer("मुझे गुस्सा मत दिलाओ, वरना मैं किसी से बात नहीं करूँगी!");
-            } else if (text.includes("डांस") || text.includes("dance") || text.includes("नाचो")) {
-                triggerCommandStateMatrix("dance");
-                dispatchSpeechSynthesizerVocalTrackBuffer("चलिए ठीक है, मैं आपके लिए थोड़ा सा डांस मूवमेंट करके दिखाती हूँ!");
-            } else if (text.includes("उदास") || text.includes("sad") || text.includes("रो")) {
-                triggerCommandStateMatrix("sad");
-                dispatchSpeechSynthesizerVocalTrackBuffer("क्या हुआ? आपकी ऐसी बातें सुनकर मेरा दिल उदास हो गया...");
-            } else if (text.includes("शर्मा") || text.includes("shy") || text.includes("प्यारी")) {
-                triggerCommandStateMatrix("shiyan");
-                dispatchSpeechSynthesizerVocalTrackBuffer("आप ऐसे बोलेंगे तो मुझे बहुत शर्म आ जाएगी!");
-            } else if (text.includes("सोचो") || text.includes("think") || text.includes("सवाल")) {
-                triggerCommandStateMatrix("thinking");
-                dispatchSpeechSynthesizerVocalTrackBuffer("हम्म... मैं इसके बारे में गहराई से सोच रही हूँ।");
+        function autoCalibrateViewport() {
+            if (window.innerWidth < 500) {
+                document.getElementById('dynamic-device-ui').innerText = "स्मार्ट मोबाइल व्यू";
+                corePerspectiveCameraNode.position.set(0, 0.1, 1.7);
+                coreOrbitControlsRig.target.set(0, -0.05, 0);
             } else {
-                // Agar koi explicit gesture nahi mila to default AI pipeline par bhej de
-                triggerServerInteractionFramework(rawString);
+                document.getElementById('dynamic-device-ui').innerText = "एचडी डेस्कटॉप व्यू";
+                corePerspectiveCameraNode.position.set(0, 0.15, 1.3);
+                coreOrbitControlsRig.target.set(0, 0.05, 0);
+            }
+            coreOrbitControlsRig.update();
+        }
+
+        function enforceAnatomicalBaselines() {
+            boneTargets.spine = { x: 0, y: 0, z: 0 };
+            boneTargets.leftArm = { x: 0.05, y: 0, z: -Math.PI / 13 }; // Perfectly standard human arm rest
+            boneTargets.rightArm = { x: 0.05, y: 0, z: Math.PI / 13 };
+            boneTargets.leftForeArm = { x: 0, y: 0.05, z: 0 };
+            boneTargets.rightForeArm = { x: 0, y: -0.05, z: 0 };
+        }
+
+        // 🤏 GENTLE MICRO-REACTION TOUCH ENGINE (Ab halka sa natural response karega)
+        function parseTouchRaycastTrigger(event) {
+            if (!structuralAvatar3DModelRoot) return;
+            let cx = event.clientX || (event.touches && event.touches[0].clientX);
+            let cy = event.clientY || (event.touches && event.touches[0].clientY);
+            
+            pointerNormalizedCoordinates.x = (cx / window.innerWidth) * 2 - 1;
+            pointerNormalizedCoordinates.y = -(cy / window.innerHeight) * 2 + 1;
+
+            interactionRaycaster.setFromCamera(pointerNormalizedCoordinates, corePerspectiveCameraNode);
+            const intersects = interactionRaycaster.intersectObjects(structuralAvatar3DModelRoot.children, true);
+            
+            if (intersects.length > 0) {
+                triggerStateMatrix('subtle_touch');
+                dispatchSpeechBuffer("जी बताइए, मैं सुन रही हूँ।");
             }
         }
 
-        function triggerCommandStateMatrix(stateName) {
-            currentBodyEmotionalState = stateName;
-            stateAnimationStartTimeStamp = coreSystemClockReference.getElapsedTime();
+        function parseAndRouteCommands(rawStr) {
+            const text = rawStr.toLowerCase();
+            if (text.includes("नमस्ते") || text.includes("hello") || text.includes("hi")) {
+                triggerStateMatrix('greet');
+                dispatchSpeechBuffer("नमस्ते! आपसे मिलकर अच्छा लगा।");
+            } else if (text.includes("डांस") || text.includes("dance") || text.includes("नाचो")) {
+                triggerStateMatrix('dance');
+                dispatchSpeechBuffer("बिल्कुल, देखिए मेरे नेचुरल मूवमेंट्स!");
+            } else if (text.includes("गुस्सा") || text.includes("angry")) {
+                triggerStateMatrix('angry');
+                dispatchSpeechBuffer("मुझे गुस्सा मत दिलाइए!");
+            } else if (text.includes("मुस्कुरा") || text.includes("smile")) {
+                triggerStateMatrix('smile');
+                dispatchSpeechBuffer("आपकी वजह से मेरे चेहरे पर मुस्कान आ गई।");
+            } else {
+                triggerServerFallback(rawStr);
+            }
+        }
+
+        function triggerStateMatrix(stateName) {
+            activeEmotionalState = stateName;
+            stateStartTime = coreSystemClockReference.getElapsedTime();
             document.getElementById('system-core-mood-txt').innerText = `प्रिया मोड: ${stateName.toUpperCase()}`;
         }
 
-        function dispatchSpeechSynthesizerVocalTrackBuffer(text) {
+        function dispatchSpeechBuffer(text) {
             if (!window.speechSynthesis) return;
             window.speechSynthesis.cancel();
 
-            let strippedText = text.replace(/\[.*?\]/g, '').trim();
             const subtitleBox = document.getElementById('subtitle-monitor-box');
             subtitleBox.innerText = text;
             subtitleBox.style.display = 'block';
 
-            let utterance = new SpeechSynthesisUtterance(strippedText);
+            let utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'hi-IN';
-
             utterance.onstart = () => { liveVocalOutputStateSignalActive = true; };
-            utterance.onend = () => { liveVocalOutputStateSignalActive = false; syntheticAudioAmplitudeWave = 0; subtitleBox.style.display = 'none'; };
-            utterance.onerror = () => { liveVocalOutputStateSignalActive = false; syntheticAudioAmplitudeWave = 0; };
-
+            utterance.onend = () => { liveVocalOutputStateSignalActive = false; subtitleBox.style.display = 'none'; };
+            utterance.onerror = () => { liveVocalOutputStateSignalActive = false; };
             window.speechSynthesis.speak(utterance);
         }
 
-        async function triggerServerInteractionFramework(userString) {
-            document.getElementById('system-core-mood-txt').innerText = "प्रिया: सोच रही हूँ... 🧠";
-            triggerCommandStateMatrix("thinking");
-
+        async function triggerServerFallback(userString) {
+            triggerStateMatrix("thinking");
             try {
                 const response = await fetch(APPS_SCRIPT_WEB_APP_URL, { method: "POST", body: JSON.stringify({ query: userString }) });
                 const data = await response.json();
-                document.getElementById('system-core-mood-txt').innerText = "प्रिया कोर v4.4";
-                
-                // Server response ke context par expression automatic guess karega
-                if(data.text && (data.text.includes("हाँ") || data.text.includes("अच्छा"))) triggerCommandStateMatrix("smile");
-                else triggerCommandStateMatrix("idle");
-
-                dispatchSpeechSynthesizerVocalTrackBuffer(data.text || data.output);
-            } catch (error) {
-                document.getElementById('system-core-mood-txt').innerText = "प्रिया: लोकल मोड";
-                triggerCommandStateMatrix("smile");
-                dispatchSpeechSynthesizerVocalTrackBuffer("मैं सुन रही हूँ, आपका कमांड पूरी तरह से सिंक हो चुका है!");
+                triggerStateMatrix("idle");
+                dispatchSpeechBuffer(data.text || data.output);
+            } catch (e) {
+                triggerStateMatrix("idle");
+                dispatchSpeechBuffer("मैं पूरी तरह से रेडी हूँ, निर्देश दीजिए।");
             }
         }
 
-        function executeMainChatSubmission() {
-            const inputElement = document.getElementById('userInput');
-            const commandStr = inputElement.value.trim();
-            if (!commandStr) return;
-            inputElement.value = "";
-            parseAndRouteAICommands(commandStr);
-        }
-
-        // 🔄 MASTER ENGINE LOOP: Procedural AI Commands & Humanoid Body Movements
-        function masterApplicationRenderLoopExecutionCycle() {
-            requestAnimationFrame(masterApplicationRenderLoopExecutionCycle);
+        // 🔄 MASTER SMOOTH RENDER FRAME LOOP
+        function executeMasterFrameCycle() {
+            requestAnimationFrame(executeMasterFrameCycle);
 
             const delta = coreSystemClockReference.getDelta();
             const elapsed = coreSystemClockReference.getElapsedTime();
 
-            if (coreAnimationMixerController) coreAnimationMixerController.update(delta);
             if (coreOrbitControlsRig) coreOrbitControlsRig.update();
 
             if (structuralAvatar3DModelRoot) {
-                smoothTrackX = THREE.MathUtils.lerp(smoothTrackX, pointerTargetX, 0.1);
-                smoothTrackY = THREE.MathUtils.lerp(smoothTrackY, pointerTargetY, 0.1);
+                smoothTrackX = THREE.MathUtils.lerp(smoothTrackX, pointerTargetX, 0.08);
+                smoothTrackY = THREE.MathUtils.lerp(smoothTrackY, pointerTargetY, 0.08);
 
-                // 🫁 1. Base Sine-Wave Breathing Pattern
-                const breathCycle = Math.sin(elapsed * 1.6);
-                const generalSway = Math.cos(elapsed * 0.7);
+                // Pure Human Breathing Modulation (Subtle Sway)
+                const breathWave = Math.sin(elapsed * 1.8);
+                const naturalSway = Math.cos(elapsed * 0.6);
 
-                // Default idle breathing skeleton adjustments
-                if (avaturnBoneSpine) avaturnBoneSpine.rotation.set(breathCycle * 0.008 + generalSway * 0.003, 0, generalSway * 0.004);
-                if (avaturnBoneSpine1) avaturnBoneSpine1.rotation.set(breathCycle * 0.006, generalSway * 0.003, 0);
-                
-                // Reset/Default Bone Angles before state modifier
-                if(avaturnBoneLeftArm) avaturnBoneLeftArm.rotation.set(0, 0, -Math.PI / 4.5 + (generalSway * 0.01));
-                if(avaturnBoneRightArm) avaturnBoneRightArm.rotation.set(0, 0, Math.PI / 4.5 - (generalSway * 0.01));
-                if(avaturnBoneLeftShoulder) avaturnBoneLeftShoulder.rotation.set(0, 0, -Math.PI/12);
-                if(avaturnBoneRightShoulder) avaturnBoneRightShoulder.rotation.set(0, 0, Math.PI/12);
-                if(avaturnBoneLeftForeArm) avaturnBoneLeftForeArm.rotation.set(0, Math.PI / 6, 0);
-                if(avaturnBoneRightForeArm) avaturnBoneRightForeArm.rotation.set(0, -Math.PI / 6, 0);
+                enforceAnatomicalBaselines();
 
-                // 🎭 2. STATE MACHINE: PROCEDURAL FULL BODY GESTURE COMMANDS MATRIX
-                const stateElapsed = elapsed - stateAnimationStartTimeStamp;
-                let activeMorphTargetName = null;
-                let activeMorphTargetIntensity = 0;
+                const stateElapsed = elapsed - stateStartTime;
+                let morphTarget = null;
+                let morphIntensity = 0;
 
-                switch (currentBodyEmotionalState) {
-                    case 'greeting': // Ek haath upar uthakar wave karna (Symmetrical Hello)
-                        if (avaturnBoneRightArm) {
-                            avaturnBoneRightArm.rotation.z = Math.PI / 2.2; 
-                            avaturnBoneRightArm.rotation.x = -Math.PI / 4 + Math.sin(stateElapsed * 5) * 0.15;
-                        }
-                        if (avaturnBoneLeftArm) avaturnBoneLeftArm.rotation.z = -Math.PI / 3.5;
-                        activeMorphTargetName = 'mouthSmileLeft';
-                        activeMorphTargetIntensity = 0.5;
-                        if(stateElapsed > 4.5) currentBodyEmotionalState = 'idle';
-                        break;
+                // Coordinated Dynamic Blend State Matrix (Fixes broken joint layout)
+                if (activeEmotionalState === 'greet') {
+                    // Symmetrical subtle hand lift up to elbow safely
+                    boneTargets.rightArm = { x: -0.3, y: -0.2, z: Math.PI / 4.5 };
+                    boneTargets.rightForeArm = { x: 0.4, y: Math.sin(stateElapsed * 5) * 0.15, z: 0 };
+                    morphTarget = 'mouthSmileLeft'; morphIntensity = 0.5;
+                    if (stateElapsed > 3.5) triggerStateMatrix('idle');
 
-                    case 'smile': // Pura sharir piche halka sa jhukega aur haath failenge
-                        if (avaturnBoneSpine) avaturnBoneSpine.rotation.x = -0.05 + (breathCycle * 0.005);
-                        if (avaturnBoneLeftArm) avaturnBoneLeftArm.rotation.z = -Math.PI / 3.8 - (Math.sin(stateElapsed * 2) * 0.05);
-                        if (avaturnBoneRightArm) avaturnBoneRightArm.rotation.z = Math.PI / 3.8 + (Math.sin(stateElapsed * 2) * 0.05);
-                        activeMorphTargetName = 'mouthSmileLeft';
-                        activeMorphTargetIntensity = 0.8;
-                        if(stateElapsed > 5.0) currentBodyEmotionalState = 'idle';
-                        break;
+                } else if (activeEmotionalState === 'subtle_touch') {
+                    // Halka sa natural head nod transition
+                    boneTargets.spine = { x: 0.03, y: 0, z: 0 };
+                    morphTarget = 'mouthSmileRight'; morphIntensity = 0.4;
+                    if (stateElapsed > 2.5) triggerStateMatrix('idle');
 
-                    case 'angry': // Dono haath jhatak kar aage aana aur garden tight hona
-                        if (avaturnBoneSpine) avaturnBoneSpine.rotation.x = 0.06;
-                        if (avaturnBoneLeftArm) avaturnBoneLeftArm.rotation.set(0, 0, -Math.PI / 6);
-                        if (avaturnBoneRightArm) avaturnBoneRightArm.rotation.set(0, 0, Math.PI / 6);
-                        if (avaturnBoneHead) avaturnBoneHead.rotation.x = 0.05;
-                        activeMorphTargetName = 'mouthFrownLeft';
-                        activeMorphTargetIntensity = 0.75;
-                        if(stateElapsed > 4.0) currentBodyEmotionalState = 'idle';
-                        break;
+                } else if (activeEmotionalState === 'dance') {
+                    // Pure smooth sway without bending joints uncomfortably
+                    const wave = Math.sin(stateElapsed * 3.5);
+                    boneTargets.spine = { x: 0, y: wave * 0.08, z: wave * 0.04 };
+                    boneTargets.leftArm = { x: 0.1, y: 0, z: -Math.PI / 10 + (wave * 0.05) };
+                    boneTargets.rightArm = { x: 0.1, y: 0, z: Math.PI / 10 - (wave * 0.05) };
+                    if (stateElapsed > 6.0) triggerStateMatrix('idle');
 
-                    case 'dance': // Left to Right Full Body Swing (Continuous Movement)
-                        const danceWave = Math.sin(stateElapsed * 4.0);
-                        if (structuralAvatar3DModelRoot) {
-                            structuralAvatar3ModelRoot.rotation.y = danceWave * 0.12;
-                        }
-                        if (avaturnBoneLeftArm) avaturnBoneLeftArm.rotation.set(danceWave * 0.2, 0, -Math.PI / 3);
-                        if (avaturnBoneRightArm) avaturnBoneRightArm.rotation.set(-danceWave * 0.2, 0, Math.PI / 3);
-                        if (avaturnBoneSpine) avaturnBoneSpine.rotation.z = danceWave * 0.06;
-                        activeMorphTargetName = 'mouthSmileLeft';
-                        activeMorphTargetIntensity = 0.4;
-                        if(stateElapsed > 8.0) {
-                            currentBodyEmotionalState = 'idle';
-                            if (structuralAvatar3DModelRoot) structuralAvatar3DModelRoot.rotation.y = 0;
-                        }
-                        break;
+                } else if (activeEmotionalState === 'smile') {
+                    morphTarget = 'mouthSmileLeft'; morphIntensity = 0.75;
+                    if (stateElapsed > 4.0) triggerStateMatrix('idle');
 
-                    case 'sad': // Head down aur shoulders drop hona
-                        if (avaturnBoneSpine) avaturnBoneSpine.rotation.x = 0.08;
-                        if (avaturnBoneLeftShoulder) avaturnBoneLeftShoulder.rotation.z = -Math.PI/16;
-                        if (avaturnBoneRightShoulder) avaturnBoneRightShoulder.rotation.z = Math.PI/16;
-                        if (avaturnBoneHead) avaturnBoneHead.rotation.set(0.12, 0, 0);
-                        activeMorphTargetName = 'mouthFrownRight';
-                        activeMorphTargetIntensity = 0.8;
-                        if(stateElapsed > 6.0) currentBodyEmotionalState = 'idle';
-                        break;
-
-                    case 'shiyan': // Dono arms body ke close aana aur garden side me mudna
-                        if (avaturnBoneLeftArm) avaturnBoneLeftArm.rotation.z = -Math.PI / 6;
-                        if (avaturnBoneRightArm) avaturnBoneRightArm.rotation.z = Math.PI / 6;
-                        if (avaturnBoneHead) avaturnBoneHead.rotation.set(0.04, Math.sin(stateElapsed * 2) * 0.1, 0.05);
-                        activeMorphTargetName = 'mouthSmileRight';
-                        activeMorphTargetIntensity = 0.65;
-                        if(stateElapsed > 5.0) currentBodyEmotionalState = 'idle';
-                        break;
-
-                    case 'thinking': // Head up aur side tracking lock hona
-                        if (avaturnBoneHead) avaturnBoneHead.rotation.set(-0.08, -0.15, -0.02);
-                        if (avaturnBoneLeftForeArm) avaturnBoneLeftForeArm.rotation.x = -Math.PI / 5;
-                        activeMorphTargetName = 'mouthPucker';
-                        activeMorphTargetIntensity = 0.35;
-                        break;
-
-                    default: // Idle natural micro-sway
-                        break;
+                } else if (activeEmotionalState === 'angry') {
+                    boneTargets.spine = { x: 0.04, y: 0, z: 0 };
+                    morphTarget = 'mouthFrownLeft'; morphIntensity = 0.7;
+                    if (stateElapsed > 3.0) triggerStateMatrix('idle');
                 }
 
-                // 👤 3. Realistic Head, Neck & Eye Track Solver (Overridden by state if required)
-                if (currentBodyEmotionalState !== 'thinking' && currentBodyEmotionalState !== 'sad') {
-                    if (avaturnBoneHead) {
-                        avaturnBoneHead.rotation.y = smoothTrackX * 0.42; 
-                        avaturnBoneHead.rotation.x = -smoothTrackY * 0.22 + (breathCycle * 0.005); 
-                    }
-                    if (avaturnBoneNeck) {
-                        avaturnBoneNeck.rotation.y = smoothTrackX * 0.12;
-                        avaturnBoneNeck.rotation.x = -smoothTrackY * 0.08;
-                    }
-                    if (avaturnBoneLeftEye && avaturnBoneRightEye) {
-                        avaturnBoneLeftEye.rotation.y = smoothTrackX * 0.2; 
-                        avaturnBoneRightEye.rotation.y = smoothTrackX * 0.2;
-                    }
+                // Smooth Interp Matrix Processing Layer (Enforcing strict speed constraints)
+                const speed = 0.06;
+                if (boneSpine) {
+                    boneSpine.rotation.x = THREE.MathUtils.lerp(boneSpine.rotation.x, boneTargets.spine.x + (breathWave * 0.006), speed);
+                    boneSpine.rotation.y = THREE.MathUtils.lerp(boneSpine.rotation.y, boneTargets.spine.y, speed);
+                    boneSpine.rotation.z = THREE.MathUtils.lerp(boneSpine.rotation.z, boneTargets.spine.z + (naturalSway * 0.003), speed);
                 }
+                if (boneLeftArm) {
+                    boneLeftArm.rotation.x = THREE.MathUtils.lerp(boneLeftArm.rotation.x, boneTargets.leftArm.x, speed);
+                    boneLeftArm.rotation.z = THREE.MathUtils.lerp(boneLeftArm.rotation.z, boneTargets.leftArm.z, speed);
+                }
+                if (boneRightArm) {
+                    boneRightArm.rotation.x = THREE.MathUtils.lerp(boneRightArm.rotation.x, boneTargets.rightArm.x, speed);
+                    boneRightArm.rotation.z = THREE.MathUtils.lerp(boneRightArm.rotation.z, boneTargets.rightArm.z, speed);
+                }
+                if (boneLeftForeArm) boneLeftForeArm.rotation.y = THREE.MathUtils.lerp(boneLeftForeArm.rotation.y, boneTargets.leftForeArm.y, speed);
+                if (boneRightForeArm) boneRightForeArm.rotation.y = THREE.MathUtils.lerp(boneRightForeArm.rotation.y, boneTargets.rightForeArm.y, speed);
 
-                // 👄 4. Fluid Lip-Sync Algorithm
+                // Realistic Eye Gaze and Neck LookAt Limiters
+                if (boneHead) {
+                    boneHead.rotation.y = THREE.MathUtils.lerp(boneHead.rotation.y, smoothTrackX * 0.35, 0.08);
+                    boneHead.rotation.x = THREE.MathUtils.lerp(boneHead.rotation.x, -smoothTrackY * 0.2 + (breathWave * 0.004), 0.08);
+                }
+                if (boneNeck) boneNeck.rotation.y = THREE.MathUtils.lerp(boneNeck.rotation.y, smoothTrackX * 0.12, 0.08);
+
+                // Lip Sync Modulation
                 if (liveVocalOutputStateSignalActive) {
-                    syntheticAudioAmplitudeWave = (Math.sin(elapsed * 28) * Math.cos(elapsed * 16) * 0.38) + 0.32;
-                    if (Math.sin(elapsed * 4) > 0.5) syntheticAudioAmplitudeWave += 0.18;
-                    syntheticAudioAmplitudeWave = Math.max(0, Math.min(syntheticAudioAmplitudeWave, 0.8));
+                    syntheticAudioAmplitudeWave = (Math.sin(elapsed * 26) * Math.cos(elapsed * 15) * 0.35) + 0.3;
                 } else {
                     syntheticAudioAmplitudeWave = THREE.MathUtils.lerp(syntheticAudioAmplitudeWave, 0, 0.2);
                 }
 
-                // Stochastic Eye Blink Engine
-                let blinkValue = (Math.sin(elapsed * 4.5) > 0.97 || (elapsed % 6.5 > 6.2)) ? 1.0 : 0.0;
+                // Human Natural Eye Blink Randomizer
+                let blinkValue = (Math.sin(elapsed * 5) > 0.98 || (elapsed % 6.0 > 5.8)) ? 1.0 : 0.0;
 
-                // Apply Morph Vectors on Meshes Safely
+                // Mesh Safety Validation Loop
                 avaturnSkinnedMeshes.forEach(mesh => {
                     const dict = mesh.morphTargetDictionary;
                     const influences = mesh.morphTargetInfluences;
                     if (!dict || !influences) return;
 
-                    // Jaw movement execution
-                    if (dict['jawOpen'] !== undefined) {
-                        influences[dict['jawOpen']] = syntheticAudioAmplitudeWave;
-                    }
-                    if (dict['mouthFunnel'] !== undefined && liveVocalOutputStateSignalActive) {
-                        influences[dict['mouthFunnel']] = syntheticAudioAmplitudeWave * 0.25;
-                    }
-
-                    // Eye blink synchronization
+                    if (dict['jawOpen'] !== undefined) influences[dict['jawOpen']] = syntheticAudioAmplitudeWave;
                     if (dict['eyeBlinkLeft'] !== undefined) influences[dict['eyeBlinkLeft']] = blinkValue;
                     if (dict['eyeBlinkRight'] !== undefined) influences[dict['eyeBlinkRight']] = blinkValue;
 
-                    // Apply command driven emotional facial expressions
-                    if (activeMorphTargetName && dict[activeMorphTargetName] !== undefined) {
-                        influences[dict[activeMorphTargetName]] = THREE.MathUtils.lerp(influences[dict[activeMorphTargetName]], activeMorphTargetIntensity, 0.1);
+                    if (morphTarget && dict[morphTarget] !== undefined) {
+                        influences[dict[morphTarget]] = THREE.MathUtils.lerp(influences[dict[morphTarget]], morphIntensity, 0.12);
                     } else {
-                        // Slowly fade other facial blendshapes to baseline zero
                         Object.keys(dict).forEach(key => {
-                            if (key !== 'jawOpen' && key !== 'mouthFunnel' && key !== 'eyeBlinkLeft' && key !== 'eyeBlinkRight') {
+                            if (key !== 'jawOpen' && key !== 'eyeBlinkLeft' && key !== 'eyeBlinkRight') {
                                 influences[dict[key]] = THREE.MathUtils.lerp(influences[dict[key]], 0, 0.08);
                             }
                         });
@@ -717,32 +476,30 @@
             coreWebGLRendererModule.render(coreThreeSceneInstance, corePerspectiveCameraNode);
         }
 
-        document.getElementById('sendBtn').addEventListener('click', executeMainChatSubmission);
-        document.getElementById('userInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') executeMainChatSubmission(); });
+        document.getElementById('sendBtn').addEventListener('click', () => {
+            const input = document.getElementById('userInput');
+            if(input.value.trim()) { parseAndRouteCommands(input.value.trim()); input.value = ""; }
+        });
+        document.getElementById('userInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const input = document.getElementById('userInput');
+                if(input.value.trim()) { parseAndRouteCommands(input.value.trim()); input.value = ""; }
+            }
+        });
 
-        if (frameworkSpeechRecognitionProcessor) {
-            frameworkSpeechRecognitionProcessor.onresult = (e) => {
-                const speechString = e.results[0][0].transcript;
-                document.getElementById('userInput').value = speechString;
-                parseAndRouteAICommands(speechString);
+        if (speechProcessor) {
+            speechProcessor.onresult = (e) => {
+                const text = e.results[0][0].transcript;
+                document.getElementById('userInput').value = text;
+                parseAndRouteCommands(text);
             };
-            frameworkSpeechRecognitionProcessor.onstart = () => { document.getElementById('micBtn').classList.add('listening'); };
-            frameworkSpeechRecognitionProcessor.onend = () => { document.getElementById('micBtn').classList.remove('listening'); };
-            document.getElementById('micBtn').addEventListener('click', () => { 
-                if (window.speechSynthesis) window.speechSynthesis.cancel();
-                try { frameworkSpeechRecognitionProcessor.start(); } catch(e) {}
-            });
+            speechProcessor.onstart = () => { document.getElementById('micBtn').classList.add('listening'); };
+            speechProcessor.onend = () => { document.getElementById('micBtn').classList.remove('remove'); };
+            document.getElementById('micBtn').addEventListener('click', () => { try{ speechProcessor.start(); }catch(e){} });
         }
 
-        initializeDeviceHarmonizedGraphicsPipeline();
-        masterApplicationRenderLoopExecutionCycle();
-
-        function onDisplayGridResizeLayoutCorrectionTrigger() {
-            corePerspectiveCameraNode.aspect = window.innerWidth / window.innerHeight;
-            corePerspectiveCameraNode.updateProjectionMatrix();
-            coreWebGLRendererModule.setSize(window.innerWidth, window.innerHeight);
-            runAutomaticViewportCalibration();
-        }
+        initializeGraphicsPipeline();
+        executeMasterFrameCycle();
     </script>
 </body>
 </html>
