@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>प्रिया AI - फाइनल ऑटोमेशन प्रोडक्शन इंजन v4.0</title>
+    <title>प्रिया AI - फाइनल ऑटोमेशन प्रोडक्शन इंजन v4.2</title>
     <style>
         :root {
             --neon-cyan: #00ffcc;
@@ -128,7 +128,7 @@
     <div class="dashboard">
         <div class="status-block">
             <span class="status-beacon-dot"></span> 
-            <span class="status-title" id="system-core-mood-txt">प्रिया कोर v4.0</span>
+            <span class="status-title" id="system-core-mood-txt">प्रिया कोर v4.2</span>
         </div>
         <div class="channel-info">लाइव मौसम: <span id="weather-status-ui" style="color:#ffaa00; font-weight:bold;">सिंक हो रहा है...</span></div>
         <div class="channel-info">व्यूपोर्ट मोड: <span style="color:#00ffcc; font-weight:bold;" id="dynamic-device-ui">डिटेक्टिंग...</span></div>
@@ -138,7 +138,7 @@
 
     <div id="core-boot-loader">
         <div class="loader-ring-spinner"></div>
-        <div class="loader-label-text">प्रिया मास्टर फ़्रेमवर्क लोड हो रहा है...<br><span style="font-size:11px; color:#666;">फुल-बॉडी रेकास्टिंग और लाइव वेदर अलाइनमेंट एक्टिवेटेड</span></div>
+        <div class="loader-label-text">प्रिया मास्टर फ़्रेमवर्क लोड हो रहा है...<br><span style="font-size:11px; color:#666;">फुल बॉडी ऑटोमेशन और रियल लिप-सिंक सिंक्रोनाइज़र एक्टिवेटेड</span></div>
     </div>
 
     <div id="canvas-container"></div>
@@ -158,12 +158,13 @@
 
         let coreThreeSceneInstance, corePerspectiveCameraNode, coreWebGLRendererModule, coreOrbitControlsRig, coreAnimationMixerController, coreSystemClockReference;
         let structuralAvatar3DModelRoot = null;
-        let directSunLight;
+        let directSunLight, groundShadowPlaneMesh;
         
+        // बोन मैपिंग वेरिएबल्स (फुल बॉडी ह्युमनॉइड रिस्पॉन्स के लिए विस्तारित)
         let avaturnBoneHead = null, avaturnBoneNeck = null, avaturnBoneLeftEye = null, avaturnBoneRightEye = null;
+        let avaturnBoneSpine = null, avaturnBoneSpine1 = null, avaturnBoneLeftShoulder = null, avaturnBoneRightShoulder = null;
         let avaturnSkinnedMeshes = [];
 
-        // इंटेलिजेंट टच मैपिंग (Raycaster)
         const interactionRaycaster = new THREE.Raycaster();
         const pointerNormalizedCoordinates = new THREE.Vector2();
 
@@ -180,7 +181,7 @@
             frameworkSpeechRecognitionProcessor.lang = 'hi-IN';
         }
 
-        // 🌡️ ऑटोमेटेड लाइव वेदर इंजन (CSS इमेज इंजेक्शन)
+        // 🌡️ ऑटोमेटेड लाइव वेदर इंजन
         async function fetchLiveWeatherAndInjectEnvironment() {
             try {
                 navigator.geolocation.getCurrentPosition(async (position) => {
@@ -190,7 +191,7 @@
                     const data = await response.json();
                     applyDynamicWeatherBackground(data.current_weather.weathercode, data.current_weather.temperature);
                 }, () => {
-                    applyDynamicWeatherBackground(0, 26); // लोकेशन ब्लॉक होने पर साफ़ मौसम लोड करें
+                    applyDynamicWeatherBackground(0, 26);
                 });
             } catch (e) {
                 applyDynamicWeatherBackground(0, 25);
@@ -204,29 +205,29 @@
             if (code >= 51 && code <= 67) {
                 weatherUI.innerText = `🌧️ बारिश (${temp}°C)`;
                 bgImageUrl = "https://images.unsplash.com/photo-1534274988757-a28bf1a57c17?q=80&w=1920";
-                if(directSunLight) directSunLight.intensity = 0.6;
+                if(directSunLight) directSunLight.intensity = 0.5;
                 coreThreeSceneInstance.fog.color.setHex(0x1a1a24);
             } else if (code >= 1 && code <= 3) {
                 weatherUI.innerText = `☁️ बादल (${temp}°C)`;
                 bgImageUrl = "https://images.unsplash.com/photo-1534088568595-a066f410bcda?q=80&w=1920";
-                if(directSunLight) directSunLight.intensity = 1.0;
+                if(directSunLight) directSunLight.intensity = 0.9;
                 coreThreeSceneInstance.fog.color.setHex(0x22222b);
             } else if (code >= 71 && code <= 77) {
                 weatherUI.innerText = `🌫️ कोहरा (${temp}°C)`;
                 bgImageUrl = "https://images.unsplash.com/photo-1491466424936-e304919aafd7?q=80&w=1920";
-                if(directSunLight) directSunLight.intensity = 0.8;
+                if(directSunLight) directSunLight.intensity = 0.7;
                 coreThreeSceneInstance.fog.color.setHex(0x33333a);
             } else {
                 weatherUI.innerText = `☀️ साफ़ धूप (${temp}°C)`;
                 bgImageUrl = "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1920";
-                if(directSunLight) directSunLight.intensity = 1.8;
+                if(directSunLight) directSunLight.intensity = 1.6;
                 coreThreeSceneInstance.fog.color.setHex(0x050510);
             }
 
             document.body.style.backgroundImage = `url('${bgImageUrl}')`;
         }
 
-        // 🤖 इंटेलिजेंट व्यूपोर्ट रिस्पॉन्सिवनेस
+        // 🤖 फुल बॉडी ऑटो-कैलिब्रेशन व्यूपोर्ट (मॉडल को जमीन पर टिका कर परफेक्ट फ्रेमिंग देता है)
         function runAutomaticViewportCalibration() {
             const width = window.innerWidth;
             const deviceStatusText = document.getElementById('dynamic-device-ui');
@@ -234,20 +235,22 @@
 
             if (width < 500) {
                 deviceStatusText.innerText = "स्मार्ट मोबाइल व्यू";
-                corePerspectiveCameraNode.position.set(0, 0.48, 2.2); 
-                coreOrbitControlsRig.target.set(0, 0.45, 0);
+                corePerspectiveCameraNode.position.set(0, 0.25, 1.95); 
+                coreOrbitControlsRig.target.set(0, 0.15, 0);
                 if (structuralAvatar3DModelRoot) {
-                    structuralAvatar3DModelRoot.scale.setScalar(1.5);
-                    structuralAvatar3DModelRoot.position.y = -0.95;
+                    structuralAvatar3DModelRoot.scale.setScalar(1.22);
+                    structuralAvatar3DModelRoot.position.y = -0.85; 
                 }
+                if (groundShadowPlaneMesh) groundShadowPlaneMesh.position.y = -0.85;
             } else {
                 deviceStatusText.innerText = "एचडी डेस्कटॉप व्यू";
-                corePerspectiveCameraNode.position.set(0, 0.45, 1.6);
-                coreOrbitControlsRig.target.set(0, 0.42, 0);
+                corePerspectiveCameraNode.position.set(0, 0.3, 1.5);
+                coreOrbitControlsRig.target.set(0, 0.2, 0);
                 if (structuralAvatar3DModelRoot) {
-                    structuralAvatar3DModelRoot.scale.setScalar(1.45);
-                    structuralAvatar3DModelRoot.position.y = -0.92;
+                    structuralAvatar3DModelRoot.scale.setScalar(1.25);
+                    structuralAvatar3DModelRoot.position.y = -0.85; 
                 }
+                if (groundShadowPlaneMesh) groundShadowPlaneMesh.position.y = -0.85;
             }
             coreOrbitControlsRig.update();
         }
@@ -274,10 +277,10 @@
 
         function triggerBoneSpecificReaction(height) {
             let replyText = "";
-            if (height > 0.3) {
+            if (height > 0.2) {
                 replyText = "[शर्माते हुए] अरे! चेहरे पर टच मत कीजिए ना, सीधे बात बताइए क्या काम है?";
                 triggerTemporaryExpression('mouthSmileLeft', 0.6);
-            } else if (height <= 0.3 && height > -0.2) {
+            } else if (height <= 0.2 && height > -0.3) {
                 replyText = "[मुस्कुराते हुए] आप सीधे काम की बात बताइए ना, मैं सुन रही हूँ।";
                 triggerTemporaryExpression('eyeBlinkLeft', 0.8);
             } else {
@@ -306,7 +309,9 @@
             coreWebGLRendererModule.setSize(window.innerWidth, window.innerHeight);
             coreWebGLRendererModule.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             coreWebGLRendererModule.toneMapping = THREE.ACESFilmicToneMapping;
-            coreWebGLRendererModule.toneMappingExposure = 1.3;
+            coreWebGLRendererModule.toneMappingExposure = 1.2;
+            coreWebGLRendererModule.shadowMap.enabled = true; 
+            coreWebGLRendererModule.shadowMap.type = THREE.PCFSoftShadowMap;
             container.appendChild(coreWebGLRendererModule.domElement);
 
             corePerspectiveCameraNode = new THREE.PerspectiveCamera(38, window.innerWidth / window.innerHeight, 0.1, 100);
@@ -319,14 +324,28 @@
             coreOrbitControlsRig.enableDamping = true;
             coreOrbitControlsRig.dampingFactor = 0.05;
 
-            runAutomaticViewportCalibration();
+            // 👤 शैडो रिसीवर ग्राउंड प्लैटफ़ॉर्म
+            const groundGeometry = new THREE.PlaneGeometry(10, 10);
+            const groundMaterial = new THREE.ShadowMaterial({ opacity: 0.45 }); 
+            groundShadowPlaneMesh = new THREE.Mesh(groundGeometry, groundMaterial);
+            groundShadowPlaneMesh.rotation.x = -Math.PI / 2;
+            groundShadowPlaneMesh.receiveShadow = true;
+            coreThreeSceneInstance.add(groundShadowPlaneMesh);
 
-            const ambientLight = new THREE.HemisphereLight(0xffffff, 0x111122, 2.6);
+            const ambientLight = new THREE.HemisphereLight(0xffffff, 0x111122, 2.4);
             coreThreeSceneInstance.add(ambientLight);
             
-            directSunLight = new THREE.DirectionalLight(0xffffff, 1.6);
-            directSunLight.position.set(2, 4, 3);
+            directSunLight = new THREE.DirectionalLight(0xffffff, 1.5);
+            directSunLight.position.set(1.5, 4, 2);
+            directSunLight.castShadow = true; 
+            directSunLight.shadow.mapSize.width = 1024;
+            directSunLight.shadow.mapSize.height = 1024;
+            directSunLight.shadow.camera.near = 0.5;
+            directSunLight.shadow.camera.far = 10;
+            directSunLight.shadow.bias = -0.001;
             coreThreeSceneInstance.add(directSunLight);
+
+            runAutomaticViewportCalibration();
 
             const assetLoader = new THREE.GLTFLoader();
             assetLoader.load(ALTERNATE_ASSET_URI, 
@@ -356,8 +375,15 @@
 
         function handleSuccessfulModelInjection(gltfPayload) {
             structuralAvatar3DModelRoot = gltfPayload.scene;
-            coreThreeSceneInstance.add(structuralAvatar3DModelRoot);
             
+            structuralAvatar3DModelRoot.traverse((node) => {
+                if (node.isMesh) {
+                    node.castShadow = true;
+                    node.receiveShadow = true;
+                }
+            });
+
+            coreThreeSceneInstance.add(structuralAvatar3DModelRoot);
             runAutomaticViewportCalibration();
             document.getElementById('core-boot-loader').style.display = 'none';
 
@@ -366,6 +392,7 @@
                 coreAnimationMixerController.clipAction(gltfPayload.animations[0]).play();
             }
 
+            // डीप स्केलेटन बोन एक्सट्रैक्शन (प्रोसीजरल मूवमेंट्स के लिए मैपिंग)
             structuralAvatar3DModelRoot.traverse((node) => {
                 if (node.isBone) {
                     const boneName = node.name.toLowerCase();
@@ -373,6 +400,10 @@
                     if (boneName === 'neck') avaturnBoneNeck = node;
                     if (boneName === 'lefteye') avaturnBoneLeftEye = node;
                     if (boneName === 'righteye') avaturnBoneRightEye = node;
+                    if (boneName === 'spine') avaturnBoneSpine = node;
+                    if (boneName === 'spine1' || boneName === 'spine2') avaturnBoneSpine1 = node;
+                    if (boneName === 'leftshoulder') avaturnBoneLeftShoulder = node;
+                    if (boneName === 'rightshoulder') avaturnBoneRightShoulder = node;
                 }
                 if (node.isMesh && node.morphTargetDictionary) {
                     avaturnSkinnedMeshes.push(node);
@@ -446,7 +477,7 @@
             try {
                 const response = await fetch(APPS_SCRIPT_WEB_APP_URL, { method: "POST", body: JSON.stringify({ query: userString }) });
                 const data = await response.json();
-                document.getElementById('system-core-mood-txt').innerText = "प्रिया कोर v4.0";
+                document.getElementById('system-core-mood-txt').innerText = "प्रिया कोर v4.2";
                 dispatchSpeechSynthesizerVocalTrackBuffer(data.text || data.output);
             } catch (error) {
                 document.getElementById('system-core-mood-txt').innerText = "प्रिया: लोकल मोड";
@@ -454,6 +485,7 @@
             }
         }
 
+        // 🔄 मास्टर रेंडर लूप: प्रोसीजरल फुल बॉडी लाइफ-लाइक ऑटोमेशन इंजन
         function masterApplicationRenderLoopExecutionCycle() {
             requestAnimationFrame(masterApplicationRenderLoopExecutionCycle);
 
@@ -464,36 +496,72 @@
             if (coreOrbitControlsRig) coreOrbitControlsRig.update();
 
             if (structuralAvatar3DModelRoot) {
-                smoothTrackX = THREE.MathUtils.lerp(smoothTrackX, pointerTargetX, 0.15);
-                smoothTrackY = THREE.MathUtils.lerp(smoothTrackY, pointerTargetY, 0.15);
+                // इंटरएक्टिव ट्रैकिंग स्मूथनिंग
+                smoothTrackX = THREE.MathUtils.lerp(smoothTrackX, pointerTargetX, 0.12);
+                smoothTrackY = THREE.MathUtils.lerp(smoothTrackY, pointerTargetY, 0.12);
 
+                // 🫁 1. प्रोसीजरल ब्रीदिंग सिमुलेटर (इंसानी सांस लेने की गति)
+                const breathingCycle = Math.sin(elapsed * 1.8); 
+                const microSwayCycle = Math.cos(elapsed * 0.8); 
+
+                if (avaturnBoneSpine) {
+                    avaturnBoneSpine.rotation.x = (breathingCycle * 0.008) + (microSwayCycle * 0.005);
+                    avaturnBoneSpine.rotation.z = microSwayCycle * 0.006;
+                }
+                if (avaturnBoneSpine1) {
+                    avaturnBoneSpine1.rotation.x = breathingCycle * 0.01;
+                }
+
+                //  épaules (कंधों का प्राकृतिक सूक्ष्म मूवमेंट)
+                if (avaturnBoneLeftShoulder) avaturnBoneLeftShoulder.rotation.z = (breathingCycle * 0.004);
+                if (avaturnBoneRightShoulder) avaturnBoneRightShoulder.rotation.z = -(breathingCycle * 0.004);
+
+                // 👤 2. हेड, नेक और आईज़ का ऑर्गेनिक विज़न ट्रैकिंग अलाइनमेंट
                 if (avaturnBoneHead) {
-                    avaturnBoneHead.rotation.y = smoothTrackX * 0.55; 
-                    avaturnBoneHead.rotation.x = -smoothTrackY * 0.35 + (Math.sin(elapsed * 1.5) * 0.01); 
+                    avaturnBoneHead.rotation.y = smoothTrackX * 0.45; 
+                    avaturnBoneHead.rotation.x = -smoothTrackY * 0.25 + (breathingCycle * 0.006); 
                 }
-                if (avaturnBoneNeck) avaturnBoneNeck.rotation.y = smoothTrackX * 0.2;
+                if (avaturnBoneNeck) {
+                    avaturnBoneNeck.rotation.y = smoothTrackX * 0.15;
+                    avaturnBoneNeck.rotation.x = -smoothTrackY * 0.1;
+                }
                 if (avaturnBoneLeftEye && avaturnBoneRightEye) {
-                    avaturnBoneLeftEye.rotation.y = smoothTrackX * 0.3; 
-                    avaturnBoneRightEye.rotation.y = smoothTrackX * 0.3;
+                    avaturnBoneLeftEye.rotation.y = smoothTrackX * 0.25; 
+                    avaturnBoneRightEye.rotation.y = smoothTrackX * 0.25;
                 }
 
+                // 👄 3. एडवांस्ड रियल-टाइम लिप-सिंक (वॉयस एम्प्लीट्यूड जनरेटर)
                 if (liveVocalOutputStateSignalActive) {
-                    syntheticAudioAmplitudeWave = (Math.sin(elapsed * 28) * Math.cos(elapsed * 15) * 0.45) + 0.4;
-                    syntheticAudioAmplitudeWave = Math.max(0, Math.min(syntheticAudioAmplitudeWave, 0.9));
+                    // प्राकृतिक रूप से होठों को अलग-अलग फ़्रीक्वेंसी पर वाइब्रेट कराना ताकि रोबोटिक न लगे
+                    syntheticAudioAmplitudeWave = (Math.sin(elapsed * 32) * Math.cos(elapsed * 18) * 0.4) + 0.35;
+                    // जब कोई मात्रा खींचे तो मुंह थोड़ा खुला रहे
+                    if (Math.sin(elapsed * 5) > 0.6) syntheticAudioAmplitudeWave += 0.2;
+                    syntheticAudioAmplitudeWave = Math.max(0, Math.min(syntheticAudioAmplitudeWave, 0.85));
                 } else {
                     syntheticAudioAmplitudeWave = THREE.MathUtils.lerp(syntheticAudioAmplitudeWave, 0, 0.25);
                 }
 
-                let blinkValue = (Math.sin(elapsed * 3.8) > 0.97) ? 1.0 : 0.0;
+                // 👁️ 4. रैंडम पलकें झपकना (Natural Eye Blink Mechanism)
+                let blinkValue = (Math.sin(elapsed * 4.2) > 0.98 || (elapsed % 7 > 6.7)) ? 1.0 : 0.0;
 
+                // मॉर्फ टारगेट को हर फ्रेम में रेंडर करना
                 avaturnSkinnedMeshes.forEach(mesh => {
                     const dict = mesh.morphTargetDictionary;
                     const influences = mesh.morphTargetInfluences;
                     if (!dict || !influences) return;
 
-                    if (dict['jawOpen'] !== undefined) influences[dict['jawOpen']] = syntheticAudioAmplitudeWave;
-                    if (dict['eyeBlinkLeft'] !== undefined && blinkValue > 0) influences[dict['eyeBlinkLeft']] = blinkValue;
-                    if (dict['eyeBlinkRight'] !== undefined && blinkValue > 0) influences[dict['eyeBlinkRight']] = blinkValue;
+                    // जबड़े का खुलना (लिप-सिंक)
+                    if (dict['jawOpen'] !== undefined) {
+                        influences[dict['jawOpen']] = syntheticAudioAmplitudeWave;
+                    }
+                    // मुंह के कोणों में थोड़ी हरकत ताकि बोलना नेचुरल लगे
+                    if (dict['mouthFunnel'] !== undefined && liveVocalOutputStateSignalActive) {
+                        influences[dict['mouthFunnel']] = syntheticAudioAmplitudeWave * 0.3;
+                    }
+
+                    // पलकें झपकना
+                    if (dict['eyeBlinkLeft'] !== undefined) influences[dict['eyeBlinkLeft']] = blinkValue;
+                    if (dict['eyeBlinkRight'] !== undefined) influences[dict['eyeBlinkRight']] = blinkValue;
                 });
             }
 
