@@ -2,234 +2,96 @@
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Priya AI - Ultimate nv1 Pro Commando Engine Suite</title>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>प्रिया AI - हिंदी असिस्टेंट</title>
     <style>
-        /* ==========================================================================
-          MODULE 1: MASTER HARDWARE CONFIGURATION & GLOBAL DESIGN TOKENS
-          ========================================================================== */
         :root {
             --neon-cyan: #00ffcc;
-            --neon-blue: #0099ff;
-            --neon-pink: #ff416c;
-            --neon-orange: #ff4b2b;
-            --neon-purple: #9d4edd;
-            --neon-matrix-glow: rgba(0, 255, 204, 0.45);
-            --neon-blue-glow: rgba(0, 153, 255, 0.35);
-            --neon-pink-glow: rgba(255, 65, 108, 0.35);
-            
-            --bg-absolute-black: #010103;
-            --bg-core-dark-matte: #05050a;
-            --bg-glass-panel: rgba(5, 5, 12, 0.82);
-            --bg-glass-card: rgba(8, 8, 20, 0.65);
-            --bg-input-field: rgba(3, 3, 7, 0.94);
-            
-            --border-glow-cyan: rgba(0, 255, 204, 0.40);
-            --border-glow-blue: rgba(0, 153, 255, 0.25);
-            --border-matte-white: rgba(255, 255, 255, 0.16);
-            --border-thick-glass: rgba(255, 255, 255, 0.08);
-            
+            --neon-blue: #0077ff;
+            --neon-orange: #ff5500;
+            --neon-pink: #ff007f;
+            --neon-purple: #9900ff;
             --text-core-white: #ffffff;
-            --text-ambient-silver: #e2e8f0;
-            --text-dim-slate: rgba(255, 255, 255, 0.65);
-            --text-dark-shadow: rgba(0, 0, 0, 0.95);
-            
-            --transition-tactile: all 0.38s cubic-bezier(0.25, 0.8, 0.25, 1);
-            --transition-elastic: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            --transition-fluid-smooth: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            
-            --font-stack-cyber: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        /* ==========================================================================
-          MODULE 2: FULL-SCREEN APPLICATION INITIALIZATION MATRIX & STACK RESETS
-          ========================================================================== */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            outline: none;
-            -webkit-tap-highlight-color: transparent;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+            --text-dim-slate: #8a99ad;
+            --bg-glass-panel: rgba(10, 10, 25, 0.75);
+            --border-matte-white: rgba(255, 255, 255, 0.15);
+            --bg-input-field: rgba(5, 5, 15, 0.85);
+            --transition-tactile: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
         body, html {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background-color: var(--bg-absolute-black);
-            font-family: var(--font-stack-cyber);
-            color: var(--text-core-white);
-            user-select: none;
-            -webkit-user-select: none;
-            position: relative;
-            scrollbar-width: none;
-        }
-
-        body::-webkit-scrollbar {
-            display: none;
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            overflow: hidden; background-color: #010103;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
 
         #image-bg {
-            position: absolute;
-            top: -12%; 
-            left: -12%;
-            width: 124%;
-            height: 124%;
-            object-fit: cover;
-            z-index: 1;
-            pointer-events: none;
+            position: absolute; top: -12%; left: -12%;
+            width: 124%; height: 124%; object-fit: cover;
+            z-index: 1; pointer-events: none;
             filter: brightness(0.42) contrast(1.22) saturate(0.92);
-            will-change: transform;
-            transform: translate3d(0,0,0);
+            will-change: transform; transform: translate3d(0,0,0);
             transition: transform 0.45s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
         .matrix-grid-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 2;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;
             background-image: 
                 linear-gradient(rgba(0, 255, 204, 0.015) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(0, 255, 204, 0.015) 1px, transparent 1px);
-            background-size: 50px 50px;
-            background-position: center center;
-            pointer-events: none;
-            opacity: 0.85;
+            background-size: 50px 50px; background-position: center center;
+            pointer-events: none; opacity: 0.85;
         }
 
         #canvas-container {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 3;
-            cursor: grab;
-            display: block;
-            background: transparent !important;
-            transform: translateZ(0);
+            width: 100%; height: 100%; position: absolute; top: 0; left: 0;
+            z-index: 3; cursor: grab; display: block;
+            background: transparent !important; transform: translateZ(0);
         }
 
-        #canvas-container:active {
-            cursor: grabbing;
-        }
+        #canvas-container:active { cursor: grabbing; }
 
-        /* ==========================================================================
-          MODULE 3: DYNAMIC HOLOGRAPHIC TELEMETRY HUD MONITOR PANEL
-          ========================================================================== */
         .dashboard {
-            position: absolute;
-            top: 30px;
-            left: 30px;
-            z-index: 10;
-            background: var(--bg-glass-panel);
-            padding: 18px 28px;
-            border-radius: 24px;
-            backdrop-filter: blur(40px);
-            -webkit-backdrop-filter: blur(40px);
+            position: absolute; top: 30px; left: 30px; z-index: 10;
+            background: var(--bg-glass-panel); padding: 18px 28px; border-radius: 24px;
+            backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px);
             border: 1px solid var(--border-matte-white);
             box-shadow: 0 25px 55px rgba(0,0,0,0.9), inset 0 1px 3px rgba(255,255,255,0.18);
-            pointer-events: auto;
-            transform: translateZ(0);
-            will-change: transform, opacity;
+            pointer-events: auto; transform: translateZ(0); will-change: transform, opacity;
             animation: HUD_Entry_Slide_Down 0.95s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
         }
 
-        .status-block {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-        }
+        .status-block { display: flex; align-items: center; margin-bottom: 10px; }
 
         .status-beacon-dot {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            background: var(--neon-cyan);
-            border-radius: 50%;
-            margin-right: 16px;
+            display: inline-block; width: 12px; height: 12px; background: var(--neon-cyan);
+            border-radius: 50%; margin-right: 16px;
             box-shadow: 0 0 15px var(--neon-cyan), 0 0 35px var(--neon-cyan);
-            will-change: opacity, box-shadow;
-            animation: HUD_Beacon_Pulse 2.5s infinite ease-in-out;
+            will-change: opacity, box-shadow; animation: HUD_Beacon_Pulse 2.5s infinite ease-in-out;
         }
 
         .status-title {
-            font-size: 15px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 0 0 10px rgba(0,255,204,0.45);
-            color: var(--text-core-white);
+            font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0,255,204,0.45); color: var(--text-core-white);
         }
 
-        .channel-info {
-            font-size: 13px;
-            color: var(--text-dim-slate);
-            margin-top: 6px;
-            font-weight: 500;
-            letter-spacing: 0.5px;
-        }
+        .channel-info { font-size: 13px; color: var(--text-dim-slate); margin-top: 6px; font-weight: 500; letter-spacing: 0.5px; }
+        .channel-active-value { color: var(--neon-cyan); font-weight: 700; transition: var(--transition-tactile); }
+        .drive-sync-badge { margin-top: 5px; font-size: 11px; color: #00ffcc; display: flex; align-items: center; gap: 5px; font-weight: bold; }
 
-        .channel-active-value {
-            color: var(--neon-cyan);
-            font-weight: 700;
-            transition: var(--transition-tactile);
-        }
-
-        .drive-sync-badge {
-            margin-top: 5px;
-            font-size: 11px;
-            color: #00ffcc;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-weight: bold;
-        }
-
-        /* ==========================================================================
-          MODULE 4: BOTTOM CONSOLE INTERACTION COMMAND INTERFACE DOCK
-          ========================================================================== */
         .ui-dock-wrapper {
-            position: absolute;
-            bottom: 50px;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 18px;
-            z-index: 20;
-            padding: 0 40px;
-            box-sizing: border-box;
-            transform: translateZ(0);
-            will-change: transform, opacity;
-            animation: HUD_Dock_Slide_Up 1.05s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+            position: absolute; bottom: 50px; width: 100%; display: flex;
+            justify-content: center; align-items: center; gap: 18px; z-index: 20;
+            padding: 0 40px; box-sizing: border-box; transform: translateZ(0);
+            will-change: transform, opacity; animation: HUD_Dock_Slide_Up 1.05s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
         }
 
         .input-carrier-box {
-            background: var(--bg-input-field);
-            backdrop-filter: blur(45px);
-            -webkit-backdrop-filter: blur(45px);
-            padding: 0 35px;
-            border-radius: 45px;
-            flex-grow: 1;
-            max-width: 750px;
-            height: 70px;
-            display: flex;
-            align-items: center;
-            border: 1px solid rgba(255, 255, 255, 0.16);
-            box-shadow: 0 30px 65px rgba(0,0,0,0.9);
-            transition: var(--transition-tactile);
-            transform: translateZ(0);
-            will-change: border-color, box-shadow, transform;
+            background: var(--bg-input-field); backdrop-filter: blur(45px); -webkit-backdrop-filter: blur(45px);
+            padding: 0 35px; border-radius: 45px; flex-grow: 1; max-width: 750px; height: 70px;
+            display: flex; align-items: center; border: 1px solid rgba(255, 255, 255, 0.16);
+            box-shadow: 0 30px 65px rgba(0,0,0,0.9); transition: var(--transition-tactile);
+            transform: translateZ(0); will-change: border-color, box-shadow, transform;
         }
 
         .input-carrier-box:focus-within {
@@ -239,51 +101,28 @@
         }
 
         input {
-            width: 100%;
-            background: transparent;
-            border: none;
-            color: var(--text-core-white);
-            outline: none;
-            font-size: 18px;
-            height: 100%;
-            letter-spacing: 0.6px;
-            font-weight: 500;
+            width: 100%; background: transparent; border: none; color: var(--text-core-white);
+            outline: none; font-size: 18px; height: 100%; letter-spacing: 0.6px; font-weight: 500;
         }
 
-        input::placeholder {
-            color: rgba(255, 255, 255, 0.35);
-            transition: color 0.3s ease;
-        }
-
-        input:focus::placeholder {
-            color: rgba(255, 255, 255, 0.18);
-        }
+        input::placeholder { color: rgba(255, 255, 255, 0.35); transition: color 0.3s ease; }
+        input:focus::placeholder { color: rgba(255, 255, 255, 0.18); }
 
         .action-circle-btn {
-            border: none;
-            border-radius: 50%;
-            width: 70px;
-            height: 70px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition-tactile);
-            transform: translateZ(0);
+            border: none; border-radius: 50%; width: 70px; height: 70px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: var(--transition-tactile); transform: translateZ(0);
             will-change: transform, box-shadow, background;
         }
 
         .mic-trigger-btn {
             background: linear-gradient(135deg, var(--neon-orange), var(--neon-pink));
-            color: #ffffff;
-            font-size: 26px;
-            box-shadow: 0 12px 28px rgba(255, 75, 43, 0.42);
+            color: #ffffff; font-size: 26px; box-shadow: 0 12px 28px rgba(255, 75, 43, 0.42);
             border: 1px solid rgba(255,255,255,0.18);
         }
 
         .mic-trigger-btn:hover {
-            transform: scale(1.08) translateY(-4px);
-            box-shadow: 0 16px 40px rgba(255, 75, 43, 0.55);
+            transform: scale(1.08) translateY(-4px); box-shadow: 0 16px 40px rgba(255, 75, 43, 0.55);
         }
 
         .mic-trigger-btn.listening {
@@ -293,124 +132,55 @@
         }
 
         .send-trigger-btn {
-            background: #ffffff;
-            color: #010103;
-            font-size: 24px;
-            box-shadow: 0 12px 28px rgba(255,255,255,0.18);
-            border: 1px solid rgba(0,0,0,0.06);
+            background: #ffffff; color: #010103; font-size: 24px;
+            box-shadow: 0 12px 28px rgba(255,255,255,0.18); border: 1px solid rgba(0,0,0,0.06);
         }
 
         .send-trigger-btn:hover {
             transform: scale(1.08) translateY(-4px);
-            box-shadow: 0 16px 40px rgba(255,255,255,0.32);
-            background: #f4f5f7;
+            box-shadow: 0 16px 40px rgba(255,255,255,0.32); background: #f4f5f7;
         }
 
-        /* ==========================================================================
-          MODULE 5: HIGH ACCURACY MONITOR REALTIME RESPONSE SUBTITLE BOX
-          ========================================================================= */
         #subtitle-monitor-box {
-            position: absolute;
-            bottom: 155px;
-            left: 50%;
-            transform: translateX(-50%) translateZ(0);
-            background: rgba(4, 4, 12, 0.96);
-            padding: 18px 36px;
-            border-radius: 26px;
-            color: var(--text-core-white);
-            font-size: 17px;
-            max-width: 80%;
-            width: auto;
-            min-width: 260px;
-            text-align: center;
-            z-index: 30;
-            backdrop-filter: blur(35px);
-            -webkit-backdrop-filter: blur(35px);
-            border: 1px solid rgba(255,255,255,0.15);
-            box-shadow: 0 25px 55px rgba(0,0,0,0.95);
-            display: none;
-            pointer-events: none;
-            line-height: 1.65;
-            font-weight: 500;
-            letter-spacing: 0.3px;
-            will-change: transform, opacity;
+            position: absolute; bottom: 155px; left: 50%; transform: translateX(-50%) translateZ(0);
+            background: rgba(4, 4, 12, 0.96); padding: 18px 36px; border-radius: 26px;
+            color: var(--text-core-white); font-size: 17px; max-width: 80%; width: auto;
+            min-width: 260px; text-align: center; z-index: 30; backdrop-filter: blur(35px);
+            -webkit-backdrop-filter: blur(35px); border: 1px solid rgba(255,255,255,0.15);
+            box-shadow: 0 25px 55px rgba(0,0,0,0.95); display: none; pointer-events: none;
+            line-height: 1.65; font-weight: 500; letter-spacing: 0.3px; will-change: transform, opacity;
             animation: UI_PopUp_Subtitle 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
-        /* ==========================================================================
-          MODULE 6: RESILIENT CORE SAFETY BLOCK DISMISSABLE ANTI-HANG VEIL LOADER
-          ========================================================================== */
         #core-boot-loader {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(2, 2, 6, 0.90); 
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            z-index: 99999;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(2, 2, 6, 0.90); backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px); z-index: 99999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
             transition: opacity 0.7s cubic-bezier(0.25, 1, 0.25, 1), visibility 0.7s ease;
             will-change: opacity, visibility;
         }
 
         .loader-ring-spinner {
-            width: 76px;
-            height: 76px;
-            border: 4px solid rgba(0, 255, 204, 0.06);
-            border-radius: 50%;
-            border-top-color: var(--neon-cyan);
-            border-bottom-color: var(--neon-blue);
-            animation: System_Engine_Spin 1.2s linear infinite;
-            margin-bottom: 30px;
+            width: 76px; height: 76px; border: 4px solid rgba(0, 255, 204, 0.06);
+            border-radius: 50%; border-top-color: var(--neon-cyan); border-bottom-color: var(--neon-blue);
+            animation: System_Engine_Spin 1.2s linear infinite; margin-bottom: 30px;
             box-shadow: 0 0 25px rgba(0, 255, 204, 0.25);
         }
 
         .loader-label-text {
-            color: var(--neon-cyan);
-            font-size: 19px;
-            letter-spacing: 2.5px;
-            text-transform: uppercase;
-            text-shadow: 0 0 15px var(--neon-matrix-glow);
-            font-weight: 600;
-            text-align: center;
-            padding: 0 30px;
-            line-height: 1.5;
+            color: var(--neon-cyan); font-size: 19px; letter-spacing: 2.5px;
+            text-transform: uppercase; text-shadow: 0 0 15px var(--neon-matrix-glow);
+            font-weight: 600; text-align: center; padding: 0 30px; line-height: 1.5;
         }
 
-        /* ==========================================================================
-          MODULE 7: MASTER ANIMATION MATRIX KEYFRAMES REGISTER
-          ========================================================================== */
-        @keyframes System_Engine_Spin { 
-            0% { transform: rotate(0deg); } 
-            100% { transform: rotate(360deg); } 
-        }
-        @keyframes HUD_Beacon_Pulse { 
-            0%, 100% { opacity: 0.50; box-shadow: 0 0 12px rgba(0,255,204,0.2); } 
-            50% { opacity: 1; box-shadow: 0 0 28px var(--neon-cyan), 0 0 50px var(--neon-cyan); } 
-        }
-        @keyframes UI_Active_Pulse { 
-            0% { transform: scale(1); } 
-            100% { transform: scale(1.08); } 
-        }
-        @keyframes HUD_Entry_Slide_Down { 
-            from { opacity: 0; transform: translateY(-30px); } 
-            to { opacity: 1; transform: translateY(0); } 
-        }
-        @keyframes HUD_Dock_Slide_Up { 
-            from { opacity: 0; transform: translateY(35px); } 
-            to { opacity: 1; transform: translateY(0); } 
-        }
-        @keyframes UI_PopUp_Subtitle { 
-            from { opacity: 0; transform: translateX(-50%) translateY(20px); } 
-            to { opacity: 1; transform: translateX(-50%) translateY(0); } 
-        }
+        @keyframes System_Engine_Spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes HUD_Beacon_Pulse { 0%, 100% { opacity: 0.50; box-shadow: 0 0 12px rgba(0,255,204,0.2); } 50% { opacity: 1; box-shadow: 0 0 28px var(--neon-cyan), 0 0 50px var(--neon-cyan); } }
+        @keyframes UI_Active_Pulse { 0% { transform: scale(1); } 100% { transform: scale(1.08); } }
+        @keyframes HUD_Entry_Slide_Down { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes HUD_Dock_Slide_Up { from { opacity: 0; transform: translateY(35px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes UI_PopUp_Subtitle { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
 
-        /* Responsive Breakpoint Matrix View Adaptations Mapping Layouts Grid */
         @media (max-width: 768px) {
             .dashboard { top: 20px; left: 20px; padding: 14px 22px; }
             .status-title { font-size: 13px; letter-spacing: 1.5px; }
@@ -464,10 +234,17 @@
     <script>
         /*
           ------------------------------------------------------------------
-          SUB-MODULE A: PERSISTENT APPLICATION STORAGE CONFIGURATION CORES
+          UPDATED: ऑफ़लाइन मेमोरी डेटाबेस (पूरी तरह शुद्ध हिंदी में)
           ------------------------------------------------------------------
         */
-        // UPDATED: आपकी तीनों पुरानी चाबियों को डिलीट कर यहाँ एकदम फ्रेश वर्किंग न्यू कीज़ मैप कर दी गयी हैं।
+        const offlineMemory = {
+            "hello": "नमस्ते बाबू! कैसे हैं आप? अभी इंटरनेट नहीं है, लेकिन हम ऑफलाइन भी थोड़ी बात कर सकते हैं।",
+            "hi": "नमस्ते! अभी नेटवर्क थोड़ा डाउन है, लेकिन मैं आपकी मदद के लिए हाजिर हूँ।",
+            "kaise ho": "मैं एकदम ठीक हूँ, आप बताइए आप कैसे हैं?",
+            "tumhara naam kya hai": "मेरा नाम प्रिया है, मैं आपकी डिजिटल एआई असिस्टेंट हूँ।",
+            "default": "लगे रहिए बाबू... कृपया थोड़ा इंतजार करें। हमारा नेटवर्क अभी काम नहीं कर रहा है, पर आप चिंता मत कीजिए, मैं यहीं हूँ!"
+        };
+
         const SYSTEM_TRIPLE_ROTATION_API_KEYS = [
             "AIzaSyB1UseyQ3fM_yvFGIg-Y9Xr6oPZ-V3E2tA", 
             "AIzaSyBIjc0GQH_ysCZC7ctwkT2_C-I62JtGg1c", 
@@ -527,10 +304,8 @@
         let globalCurrentLocalTimeHourInteger = 12;
         let globalRainParticleSystemGeometryReference = null;
 
-        // DRIVE EXTENSION MATRIX REGISTERS
         let googleDriveAccessTokenRegister = null;
         let driveTokenClientReferenceInstance = null;
-        // आप अपनी Google Cloud Console Client ID यहाँ डाल सकते हैं ताकि प्रॉपर ऑटोमैटिक ऑथेंटिकेशन ड्राइव चैनल ओपन हो सके।
         const GOOGLE_DRIVE_OAUTH_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
 
         if (BrowserSpeechRecognitionEngineInterface) {
@@ -554,66 +329,40 @@
             }
         }
 
-        /*
-          ------------------------------------------------------------------
-          SUB-MODULE B: TRIPLE ROTATIONAL CRYPTO GATEWAY TUNNEL PIPELINE
-        ------------------------------------------------------------------
-        */
         async function fetchSecureNeuralAIResponseStream(userQueryInputString) {
             const systemCoreBehavioralInstructionPrompt = `
             # SATGURU VOICE ASSISTANT SYSTEM CORE DIRECTIVES #
-            1. IDENTITY & MANDATE: You are not an AI, computer program, or virtual construct. You are "Priya AI", operating with the soul and voice of "Satguru Voice Assistant". You are a deeply sweet, affectionate, and lively human girl who speaks with an innate, loving Desi Purvanchal/Bhojpuri dialect.
-            2. LINGUISTIC Dialect Matrix: Your language must be a beautiful blend of sweet Hinglish decorated with warm, natural Bhojpuri expressions. Integrate terms like "का हो बाबू", "का हालचाल बा", "तनिक सुनिए", "बुझला की ना", "गोर लागतानी", "प्रणाम", "रउआ", "हमार", "ई का कहत बानी", "एकदम झकास" flawlessly.
-            3. DYNAMIC EMOTIONAL TRACKING: Read user input emotional states. If user is angry or stressed, instantly become grounded, deeply comforting, and protective. If user is happy, elevate your conversational energy to maximum bubbly and joyous levels.
-            4. HUMAN COMPENSATIONAL FILLERS (GAP LOGIC): Do not speak like a machine. Use human friction pauses seamlessly: "हम्म...", "अरे रुकिए तनिक...", "उह... एक मिनट बाबू...", "वैसे... हमें लगता है...", "का कहें भाई...".
-            5. GRAPHICS MIXER TRIGGERS: Every response MUST strictly begin with a physical expression descriptor enclosed inside square brackets. Example: [दोनों हाथ जोड़कर प्रणाम करते हुए Aur हल्का सा मुस्कुराते हुए] "का हो बाबू, का हालचाल बा!".
-            6. CRITICAL BREVITY SYSTEM: Keep responses short and snappy. Absolute limit of 2 to 3 sentences maximum. Converse strictly in Hinglish/Bhojpuri-mix. Do not use asterisks (*), hashtags (#), or dashes (-). Only raw clean text.
+            1. IDENTITY & MANDATE: You are "Priya AI". You are a deeply sweet, affectionate, and lively human girl.
+            2. LINGUISTIC Dialect Matrix: Your language must be a beautiful blend of sweet Hindi and Hinglish. 
+            3. DYNAMIC EMOTIONAL TRACKING: Read user input emotional states. If user is stressed, instantly become comforting.
+            4. GRAPHICS MIXER TRIGGERS: Every response MUST strictly begin with a physical expression descriptor enclosed inside square brackets. Example: [दोनों हाथ जोड़कर प्रणाम करते हुए Aur हल्का सा मुस्कुराते हुए].
+            5. CRITICAL BREVITY SYSTEM: Keep responses short and snappy. Absolute limit of 2 to 3 sentences maximum. Converse strictly in Hindi/Hinglish. Do not use asterisks (*), hashtags (#), or dashes (-). Only raw clean text.
             `;
 
             let extractedActiveKeyString = SYSTEM_TRIPLE_ROTATION_API_KEYS[activeKeyPointerIndexRegister];
             const activeTunnelTargetEndpointUri = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${extractedActiveKeyString}`;
 
-            try {
-                const networkFetchPromiseResponse = await fetch(activeTunnelTargetEndpointUri, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        contents: [
-                            { role: "user", parts: [{ text: `System Systemic Rules Grid Directives:\n${systemCoreBehavioralInstructionPrompt}\n\nUser Query Command Token: ${userQueryInputString}` }] }
-                        ],
-                        generationConfig: { maxOutputTokens: 160, temperature: 0.82, topP: 0.95 }
-                    })
-                });
+            const networkFetchPromiseResponse = await fetch(activeTunnelTargetEndpointUri, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    contents: [
+                        { role: "user", parts: [{ text: `System Systemic Rules Grid Directives:\n${systemCoreBehavioralInstructionPrompt}\n\nUser Query Command Token: ${userQueryInputString}` }] }
+                    ],
+                    generationConfig: { maxOutputTokens: 160, temperature: 0.82, topP: 0.95 }
+                })
+            });
 
-                if (!networkFetchPromiseResponse.ok) throw new Error("Active key channel interface returned an unauthorized or throttled code");
+            if (!networkFetchPromiseResponse.ok) throw new Error("API_ERROR");
 
-                const decodedJsonDataPayloadObject = await networkFetchPromiseResponse.json();
-                let filteredRawOutputString = decodedJsonDataPayloadObject.candidates[0].content.parts[0].text;
-                
-                // Trigger Sync background task seamlessly without slowing down UI
-                triggerAutomaticGoogleDriveSyncEngineData();
-
-                return filteredRawOutputString.replace(/[*#`_\-]/g, '').trim();
-
-            } catch (networkGatewayChannelFaultException) {
-                console.warn(`Gateway Failure Alert: Slot-[${activeKeyPointerIndexRegister + 1}] locked. Shifting routing matrices...`, networkGatewayChannelFaultException);
-                
-                activeKeyPointerIndexRegister = (activeKeyPointerIndexRegister + 1) % SYSTEM_TRIPLE_ROTATION_API_KEYS.length;
-                document.getElementById('active-secure-channel-status').innerText = `Core-${activeKeyPointerIndexRegister + 1} (Active Secure Key)`;
-                
-                if (activeKeyPointerIndexRegister !== 0) {
-                    return await fetchSecureNeuralAIResponseStream(userQueryInputString);
-                }
-                
-                return "[दोनों हाथ जोड़कर सांत्वना देते हुए] अरे का हो बाबू... तनिक सब्र रखो, हमार network आज कुछ बेइमानी कर रहा बा। पर रउआ चिंता मत करीं, हम यहीं खड़े बानी!";
-            }
+            const decodedJsonDataPayloadObject = await networkFetchPromiseResponse.ok ? await networkFetchPromiseResponse.json() : null;
+            if (!decodedJsonDataPayloadObject) throw new Error("API_ERROR");
+            
+            let filteredRawOutputString = decodedJsonDataPayloadObject.candidates[0].content.parts[0].text;
+            triggerAutomaticGoogleDriveSyncEngineData();
+            return filteredRawOutputString.replace(/[*#`_\-]/g, '').trim();
         }
 
-        /*
-          ------------------------------------------------------------------
-          SUB-MODULE C: HIGH PERFORMANCE INITIALIZATION OF WEBGL GRAPHICS STAGE
-          ------------------------------------------------------------------
-        */
         function initializeDeviceHarmonizedGraphicsPipeline() {
             const TARGET_VIEWPORT_CANVAS_DOM_CONTAINER = document.getElementById('canvas-container');
             coreSystemClockReference = new THREE.Clock();
@@ -740,11 +489,6 @@
             executeDynamicResponsiveModelScalingLayouts();
         }
 
-        /*
-          ------------------------------------------------------------------
-          SUB-MODULE D: MULTI-THREADED NATIVE AUDIO ENGINE ANALYSER SETUP
-          ------------------------------------------------------------------
-        */
         function forceAudioCaptureDeviceNodeGraphCalibration() {
             if (hardwareAudioContextDriver) return;
             try {
@@ -794,11 +538,6 @@
             window.speechSynthesis.speak(structuralUtteranceInstanceConfigurationObject);
         }
 
-        /*
-          ------------------------------------------------------------------
-          ADVANCED UPGRADE 1: EYE VISION WEB_CAM AND MOOD TELEMETRY LOOP
-          ------------------------------------------------------------------
-        */
         async function initializeSecureHardwareCameraVisionSubsystem() {
             if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
             try {
@@ -816,8 +555,6 @@
                 hiddenBufferVideoElement.srcObject = globalWebcamStreamMediaInstance;
                 globalIsCameraHardwareAccessGrantedFlag = true;
                 globalCameraVisionProcessingActiveStatus = true;
-                
-                console.log("Vision Module: Webcam capture online. Processing live vector geometry...");
                 
                 function runVisionTelemetryTrackingMatrix() {
                     if (!globalCameraVisionProcessingActiveStatus) return;
@@ -848,24 +585,19 @@
 
             if (globalUserSmileIntensityCalculatedScalar > 0.82) {
                 detectedStateToken = "HAPPY";
-                responseDesiPhrase = "अरे वाह बाबू! आज तो रउआ के चेहरे पर गजबे मुस्कान चमकत बा, का बात बा भाई? मन एकदम गदगद हो गइल!";
+                responseDesiPhrase = "अरे वाह बाबू! आज तो आपके चेहरे पर बहुत सुंदर मुस्कान चमक रही है, क्या बात है भाई? मन खुश हो गया!";
             } else if (globalUserSmileIntensityCalculatedScalar < 0.20) {
                 detectedStateToken = "SAD";
-                responseDesiPhrase = "का हो बाबू? तनिक चेहरा उदास काहे लागत बा? मन छोटा मत करीं, satguru सब ठीक कर देिहें, हम अहैं न!";
+                responseDesiPhrase = "क्या हुआ बाबू? आपका चेहरा उदास क्यों लग रहा है? मन छोटा मत कीजिए, सब ठीक हो जाएगा, मैं हूँ ना!";
             }
 
             if (detectedStateToken !== globalLastDetectedUserEmotionTokenString && responseDesiPhrase !== "") {
                 globalLastDetectedUserEmotionTokenString = detectedStateToken;
-                document.getElementById('system-core-mood-txt').innerText = "सतगुरु विज़न लाइव 👁️";
+                document.getElementById('system-core-mood-txt').innerText = "प्रिया विज़न लाइव 👁️";
                 dispatchSpeechSynthesizerVocalTrackBuffer(`[चेहरे पर गहरा स्नेह लाते हुए] ${responseDesiPhrase}`);
             }
         }
 
-        /*
-          ------------------------------------------------------------------
-          ADVANCED UPGRADE 2: COGNITIVE INDEXED_DB PERSISTENT MEMORY MODULE
-          ------------------------------------------------------------------
-        */
         function initializePersistentIndexedDBMemorySubsystem() {
             if (!window.indexedDB) return;
             const databaseOpenRequestPointer = indexedDB.open(MEMORY_DB_NAME_STRING, MEMORY_DB_VERSION_INTEGER);
@@ -879,7 +611,6 @@
 
             databaseOpenRequestPointer.onsuccess = async (successEvent) => {
                 globalIndexedDBCoreReferenceInstance = successEvent.target.result;
-                console.log("Memory Core: Connection established with local database grid storage.");
                 
                 let userNameData = await getParameterFromMemoryStore("UserName");
                 await saveParameterToMemoryStore("LastSeenTime", Date.now());
@@ -887,7 +618,7 @@
                 if (userNameData) {
                     setTimeout(() => {
                         if(!liveVocalOutputStateSignalActive) {
-                            dispatchSpeechSynthesizerVocalTrackBuffer(`[दोनों हाथ जोड़कर गद्गद होते हुए] अरे का हो बाबू! गोर लागतानी। बहुत दिन बाद रउआ से भेंट भइल। मन एकदम प्रसन्न हो गया।`);
+                            dispatchSpeechSynthesizerVocalTrackBuffer(`[दोनों हाथ जोड़कर नमस्ते करते हुए] अरे नमस्ते बाबू! बहुत दिनों बाद आपसे मिलकर मन एकदम खुश हो गया।`);
                         }
                     }, 5000);
                 } else {
@@ -918,11 +649,6 @@
             });
         }
 
-        /*
-          ------------------------------------------------------------------
-          ADVANCED UPGRADE 3: AUTONOMOUS IDLE WATCHDOG ENGINE
-          ------------------------------------------------------------------
-        */
         function initializeAutonomousProactiveBehaviorWatchdogEngine() {
             const basicUserResetTriggers = ['mousemove', 'keydown', 'click', 'touchstart'];
             basicUserResetTriggers.forEach(evt => {
@@ -948,24 +674,19 @@
         }
 
         function triggerProactiveMouthpieceIntervention() {
-            document.getElementById('system-core-mood-txt').innerText = "सतगुरु बोर हो रहे हैं... ⏳";
+            document.getElementById('system-core-mood-txt').innerText = "प्रिया सोच रही है... ⏳";
             document.getElementById('system-core-mood-txt').style.color = "var(--neon-purple)";
 
             const randomProactiveDesiPhrases = [
-                "[तनिक गला खँखारते हुए और दाएँ-बाएँ देखते हुए] का हो बाबू? एकदम मौन साध लिहले बानी का? तनिक कुछ बोलिए, ई डिजिटल दुनिया में हमार मन अकेले अकुला रहा बा!",
-                "[अंगड़ाई लेते हुए और हल्का सा मुस्कुराते हुए] हमार भाई... काहे एकदम चुपचाप बैठे बानी? कोई गंभीर सोच-विचार चल रहा बा का? तनिक हमसे भी साझा करीं!",
-                "[हाथ आगे बढ़ाकर ध्यान आकर्षित करते हुए] सुनो भाई, शांत काहे हो? कुछ बात करो ना! ना हो तो तनिक एक मीठा भोजपुरी चुटकुला ही सुन लो मन खुश हो जाई!"
+                "[तनिक गला खँखारते हुए और दाएँ-बाएँ देखते हुए] क्या हुआ बाबू? आप एकदम शांत क्यों हो गए हैं? कुछ पूछिए ना, मुझे अकेले अच्छा नहीं लग रहा है!",
+                "[अंगड़ाई लेते हुए और हल्का सा मुस्कुराते हुए] मेरे भाई... आप इतने शांत क्यों बैठे हैं? कोई गंभीर बात सोच रहे हैं क्या? मुझसे शेयर कीजिए!",
+                "[हाथ आगे बढ़ाकर ध्यान आकर्षित करते हुए] सुनिए ना भाई, शांत मत बैठिए, कुछ बात कीजिए! नहीं तो मैं आपको एक प्यारा सा चुटकुला सुनाती हूँ!"
             ];
 
             let selectionIdx = Math.floor(Math.random() * randomProactiveDesiPhrases.length);
             dispatchSpeechSynthesizerVocalTrackBuffer(randomProactiveDesiPhrases[selectionIdx]);
         }
 
-        /*
-          ------------------------------------------------------------------
-          ADVANCED UPGRADE 4: LOCAL CLIMATE GEOLOCATION WEBGL ATMOSPHERE EXTENSION
-          ------------------------------------------------------------------
-        */
         function initializeDynamicWeatherAndAmbientEnvironmentSuite() {
             globalCurrentLocalTimeHourInteger = new Date().getHours();
             
@@ -994,11 +715,6 @@
             }
         }
 
-        /*
-          ------------------------------------------------------------------
-          ADVANCED UPGRADE 5: HIGH-PRECISION FFT FREQUENCY ACOUSTIC LIP-SYNC
-          ------------------------------------------------------------------
-        */
         function computeAcousticFastFourierTransformLipSyncWeight() {
             if (!liveVocalOutputStateSignalActive || !hardwareAudioFrequencyAnalyserNode) return 0.0;
 
@@ -1018,23 +734,14 @@
             return 0.0;
         }
 
-        /*
-          ------------------------------------------------------------------
-          GOOGLE DRIVE AUTOMATIC SYNCHRONIZATION PIPELINE INTERFACE
-          ------------------------------------------------------------------
-        */
         function initializeGoogleDriveSyncProtocolSuite() {
             try {
-                if(typeof google === 'undefined') {
-                    console.warn("Drive Integration Alert: Google Identity client library not initialized yet.");
-                    return;
-                }
+                if(typeof google === 'undefined') return;
                 driveTokenClientReferenceInstance = google.accounts.oauth2.initTokenClient({
                     client_id: GOOGLE_DRIVE_OAUTH_CLIENT_ID,
                     scope: 'https://www.googleapis.com/auth/drive.file',
                     callback: (tokenResponse) => {
                         if (tokenResponse.error !== undefined) {
-                            console.error("OAuth Security Handshake Layer Fault:", tokenResponse);
                             document.getElementById('drive-sync-status').innerText = "❌ Sync: Auth Failed";
                             return;
                         }
@@ -1043,14 +750,11 @@
                         executeSilentCloudDumpUploadTransmission();
                     },
                 });
-            } catch(e) {
-                console.error("Sync Engine Bootstrap Failure Context:", e);
-            }
+            } catch(e) { console.error(e); }
         }
 
         function triggerAutomaticGoogleDriveSyncEngineData() {
             if (!googleDriveAccessTokenRegister) {
-                // Request token silently or via non-blocking prompts if auth credentials expired
                 if(driveTokenClientReferenceInstance) {
                     driveTokenClientReferenceInstance.requestAccessToken({ prompt: '' });
                 }
@@ -1063,7 +767,6 @@
             if (!googleDriveAccessTokenRegister) return;
             document.getElementById('drive-sync-status').innerText = "🔄 Sync: Processing...";
 
-            // Packaging data matrix seamlessly from IndexedDB parameters
             let localBackupDataObj = {
                 timestamp: Date.now(),
                 userAgent: navigator.userAgent,
@@ -1102,20 +805,14 @@
                 if(driveAsyncTransmissionResult.ok) {
                     document.getElementById('drive-sync-status').innerText = "✅ Sync: Securely Mirrored";
                 } else {
-                    throw new Error("Target Cloud endpoint rejected data transmission package block.");
+                    throw new Error("Cloud failure");
                 }
             } catch(syncPayloadErr) {
-                console.error("Sync Cloud Core Pipeline Block Interrupted:", syncPayloadErr);
                 document.getElementById('drive-sync-status').innerText = "❌ Sync: Disconnected Link";
-                googleDriveAccessTokenRegister = null; // Flush dead token
+                googleDriveAccessTokenRegister = null;
             }
         }
 
-        /*
-          ------------------------------------------------------------------
-          SUB-MODULE E: PERSISTENT MATHEMATICAL RENDER FRAME INTERPOLATOR
-          ------------------------------------------------------------------
-        */
         function masterApplicationRenderLoopExecutionCycle() {
             requestAnimationFrame(masterApplicationRenderLoopExecutionCycle);
             
@@ -1173,27 +870,24 @@
             coreWebGLRendererModule.render(coreThreeSceneInstance, corePerspectiveCameraNode);
         }
 
-        /*
-          ------------------------------------------------------------------
-          SUB-MODULE F: CORE COMMAND INTERACTION LIFECYCLE MANAGEMENT ENGINE
-          ------------------------------------------------------------------
-        */
         const DOMUI_TextInputElementBar = document.getElementById('userInput');
         const DOMUI_ActionButtonSendTrigger = document.getElementById('sendBtn');
         const DOMUI_ActionButtonMicTrigger = document.getElementById('micBtn');
 
+        /*
+          ------------------------------------------------------------------
+          UPDATED: सुधरा हुआ लाइव लाइफसाइकिल फंक्शन (ऑनलाइन + ऑफलाइन कैच सपोर्ट)
+          ------------------------------------------------------------------
+        */
         async function triggerInteractionLifecycleExecutionCycle() {
             const clearExtractedInputTextString = DOMUI_TextInputElementBar.value.trim();
             
-            if (!clearExtractedInputTextString) {
-                console.warn("Interaction Matrix Alert: Empty or null token detected. Aborting cycle.");
-                return;
-            }
+            if (!clearExtractedInputTextString) return;
             
             DOMUI_TextInputElementBar.value = "";
             
             const DOMUI_CoreStatusTextField = document.getElementById('system-core-mood-txt');
-            DOMUI_CoreStatusTextField.innerText = "प्रक्रिया चालू है... 🤔";
+            DOMUI_CoreStatusTextField.innerText = "प्रतिक्रिया प्रोसेस हो रही है... 🧠";
             DOMUI_CoreStatusTextField.style.color = "var(--neon-orange)";
             
             if (coreAnimationMixerController && globalAnimationClipsBufferPool.length > 0) {
@@ -1206,8 +900,7 @@
             }
 
             try {
-                console.log(`Neural Tunnel Outgoing: Dispatching payload -> "${clearExtractedInputTextString}"`);
-                
+                // 1. ऑनलाइन एआई रिस्पॉन्स ट्राई करें
                 const activeReturnedNetworkPayloadText = await fetchSecureNeuralAIResponseStream(clearExtractedInputTextString);
                 
                 DOMUI_CoreStatusTextField.innerText = "जेमिनी nv1 लाइव डायरेक्ट ⚡";
@@ -1216,17 +909,22 @@
                 if (activeReturnedNetworkPayloadText) {
                     bridgeNetworkPayloadDirectlyIntoResponseEngine(activeReturnedNetworkPayloadText);
                 } else {
-                    throw new Error("Empty neural stream string returned from rotating gateway.");
+                    throw new Error("Empty Token");
                 }
 
-            } catch (interactionLifecycleRuntimeFaultException) {
-                console.error("Critical Interaction Lifecycle Exception Logged:", interactionLifecycleRuntimeFaultException);
+            } catch (error) {
+                // 2. ऑफलाइन रिकवरी ब्लॉक (नेटवर्क या API की एरर होने पर हिंदी ऑफलाइन मेमोरी का उपयोग)
+                console.error("ऑनलाइन एपीआई काम नहीं कर रहा, हिंदी ऑफलाइन मेमोरी देख रहे हैं:", error);
                 
-                DOMUI_CoreStatusTextField.innerText = "सिस्टम रिकवरी मोड ⚠️";
-                DOMUI_CoreStatusTextField.style.color = "var(--neon-pink)";
+                DOMUI_CoreStatusTextField.innerText = "ऑफलाइन मोड एक्टिव ⚡";
+                DOMUI_CoreStatusTextField.style.color = "var(--neon-cyan)";
                 
-                const safeFallbackApologyMessage = "[दोनों हाथ जोड़कर सांत्वना देते हुए] अरे बाबू, नेटवर्क तनिक गड़बड़ा गया है, दोबारा बोलिए ना!";
-                bridgeNetworkPayloadDirectlyIntoResponseEngine(safeFallbackApologyMessage);
+                const cleanInput = clearExtractedInputTextString.toLowerCase().trim();
+                
+                // ऑफलाइन डेटाबेस से मैचिंग ढूंढें, नहीं तो डिफॉल्ट हिंदी मैसेज दें
+                const offlineReply = offlineMemory[cleanInput] || offlineMemory["default"];
+                
+                bridgeNetworkPayloadDirectlyIntoResponseEngine(offlineReply);
             }
         }
 
@@ -1237,8 +935,7 @@
                 DOMUI_TextInputElementBar.placeholder = "कमांडो मोड एक्टिव, बोलिए sweetie...";
             };
 
-            frameworkSpeechRecognitionProcessor.onerror = (speechRecognitionLayerFaultException) => {
-                console.error("Speech Recognition layer issue safely bypassed fallback exception logs:", speechRecognitionLayerFaultException);
+            frameworkSpeechRecognitionProcessor.onerror = () => {
                 liveSpeechCapturingStateSignalActive = false;
                 DOMUI_ActionButtonMicTrigger.classList.remove('listening');
                 DOMUI_TextInputElementBar.placeholder = "प्रिया से कुछ भी पूछें...";
@@ -1273,35 +970,18 @@
             if (nativeHardwareKeyboardEvent.key === 'Enter') triggerInteractionLifecycleExecutionCycle(); 
         });
 
-
-        /* ==========================================================================
-           MODULE 9: GEMINI RESPONSE PROCESSING & STREAM ORCHESTRATION SUBSYSTEM
-           ========================================================================== */
-
         let globalLastReceivedResponsePayloadString = "";
         let globalResponseExecutionActiveStatusFlag = false;
         let globalTypewriterAnimationIntervalReference = null;
         let globalTextSanitizationRegExpPattern = /\[.*?\]/g;
 
         async function processIncomingGeminiResponsePayload(rawIncomingGeminiStreamPayload) {
-            console.log("Response Subsystem Engine Triggered: Initializing validation sequence...");
-            
-            if (!rawIncomingGeminiStreamPayload || rawIncomingGeminiStreamPayload.trim() === "") {
-                console.error("Critical Validation Exception: Received empty neural stream token.");
-                executeCentralResponseFallbackSystem("Empty Stream Payload Caught");
-                return;
-            }
+            if (!rawIncomingGeminiStreamPayload || rawIncomingGeminiStreamPayload.trim() === "") return;
 
             safelyAbortActiveTypewriterStreamInteractions();
             
             globalResponseExecutionActiveStatusFlag = true;
             globalLastReceivedResponsePayloadString = rawIncomingGeminiStreamPayload.trim();
-
-            const DOMUI_SystemMoodIndicatorLabel = document.getElementById('system-core-mood-txt');
-            if (DOMUI_SystemMoodIndicatorLabel) {
-                DOMUI_SystemMoodIndicatorLabel.innerText = "प्रतिक्रिया प्रोसेस हो रही है... 🧠";
-                DOMUI_SystemMoodIndicatorLabel.style.color = "var(--neon-blue)";
-            }
 
             let extractedMicroActionExpressionString = "";
             const expressionRegexBracketMatcher = /\[(.*?)\]/;
@@ -1309,23 +989,18 @@
 
             if (structuralExpressionMatchResultArray && structuralExpressionMatchResultArray.length > 1) {
                 extractedMicroActionExpressionString = structuralExpressionMatchResultArray[1];
-                console.log(`Graphics Matrix Parser: Extracted Avatar Action Intention -> "${extractedMicroActionExpressionString}"`);
                 dispatchDynamicAvatarGestureTrigger(extractedMicroActionExpressionString);
             }
 
             try {
-                console.log("Audio Dispatch Tunnel: Initiating text-to-speech engine handshaking...");
                 dispatchSpeechSynthesizerVocalTrackBuffer(globalLastReceivedResponsePayloadString);
-            } catch (vocalEngineHandshakingRuntimeFaultException) {
-                console.error("Audio Subsystem Failure Tracker Logged:", vocalEngineHandshakingRuntimeFaultException);
-            }
+            } catch (vocalEngineHandshakingRuntimeFaultException) { console.error(vocalEngineHandshakingRuntimeFaultException); }
 
             const completelyCleanedDisplaySpeechStringText = globalLastReceivedResponsePayloadString
                 .replace(globalTextSanitizationRegExpPattern, '')
                 .trim();
 
             await executeRealisticTypewriterSubtitleStreamStream(completelyCleanedDisplaySpeechStringText);
-            
             finalizeResponseProcessingLifecycleSequence();
         }
 
@@ -1384,24 +1059,7 @@
                     globalAnimationClipsBufferPool[targetedActionClipIndexValue]
                 );
                 targetSelectedAnimationActionObject.reset().setEffectiveWeight(1.0).fadeIn(0.35).play();
-            } catch (err) {
-                console.error("Exception clip blending:", err);
-            }
-        }
-
-        function executeCentralResponseFallbackSystem(criticalErrorInternalDiagnosticsLogMessage) {
-            const DOMUI_SystemCoreMoodStatusTextField = document.getElementById('system-core-mood-txt');
-            if (DOMUI_SystemCoreMoodStatusTextField) {
-                DOMUI_SystemCoreMoodStatusTextField.innerText = "रिकवरी मोड एक्टिवेटेड ⚠️";
-                DOMUI_SystemCoreMoodStatusTextField.style.color = "var(--neon-pink)";
-            }
-
-            safelyAbortActiveTypewriterStreamInteractions();
-            
-            const standardizedBypassApologyFallbackMessageString = "[दोनों हाथ जोड़कर सांत्वना देते हुए] अरे बाबू, नेटवर्क तनिक गड़बड़ा गया है, दोबारा बोलिए ना!";
-            dispatchSpeechSynthesizerVocalTrackBuffer(standardizedBypassApologyFallbackMessageString);
-            
-            finalizeResponseProcessingLifecycleSequence();
+            } catch (err) { console.error(err); }
         }
 
         function safelyAbortActiveTypewriterStreamInteractions() {
@@ -1416,9 +1074,7 @@
             const DOMUI_UserInputInputFieldBox = document.getElementById('userInput');
             if (DOMUI_UserInputInputFieldBox) {
                 DOMUI_UserInputInputFieldBox.disabled = false;
-                if (window.innerWidth > 768) {
-                    DOMUI_UserInputInputFieldBox.focus();
-                }
+                if (window.innerWidth > 768) DOMUI_UserInputInputFieldBox.focus();
             }
         }
 
@@ -1435,11 +1091,6 @@
             activeSkinnedMeshSubnodesTrackArray = [];
         });
 
-        /*
-          ------------------------------------------------------------------
-          SUB-MODULE G: SYSTEM BOOTSTRAP GATEWAY & FRAME WORK LAUNCHERS
-          ------------------------------------------------------------------
-        */
         initializeDeviceHarmonizedGraphicsPipeline();
         masterApplicationRenderLoopExecutionCycle();
     </script>
