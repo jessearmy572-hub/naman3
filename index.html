@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>प्रिया AI - हाइपर-रियलिस्टिक ह्यूमनॉइड v5.0</title>
+    <title>प्रिया AI - मल्टी-टच रिस्पांस इंजन v6.0</title>
     <style>
         :root {
             --neon-cyan: #00ffcc;
@@ -46,7 +46,7 @@
         }
         .status-title { font-size: 13px; font-weight: 700; text-transform: uppercase; color: var(--text-core-white); letter-spacing: 0.5px; }
         .channel-info { font-size: 11px; color: var(--text-dim-slate); margin-bottom: 2px; }
-        .badge { font-size: 11px; margin-top: 4px; font-weight: bold; color: var(--neon-cyan); }
+        .badge { font-size: 11px; margin-top: 4px; font-weight: bold; color: var(--neon-pink); }
 
         .ui-dock-wrapper {
             position: absolute; bottom: 30px; width: 100%; display: flex;
@@ -107,15 +107,15 @@
     <div class="dashboard">
         <div class="status-block">
             <span class="status-beacon-dot"></span> 
-            <span class="status-title" id="system-core-mood-txt">प्रिया कोर v5.0</span>
+            <span class="status-title" id="system-core-mood-txt">प्रिया कोर v6.0</span>
         </div>
-        <div class="channel-info">व्यूपोर्ट मोड: <span style="color:#00ffcc;" id="dynamic-device-ui">मोबाइल अलाइन...</span></div>
-        <div class="badge">💎 हाइपर-रियलिस्टिक नेचुरल स्टेबिलिटी एक्टिव</div>
+        <div class="channel-info">सिस्टम मोड: <span style="color:#00ffcc;" id="dynamic-device-ui">रीडिंग...</span></div>
+        <div class="badge">🎯 मल्टी-बॉडी टच सेंसिंग एक्टिव</div>
     </div>
 
     <div id="core-boot-loader">
         <div class="loader-ring-spinner"></div>
-        <div class="loader-label-text">एंकरिंग ग्राउंड एंड जॉइंट्स सिंक...</div>
+        <div class="loader-label-text">बॉडी सेंसर्स मैपिंग चालू है...</div>
     </div>
 
     <div id="canvas-container"></div>
@@ -137,8 +137,7 @@
         let structuralAvatar3DModelRoot = null;
         let ambientDropShadowPlane = null;
         
-        // Bone Rig Targets for Natural Constraints
-        let boneHead = null, boneNeck = null, boneSpine = null, boneSpine1 = null;
+        let boneHead = null, boneNeck = null, boneSpine = null, boneSpine1 = null, boneSpine2 = null;
         let boneLeftArm = null, boneRightArm = null, boneLeftForeArm = null, boneRightForeArm = null;
         let avaturnSkinnedMeshes = [];
 
@@ -150,11 +149,11 @@
         let activeEmotionalState = 'idle';
         let stateStartTime = 0;
 
-        // Strict Humanoid Bone Rotations (Prevents breaking of hands/joints)
+        // Base Anatomical Baselines (T-Pose Completely Blocked)
         const boneTargets = {
             spine: { x: 0, y: 0, z: 0 },
-            leftArm: { x: 0.1, y: 0, z: -Math.PI / 14 }, // Hand stays naturally parallel to thighs
-            rightArm: { x: 0.1, y: 0, z: Math.PI / 14 },
+            leftArm: { x: 0.08, y: 0, z: -Math.PI / 2.5 }, 
+            rightArm: { x: 0.08, y: 0, z: Math.PI / 2.5 },
             leftForeArm: { x: 0, y: 0.1, z: 0 },
             rightForeArm: { x: 0, y: -0.1, z: 0 }
         };
@@ -167,15 +166,13 @@
             const container = document.getElementById('canvas-container');
             coreSystemClockReference = new THREE.Clock();
             coreThreeSceneInstance = new THREE.Scene();
-            
-            // Soft atmospheric lighting for realistic skin blending
             coreThreeSceneInstance.fog = new THREE.FogExp2(0x0a0a14, 0.02);
 
             coreWebGLRendererModule = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
             coreWebGLRendererModule.setSize(window.innerWidth, window.innerHeight);
             coreWebGLRendererModule.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             coreWebGLRendererModule.toneMapping = THREE.ACESFilmicToneMapping;
-            coreWebGLRendererModule.toneMappingExposure = 1.1;
+            coreWebGLRendererModule.toneMappingExposure = 1.15;
             coreWebGLRendererModule.shadowMap.enabled = true;
             coreWebGLRendererModule.shadowMap.type = THREE.PCFSoftShadowMap;
             container.appendChild(coreWebGLRendererModule.domElement);
@@ -190,25 +187,24 @@
             coreOrbitControlsRig.enableDamping = true;
             coreOrbitControlsRig.dampingFactor = 0.05;
 
-            // 👣 GROUNDING ANCHOR SYSTEM: Fixing the Floating Issue
-            const shadowPlaneGeo = new THREE.PlaneGeometry(4, 4);
-            const shadowPlaneMat = new THREE.ShadowMaterial({ opacity: 0.65 });
+            // Ground Anchor
+            const shadowPlaneGeo = new THREE.PlaneGeometry(5, 5);
+            const shadowPlaneMat = new THREE.ShadowMaterial({ opacity: 0.75 });
             ambientDropShadowPlane = new THREE.Mesh(shadowPlaneGeo, shadowPlaneMat);
             ambientDropShadowPlane.rotation.x = -Math.PI / 2;
-            ambientDropShadowPlane.position.y = -1.05; // Ground level lock
+            ambientDropShadowPlane.position.y = -1.05; 
             ambientDropShadowPlane.receiveShadow = true;
             coreThreeSceneInstance.add(ambientDropShadowPlane);
 
-            // Lighting Rig for Natural Depth
-            const hemiLight = new THREE.HemisphereLight(0xffffff, 0x333344, 2.2);
+            const hemiLight = new THREE.HemisphereLight(0xffffff, 0x333344, 2.4);
             coreThreeSceneInstance.add(hemiLight);
 
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 1.4);
-            directionalLight.position.set(1.5, 4, 2.5);
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
+            directionalLight.position.set(2, 4, 3);
             directionalLight.castShadow = true;
             directionalLight.shadow.mapSize.width = 2048;
             directionalLight.shadow.mapSize.height = 2048;
-            directionalLight.shadow.bias = -0.0005;
+            directionalLight.shadow.bias = -0.0004;
             coreThreeSceneInstance.add(directionalLight);
 
             autoCalibrateViewport();
@@ -228,6 +224,7 @@
                         else if (boneName.includes('neck')) boneNeck = node;
                         else if (boneName === 'spine') boneSpine = node;
                         else if (boneName === 'spine1') boneSpine1 = node;
+                        else if (boneName === 'spine2') boneSpine2 = node;
                         else if (boneName === 'leftarm') boneLeftArm = node;
                         else if (boneName === 'rightarm') boneRightArm = node;
                         else if (boneName === 'leftforearm') boneLeftForeArm = node;
@@ -238,9 +235,8 @@
                     }
                 });
 
-                // Perfect Foot Grounding Constraints
                 structuralAvatar3DModelRoot.position.set(0, -1.05, 0); 
-                structuralAvatar3DModelRoot.scale.setScalar(1.25);
+                structuralAvatar3DModelRoot.scale.setScalar(1.28);
                 coreThreeSceneInstance.add(structuralAvatar3DModelRoot);
                 
                 document.getElementById('core-boot-loader').style.display = 'none';
@@ -270,26 +266,26 @@
 
         function autoCalibrateViewport() {
             if (window.innerWidth < 500) {
-                document.getElementById('dynamic-device-ui').innerText = "स्मार्ट मोबाइल व्यू";
-                corePerspectiveCameraNode.position.set(0, 0.1, 1.7);
-                coreOrbitControlsRig.target.set(0, -0.05, 0);
+                document.getElementById('dynamic-device-ui').innerText = "मोबाइल अलाइन";
+                corePerspectiveCameraNode.position.set(0, 0.05, 1.65);
+                coreOrbitControlsRig.target.set(0, -0.1, 0);
             } else {
-                document.getElementById('dynamic-device-ui').innerText = "एचडी डेस्कटॉप व्यू";
-                corePerspectiveCameraNode.position.set(0, 0.15, 1.3);
-                coreOrbitControlsRig.target.set(0, 0.05, 0);
+                document.getElementById('dynamic-device-ui').innerText = "डेस्कटॉप अलाइन";
+                corePerspectiveCameraNode.position.set(0, 0.1, 1.25);
+                coreOrbitControlsRig.target.set(0, 0, 0);
             }
             coreOrbitControlsRig.update();
         }
 
         function enforceAnatomicalBaselines() {
             boneTargets.spine = { x: 0, y: 0, z: 0 };
-            boneTargets.leftArm = { x: 0.05, y: 0, z: -Math.PI / 13 }; // Perfectly standard human arm rest
-            boneTargets.rightArm = { x: 0.05, y: 0, z: Math.PI / 13 };
-            boneTargets.leftForeArm = { x: 0, y: 0.05, z: 0 };
-            boneTargets.rightForeArm = { x: 0, y: -0.05, z: 0 };
+            boneTargets.leftArm = { x: 0.08, y: 0, z: -Math.PI / 2.5 }; 
+            boneTargets.rightArm = { x: 0.08, y: 0, z: Math.PI / 2.5 };
+            boneTargets.leftForeArm = { x: 0, y: 0.1, z: 0 };
+            boneTargets.rightForeArm = { x: 0, y: -0.1, z: 0 };
         }
 
-        // 🤏 GENTLE MICRO-REACTION TOUCH ENGINE (Ab halka sa natural response karega)
+        // 🎯 MULTI-BODY INDEPENDENT TOUCH ROUTER
         function parseTouchRaycastTrigger(event) {
             if (!structuralAvatar3DModelRoot) return;
             let cx = event.clientX || (event.touches && event.touches[0].clientX);
@@ -302,8 +298,51 @@
             const intersects = interactionRaycaster.intersectObjects(structuralAvatar3DModelRoot.children, true);
             
             if (intersects.length > 0) {
-                triggerStateMatrix('subtle_touch');
-                dispatchSpeechBuffer("जी बताइए, मैं सुन रही हूँ।");
+                let hitObjectName = intersects[0].object.name.toLowerCase();
+                
+                // Deep parsing parent chain if object name is generic
+                let currentCheckNode = intersects[0].object;
+                while(currentCheckNode && currentCheckNode !== structuralAvatar3DModelRoot) {
+                    if(currentCheckNode.name) {
+                        let innerName = currentCheckNode.name.toLowerCase();
+                        if(innerName.includes("head") || innerName.includes("face") || innerName.includes("neck")) {
+                            hitObjectName = "head_zone";
+                            break;
+                        }
+                        if(innerName.includes("leftarm") || innerName.includes("leftshoulder") || innerName.includes("leftforearm")) {
+                            hitObjectName = "left_arm_zone";
+                            break;
+                        }
+                        if(innerName.includes("rightarm") || innerName.includes("rightshoulder") || innerName.includes("rightforearm")) {
+                            hitObjectName = "right_arm_zone";
+                            break;
+                        }
+                        if(innerName.includes("spine") || innerName.includes("body") || innerName.includes("hips")) {
+                            hitObjectName = "spine_zone";
+                            break;
+                        }
+                    }
+                    currentCheckNode = currentCheckNode.parent;
+                }
+
+                // Route custom behaviors based on detected hit zones
+                if (hitObjectName === "head_zone") {
+                    triggerStateMatrix('touch_head');
+                    dispatchSpeechBuffer("अरे! चेहरे पर टच मत कीजिए ना, सीधे बात बताइए क्या काम है?");
+                } 
+                else if (hitObjectName === "left_arm_zone" || hitObjectName === "right_arm_zone") {
+                    triggerStateMatrix('touch_hand');
+                    dispatchSpeechBuffer("आप मेरा हाथ पकड़कर बात कर सकते हैं, मैं सुन रही हूँ।");
+                } 
+                else if (hitObjectName === "spine_zone") {
+                    triggerStateMatrix('touch_spine');
+                    dispatchSpeechBuffer("कृपया थोड़ा ध्यान रखें, सीधे वॉयस कमांड का इस्तेमाल करें।");
+                }
+                else {
+                    // Default fallback response
+                    triggerStateMatrix('subtle_touch');
+                    dispatchSpeechBuffer("जी बताइए, क्या निर्देश है मेरे लिए?");
+                }
             }
         }
 
@@ -311,16 +350,16 @@
             const text = rawStr.toLowerCase();
             if (text.includes("नमस्ते") || text.includes("hello") || text.includes("hi")) {
                 triggerStateMatrix('greet');
-                dispatchSpeechBuffer("नमस्ते! आपसे मिलकर अच्छा लगा।");
+                dispatchSpeechBuffer("नमस्ते! आपसे मिलकर बहुत अच्छा लगा।");
             } else if (text.includes("डांस") || text.includes("dance") || text.includes("नाचो")) {
                 triggerStateMatrix('dance');
-                dispatchSpeechBuffer("बिल्कुल, देखिए मेरे नेचुरल मूवमेंट्स!");
+                dispatchSpeechBuffer("बिल्कुल, देखिए मेरे मूवमेंट्स!");
             } else if (text.includes("गुस्सा") || text.includes("angry")) {
                 triggerStateMatrix('angry');
                 dispatchSpeechBuffer("मुझे गुस्सा मत दिलाइए!");
             } else if (text.includes("मुस्कुरा") || text.includes("smile")) {
                 triggerStateMatrix('smile');
-                dispatchSpeechBuffer("आपकी वजह से मेरे चेहरे पर मुस्कान आ गई।");
+                dispatchSpeechBuffer("शुक्रिया, आपके निर्देश का पालन कर रही हूँ।");
             } else {
                 triggerServerFallback(rawStr);
             }
@@ -357,11 +396,11 @@
                 dispatchSpeechBuffer(data.text || data.output);
             } catch (e) {
                 triggerStateMatrix("idle");
-                dispatchSpeechBuffer("मैं पूरी तरह से रेडी हूँ, निर्देश दीजिए।");
+                dispatchSpeechBuffer("मैं पूरी तरह तैयार हूँ, बताइए।");
             }
         }
 
-        // 🔄 MASTER SMOOTH RENDER FRAME LOOP
+        // 🔄 ADVANCED RENDER CYCLE WITH DISTINCT MOTION MATRIX
         function executeMasterFrameCycle() {
             requestAnimationFrame(executeMasterFrameCycle);
 
@@ -371,12 +410,11 @@
             if (coreOrbitControlsRig) coreOrbitControlsRig.update();
 
             if (structuralAvatar3DModelRoot) {
-                smoothTrackX = THREE.MathUtils.lerp(smoothTrackX, pointerTargetX, 0.08);
-                smoothTrackY = THREE.MathUtils.lerp(smoothTrackY, pointerTargetY, 0.08);
+                smoothTrackX = THREE.MathUtils.lerp(smoothTrackX, pointerTargetX, 0.07);
+                smoothTrackY = THREE.MathUtils.lerp(smoothTrackY, pointerTargetY, 0.07);
 
-                // Pure Human Breathing Modulation (Subtle Sway)
-                const breathWave = Math.sin(elapsed * 1.8);
-                const naturalSway = Math.cos(elapsed * 0.6);
+                const breathWave = Math.sin(elapsed * 1.5);
+                const naturalSway = Math.cos(elapsed * 0.5);
 
                 enforceAnatomicalBaselines();
 
@@ -384,45 +422,57 @@
                 let morphTarget = null;
                 let morphIntensity = 0;
 
-                // Coordinated Dynamic Blend State Matrix (Fixes broken joint layout)
-                if (activeEmotionalState === 'greet') {
-                    // Symmetrical subtle hand lift up to elbow safely
-                    boneTargets.rightArm = { x: -0.3, y: -0.2, z: Math.PI / 4.5 };
-                    boneTargets.rightForeArm = { x: 0.4, y: Math.sin(stateElapsed * 5) * 0.15, z: 0 };
-                    morphTarget = 'mouthSmileLeft'; morphIntensity = 0.5;
-                    if (stateElapsed > 3.5) triggerStateMatrix('idle');
-
-                } else if (activeEmotionalState === 'subtle_touch') {
-                    // Halka sa natural head nod transition
-                    boneTargets.spine = { x: 0.03, y: 0, z: 0 };
-                    morphTarget = 'mouthSmileRight'; morphIntensity = 0.4;
+                // 🎭 INDEPENDENT MOTION MATRIX ASSIGNMENT
+                if (activeEmotionalState === 'touch_head') {
+                    // Shy head tilt & high smile
+                    boneTargets.spine = { x: 0.01, y: 0.05, z: 0.02 };
+                    morphTarget = 'mouthSmileLeft'; morphIntensity = 0.8;
                     if (stateElapsed > 2.5) triggerStateMatrix('idle');
 
+                } else if (activeEmotionalState === 'touch_hand') {
+                    // Lift corresponding hand slightly as response
+                    boneTargets.leftArm = { x: 0.2, y: 0.1, z: -Math.PI / 3.5 };
+                    boneTargets.rightArm = { x: 0.2, y: -0.1, z: Math.PI / 3.5 };
+                    morphTarget = 'mouthSmileRight'; morphIntensity = 0.4;
+                    if (stateElapsed > 3.0) triggerStateMatrix('idle');
+
+                } else if (activeEmotionalState === 'touch_spine') {
+                    // Step back style defensive spine twist
+                    boneTargets.spine = { x: -0.05, y: -0.05, z: 0 };
+                    morphTarget = 'mouthFrownLeft'; morphIntensity = 0.5;
+                    if (stateElapsed > 2.5) triggerStateMatrix('idle');
+
+                } else if (activeEmotionalState === 'greet') {
+                    boneTargets.rightArm = { x: -0.2, y: -0.1, z: Math.PI / 3.5 };
+                    boneTargets.rightForeArm = { x: 0.3, y: Math.sin(stateElapsed * 4) * 0.1, z: 0 };
+                    morphTarget = 'mouthSmileLeft'; morphIntensity = 0.5;
+                    if (stateElapsed > 3.0) triggerStateMatrix('idle');
+
                 } else if (activeEmotionalState === 'dance') {
-                    // Pure smooth sway without bending joints uncomfortably
-                    const wave = Math.sin(stateElapsed * 3.5);
-                    boneTargets.spine = { x: 0, y: wave * 0.08, z: wave * 0.04 };
-                    boneTargets.leftArm = { x: 0.1, y: 0, z: -Math.PI / 10 + (wave * 0.05) };
-                    boneTargets.rightArm = { x: 0.1, y: 0, z: Math.PI / 10 - (wave * 0.05) };
-                    if (stateElapsed > 6.0) triggerStateMatrix('idle');
+                    const wave = Math.sin(stateElapsed * 3.0);
+                    boneTargets.spine = { x: 0, y: wave * 0.06, z: wave * 0.03 };
+                    boneTargets.leftArm = { x: 0.08, y: 0, z: -Math.PI / 2.5 + (wave * 0.04) };
+                    boneTargets.rightArm = { x: 0.08, y: 0, z: Math.PI / 2.5 - (wave * 0.04) };
+                    if (stateElapsed > 5.5) triggerStateMatrix('idle');
 
                 } else if (activeEmotionalState === 'smile') {
-                    morphTarget = 'mouthSmileLeft'; morphIntensity = 0.75;
-                    if (stateElapsed > 4.0) triggerStateMatrix('idle');
+                    morphTarget = 'mouthSmileLeft'; morphIntensity = 0.7;
+                    if (stateElapsed > 3.5) triggerStateMatrix('idle');
 
                 } else if (activeEmotionalState === 'angry') {
-                    boneTargets.spine = { x: 0.04, y: 0, z: 0 };
-                    morphTarget = 'mouthFrownLeft'; morphIntensity = 0.7;
+                    boneTargets.spine = { x: 0.03, y: 0, z: 0 };
+                    morphTarget = 'mouthFrownLeft'; morphIntensity = 0.65;
                     if (stateElapsed > 3.0) triggerStateMatrix('idle');
                 }
 
-                // Smooth Interp Matrix Processing Layer (Enforcing strict speed constraints)
-                const speed = 0.06;
+                // 🛑 SMOOTH INTERPOLATION TRANSFORMS
+                const speed = 0.08;
                 if (boneSpine) {
-                    boneSpine.rotation.x = THREE.MathUtils.lerp(boneSpine.rotation.x, boneTargets.spine.x + (breathWave * 0.006), speed);
+                    boneSpine.rotation.x = THREE.MathUtils.lerp(boneSpine.rotation.x, boneTargets.spine.x + (breathWave * 0.005), speed);
                     boneSpine.rotation.y = THREE.MathUtils.lerp(boneSpine.rotation.y, boneTargets.spine.y, speed);
-                    boneSpine.rotation.z = THREE.MathUtils.lerp(boneSpine.rotation.z, boneTargets.spine.z + (naturalSway * 0.003), speed);
+                    boneSpine.rotation.z = THREE.MathUtils.lerp(boneSpine.rotation.z, boneTargets.spine.z + (naturalSway * 0.002), speed);
                 }
+
                 if (boneLeftArm) {
                     boneLeftArm.rotation.x = THREE.MathUtils.lerp(boneLeftArm.rotation.x, boneTargets.leftArm.x, speed);
                     boneLeftArm.rotation.z = THREE.MathUtils.lerp(boneLeftArm.rotation.z, boneTargets.leftArm.z, speed);
@@ -434,22 +484,23 @@
                 if (boneLeftForeArm) boneLeftForeArm.rotation.y = THREE.MathUtils.lerp(boneLeftForeArm.rotation.y, boneTargets.leftForeArm.y, speed);
                 if (boneRightForeArm) boneRightForeArm.rotation.y = THREE.MathUtils.lerp(boneRightForeArm.rotation.y, boneTargets.rightForeArm.y, speed);
 
-                // Realistic Eye Gaze and Neck LookAt Limiters
+                // Look At / Gaze Tracker Tracker
                 if (boneHead) {
-                    boneHead.rotation.y = THREE.MathUtils.lerp(boneHead.rotation.y, smoothTrackX * 0.35, 0.08);
-                    boneHead.rotation.x = THREE.MathUtils.lerp(boneHead.rotation.x, -smoothTrackY * 0.2 + (breathWave * 0.004), 0.08);
+                    // Dynamic override for shyness expression during head touch
+                    let lookModifier = (activeEmotionalState === 'touch_head') ? 0.05 : 0.3;
+                    boneHead.rotation.y = THREE.MathUtils.lerp(boneHead.rotation.y, smoothTrackX * lookModifier, 0.08);
+                    boneHead.rotation.x = THREE.MathUtils.lerp(boneHead.rotation.x, -smoothTrackY * 0.18 + (breathWave * 0.003), 0.08);
                 }
-                if (boneNeck) boneNeck.rotation.y = THREE.MathUtils.lerp(boneNeck.rotation.y, smoothTrackX * 0.12, 0.08);
+                if (boneNeck) boneNeck.rotation.y = THREE.MathUtils.lerp(boneNeck.rotation.y, smoothTrackX * 0.1, 0.08);
 
                 // Lip Sync Modulation
                 if (liveVocalOutputStateSignalActive) {
-                    syntheticAudioAmplitudeWave = (Math.sin(elapsed * 26) * Math.cos(elapsed * 15) * 0.35) + 0.3;
+                    syntheticAudioAmplitudeWave = (Math.sin(elapsed * 25) * Math.cos(elapsed * 14) * 0.35) + 0.3;
                 } else {
-                    syntheticAudioAmplitudeWave = THREE.MathUtils.lerp(syntheticAudioAmplitudeWave, 0, 0.2);
+                    syntheticAudioAmplitudeWave = THREE.MathUtils.lerp(syntheticAudioAmplitudeWave, 0, 0.25);
                 }
 
-                // Human Natural Eye Blink Randomizer
-                let blinkValue = (Math.sin(elapsed * 5) > 0.98 || (elapsed % 6.0 > 5.8)) ? 1.0 : 0.0;
+                let blinkValue = (Math.sin(elapsed * 4.8) > 0.98 || (elapsed % 6.5 > 6.2)) ? 1.0 : 0.0;
 
                 // Mesh Safety Validation Loop
                 avaturnSkinnedMeshes.forEach(mesh => {
@@ -462,15 +513,17 @@
                     if (dict['eyeBlinkRight'] !== undefined) influences[dict['eyeBlinkRight']] = blinkValue;
 
                     if (morphTarget && dict[morphTarget] !== undefined) {
-                        influences[dict[morphTarget]] = THREE.MathUtils.lerp(influences[dict[morphTarget]], morphIntensity, 0.12);
+                        influences[dict[morphTarget]] = THREE.MathUtils.lerp(influences[dict[morphTarget]], morphIntensity, 0.15);
                     } else {
                         Object.keys(dict).forEach(key => {
                             if (key !== 'jawOpen' && key !== 'eyeBlinkLeft' && key !== 'eyeBlinkRight') {
-                                influences[dict[key]] = THREE.MathUtils.lerp(influences[dict[key]], 0, 0.08);
+                                influences[dict[key]] = THREE.MathUtils.lerp(influences[dict[key]], 0, 0.1);
                             }
                         });
                     }
                 });
+
+                structuralAvatar3DModelRoot.updateMatrixWorld(true);
             }
 
             coreWebGLRendererModule.render(coreThreeSceneInstance, corePerspectiveCameraNode);
@@ -494,7 +547,7 @@
                 parseAndRouteCommands(text);
             };
             speechProcessor.onstart = () => { document.getElementById('micBtn').classList.add('listening'); };
-            speechProcessor.onend = () => { document.getElementById('micBtn').classList.remove('remove'); };
+            speechProcessor.onend = () => { document.getElementById('micBtn').classList.remove('listening'); };
             document.getElementById('micBtn').addEventListener('click', () => { try{ speechProcessor.start(); }catch(e){} });
         }
 
