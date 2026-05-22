@@ -3,101 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>प्रिया AI - प्रोडक्शन रेडी v7.6</title>
+    <title>प्रिया AI - Final Production v7.7.1</title>
     <style>
-        :root {
-            --neon-cyan: #00ffcc;
-            --neon-blue: #0077ff;
-            --neon-pink: #ff007f;
-            --text-core-white: #ffffff;
-            --text-dim-slate: #8a99ad;
-            --bg-glass-panel: rgba(10, 10, 22, 0.7);
-            --border-matte-white: rgba(255, 255, 255, 0.1);
-            --bg-input-field: rgba(6, 6, 18, 0.85);
-        }
-
-        body, html {
-            margin: 0; padding: 0; width: 100%; height: 100%;
-            overflow: hidden; 
-            background: #020206 url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1920') no-repeat center center;
-            background-size: cover;
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        #canvas-container {
-            width: 100%; height: 100%; position: absolute; top: 0; left: 0;
-            z-index: 3; cursor: pointer; touch-action: none;
-        }
-
-        .dashboard {
-            position: absolute; top: 20px; left: 20px; z-index: 10;
-            background: var(--bg-glass-panel); padding: 14px 20px; border-radius: 16px;
-            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-            border: 1px solid var(--border-matte-white);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-        }
-
-        .status-block { display: flex; align-items: center; margin-bottom: 6px; }
-        .status-beacon-dot {
-            width: 10px; height: 10px; background: var(--neon-cyan);
-            border-radius: 50%; margin-right: 10px;
-            box-shadow: 0 0 10px var(--neon-cyan);
-        }
-        .status-title { font-size: 13px; font-weight: 700; text-transform: uppercase; color: var(--text-core-white); letter-spacing: 0.5px; }
-        .channel-info { font-size: 11px; color: var(--text-dim-slate); margin-bottom: 2px; }
-        .badge { font-size: 11px; margin-top: 4px; font-weight: bold; color: var(--neon-pink); }
-
-        .ui-dock-wrapper {
-            position: absolute; bottom: 30px; width: 100%; display: flex;
-            justify-content: center; align-items: center; gap: 12px; z-index: 20;
-            padding: 0 20px; box-sizing: border-box;
-        }
-
-        .input-carrier-box {
-            background: var(--bg-input-field); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            padding: 0 20px; border-radius: 30px; flex-grow: 1; max-width: 550px; height: 54px;
-            display: flex; align-items: center; border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .input-carrier-box:focus-within { border-color: var(--neon-cyan); }
-
-        input {
-            width: 100%; background: transparent; border: none; color: var(--text-core-white);
-            outline: none; font-size: 15px; height: 100%;
-        }
-        input::placeholder { color: rgba(255, 255, 255, 0.3); }
-
-        .action-circle-btn {
-            border: none; border-radius: 50%; width: 54px; height: 54px; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; font-size: 18px;
-            transition: transform 0.2s ease;
-        }
-        .action-circle-btn:active { transform: scale(0.95); }
-        .mic-trigger-btn { background: linear-gradient(135deg, #ff5500, #ff007f); color: white; }
-        .mic-trigger-btn.listening { background: var(--neon-cyan); animation: pulse 1s infinite alternate; }
-        .send-trigger-btn { background: white; color: black; }
-
-        #subtitle-monitor-box {
-            position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%);
-            background: rgba(4, 4, 12, 0.9); padding: 12px 24px; border-radius: 14px;
-            color: white; font-size: 14px; max-width: 75%; text-align: center; z-index: 30;
-            border: 1px solid rgba(255,255,255,0.08); display: none;
-        }
-
-        #core-boot-loader {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: #030308; z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center;
-        }
-        .loader-ring-spinner {
-            width: 45px; height: 45px; border: 3px solid rgba(0, 255, 204, 0.1);
-            border-radius: 50%; border-top-color: var(--neon-cyan); animation: spin 1s linear infinite; margin-bottom: 15px;
-        }
-        .loader-label-text { color: #fff; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; text-align: center; }
-
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes pulse { 0% { transform: scale(1); } 100% { transform: scale(1.05); } }
+        :root { --neon-cyan: #00ffcc; --neon-pink: #ff007f; --bg-glass: rgba(10, 10, 22, 0.7); }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #020206; font-family: 'Segoe UI', sans-serif; }
+        #canvas-container { width: 100%; height: 100%; position: absolute; z-index: 3; touch-action: none; }
+        .dashboard { position: absolute; top: 20px; left: 20px; z-index: 10; background: var(--bg-glass); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); color: white; }
+        .ui-dock { position: absolute; bottom: 30px; width: 100%; display: flex; justify-content: center; gap: 15px; z-index: 20; }
+        .input-box { background: rgba(255,255,255,0.1); border-radius: 30px; padding: 10px 20px; width: 300px; border: none; color: white; outline: none; }
+        .btn { border-radius: 50%; width: 50px; height: 50px; border: none; cursor: pointer; }
+        #subtitle { position: absolute; bottom: 120px; left: 50%; transform: translateX(-50%); color: white; background: rgba(0,0,0,0.6); padding: 10px 20px; border-radius: 10px; display: none; }
     </style>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
@@ -105,449 +21,82 @@
 <body>
 
     <div class="dashboard">
-        <div class="status-block">
-            <span class="status-beacon-dot"></span> 
-            <span class="status-title" id="system-core-mood-txt">प्रिया कोर v7.6</span>
-        </div>
-        <div class="channel-info">सिस्टम मोड: <span style="color:#00ffcc;" id="dynamic-device-ui">सिंक हो रहा है...</span></div>
-        <div class="badge">🛡️ एरर फ्री कमांड आर्किटेक्चर</div>
+        <div id="system-core-mood-txt">प्रिया कोर v7.7.1</div>
     </div>
-
-    <div id="core-boot-loader">
-        <div class="loader-ring-spinner"></div>
-        <div class="loader-label-text">एंटी-फ्लोट लॉकिंग चालू है...</div>
-    </div>
-
+    <div id="subtitle"></div>
     <div id="canvas-container"></div>
-    <div id="subtitle-monitor-box">प्रिया सुन रही है...</div>
-
-    <div class="ui-dock-wrapper">
-        <button class="action-circle-btn mic-trigger-btn" id="micBtn">🎤</button>
-        <div class="input-carrier-box">
-            <input type="text" id="userInput" placeholder="कमांड दें या बात करें..." autocomplete="off"/>
-        </div>
-        <button class="action-circle-btn send-trigger-btn" id="sendBtn">➔</button>
+    <div class="ui-dock">
+        <button class="btn" id="micBtn">🎤</button>
+        <input type="text" class="input-box" id="userInput" placeholder="कमांड दें...">
+        <button class="btn" id="sendBtn">➔</button>
     </div>
 
     <script>
-        const APPS_SCRIPT_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyI_Vz0rR7O_CclY-vH-XUorR_2oBsh236U_v7a2g5_nre382_j0Xy28rYhY24vG_E/exec";
-        const ALTERNATE_ASSET_URI = "https://cdn.jsdelivr.net/gh/jessearmy572-hub/naman3@main/model.glb";
-
-        let coreThreeSceneInstance, corePerspectiveCameraNode, coreWebGLRendererModule, coreOrbitControlsRig, coreSystemClockReference;
-        let structuralAvatar3DModelRoot = null;
-        let ambientDropShadowPlane = null;
+        // CORE INITIALIZATION
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 100);
+        const renderer = new THREE.WebGLRenderer({antialias: true, alpha: true});
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
         
-        let boneHead = null, boneNeck = null, boneSpine = null, boneSpine1 = null, boneSpine2 = null;
-        let boneLeftArm = null, boneRightArm = null, boneLeftForeArm = null, boneRightForeArm = null;
-        let avaturnSkinnedMeshes = [];
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        camera.position.set(0, 0, 1.5);
+        controls.enablePan = false; controls.minDistance = 1.0; controls.maxDistance = 3.0;
 
-        const interactionRaycaster = new THREE.Raycaster();
-        const pointerNormalizedCoordinates = new THREE.Vector2();
-        let pointerTargetX = 0, pointerTargetY = 0, smoothTrackX = 0, smoothTrackY = 0;
+        // LIGHTING
+        scene.add(new THREE.AmbientLight(0xffffff, 1.5));
+        
+        // GLOBAL VARIABLES
+        let model, mixer, bones = {};
+        let state = 'idle', stateTime = 0;
 
-        let liveVocalOutputStateSignalActive = false, syntheticAudioAmplitudeWave = 0;
-        let activeEmotionalState = 'idle';
-        let stateStartTime = 0;
-
-        // 🎯 FIXED ANATOMICAL RESTING POSTURE (Zeroing Shrug & Dropping Shoulders Naturally)
-        const boneTargets = {
-            spine: { x: 0, y: 0, z: 0 },
-            leftArm: { x: 0.0, y: 0.0, z: -Math.PI / 2.1 }, 
-            rightArm: { x: 0.0, y: 0.0, z: Math.PI / 2.1 },
-            leftForeArm: { x: 0.0, y: 0.1, z: 0 },
-            rightForeArm: { x: 0.0, y: -0.1, z: 0 }
-        };
-
-        const SpeechEngine = window.SpeechRecognition || window.webkitSpeechRecognition;
-        let speechProcessor = SpeechEngine ? new SpeechEngine() : null;
-        if (speechProcessor) { speechProcessor.continuous = false; speechProcessor.lang = 'hi-IN'; }
-
-        function initializeGraphicsPipeline() {
-            const container = document.getElementById('canvas-container');
-            coreSystemClockReference = new THREE.Clock();
-            coreThreeSceneInstance = new THREE.Scene();
-            coreThreeSceneInstance.fog = new THREE.FogExp2(0x0a0a14, 0.02);
-
-            coreWebGLRendererModule = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
-            coreWebGLRendererModule.setSize(window.innerWidth, window.innerHeight);
-            coreWebGLRendererModule.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            coreWebGLRendererModule.toneMapping = THREE.ACESFilmicToneMapping;
-            coreWebGLRendererModule.toneMappingExposure = 1.15;
-            coreWebGLRendererModule.shadowMap.enabled = true;
-            coreWebGLRendererModule.shadowMap.type = THREE.PCFSoftShadowMap;
-            container.appendChild(coreWebGLRendererModule.domElement);
-
-            corePerspectiveCameraNode = new THREE.PerspectiveCamera(38, window.innerWidth / window.innerHeight, 0.1, 50);
-            
-            coreOrbitControlsRig = new THREE.OrbitControls(corePerspectiveCameraNode, coreWebGLRendererModule.domElement);
-            coreOrbitControlsRig.enableZoom = true;
-            coreOrbitControlsRig.enablePan = false;
-            coreOrbitControlsRig.minDistance = 0.5;
-            coreOrbitControlsRig.maxDistance = 4.0;
-            coreOrbitControlsRig.enableDamping = true;
-            coreOrbitControlsRig.dampingFactor = 0.05;
-
-            const shadowPlaneGeo = new THREE.PlaneGeometry(5, 5);
-            const shadowPlaneMat = new THREE.ShadowMaterial({ opacity: 0.75 });
-            ambientDropShadowPlane = new THREE.Mesh(shadowPlaneGeo, shadowPlaneMat);
-            ambientDropShadowPlane.rotation.x = -Math.PI / 2;
-            ambientDropShadowPlane.position.y = -1.35; 
-            ambientDropShadowPlane.receiveShadow = true;
-            coreThreeSceneInstance.add(ambientDropShadowPlane);
-
-            const hemiLight = new THREE.HemisphereLight(0xffffff, 0x333344, 2.4);
-            coreThreeSceneInstance.add(hemiLight);
-
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
-            directionalLight.position.set(2, 4, 3);
-            directionalLight.castShadow = true;
-            directionalLight.shadow.mapSize.width = 2048;
-            directionalLight.shadow.mapSize.height = 2048;
-            directionalLight.shadow.bias = -0.0004;
-            coreThreeSceneInstance.add(directionalLight);
-
-            autoCalibrateViewport();
-
-            const gltfLoader = new THREE.GLTFLoader();
-            gltfLoader.load(ALTERNATE_ASSET_URI, (gltf) => {
-                structuralAvatar3DModelRoot = gltf.scene;
-                
-                structuralAvatar3DModelRoot.traverse((node) => {
-                    if (node.isMesh) {
-                        node.castShadow = true;
-                        node.receiveShadow = true;
-                    }
-                    if (node.isBone) {
-                        const boneName = node.name.toLowerCase();
-                        if (boneName.includes('head')) boneHead = node;
-                        else if (boneName.includes('neck')) boneNeck = node;
-                        else if (boneName === 'spine') boneSpine = node;
-                        else if (boneName === 'spine1') boneSpine1 = node;
-                        else if (boneName === 'spine2') boneSpine2 = node;
-                        else if (boneName.includes('leftarm')) boneLeftArm = node;
-                        else if (boneName.includes('rightarm')) boneRightArm = node;
-                        else if (boneName.includes('leftforearm')) boneLeftForeArm = node;
-                        else if (boneName.includes('rightforearm')) boneRightForeArm = node;
-                    }
-                    if (node.isMesh && node.morphTargetDictionary) {
-                        avaturnSkinnedMeshes.push(node);
-                    }
-                });
-
-                structuralAvatar3DModelRoot.position.set(0, -1.35, 0); 
-                structuralAvatar3DModelRoot.scale.setScalar(1.28);
-                coreThreeSceneInstance.add(structuralAvatar3DModelRoot);
-                
-                document.getElementById('core-boot-loader').style.display = 'none';
-                enforceAnatomicalBaselines();
-            });
-
-            window.addEventListener('mousemove', (e) => {
-                pointerTargetX = (e.clientX / window.innerWidth) * 2 - 1;
-                pointerTargetY = -(e.clientY / window.innerHeight) * 2 + 1;
-            });
-
-            window.addEventListener('touchmove', (e) => {
-                if (e.touches.length > 0) {
-                    pointerTargetX = (e.touches[0].clientX / window.innerWidth) * 2 - 1;
-                    pointerTargetY = -(e.touches[0].clientY / window.innerHeight) * 2 + 1;
-                }
-            }, { passive: true });
-
-            container.addEventListener('click', parseTouchRaycastTrigger, false);
-            window.addEventListener('resize', () => {
-                corePerspectiveCameraNode.aspect = window.innerWidth / window.innerHeight;
-                corePerspectiveCameraNode.updateProjectionMatrix();
-                coreWebGLRendererModule.setSize(window.innerWidth, window.innerHeight);
-                autoCalibrateViewport();
-            });
-        }
-
-        function autoCalibrateViewport() {
-            if (window.innerWidth < 500) {
-                document.getElementById('dynamic-device-ui').innerText = "मोबाइल अलाइन";
-                corePerspectiveCameraNode.position.set(0, -0.15, 1.55);
-                coreOrbitControlsRig.target.set(0, -0.3, 0);
-            } else {
-                document.getElementById('dynamic-device-ui').innerText = "डेस्कटॉप अलाइन";
-                corePerspectiveCameraNode.position.set(0, 0, 1.25);
-                coreOrbitControlsRig.target.set(0, -0.1, 0);
-            }
-            coreOrbitControlsRig.update();
-        }
-
-        function enforceAnatomicalBaselines() {
-            boneTargets.spine = { x: 0, y: 0, z: 0 };
-            boneTargets.leftArm = { x: 0.0, y: 0.0, z: -Math.PI / 2.1 }; 
-            boneTargets.rightArm = { x: 0.0, y: 0.0, z: Math.PI / 2.1 };
-            boneTargets.leftForeArm = { x: 0.0, y: 0.1, z: 0 };
-            boneTargets.rightForeArm = { x: 0.0, y: -0.1, z: 0 };
-        }
-
-        function parseTouchRaycastTrigger(event) {
-            if (!structuralAvatar3DModelRoot) return;
-            let cx = event.clientX || (event.touches && event.touches[0].clientX);
-            let cy = event.clientY || (event.touches && event.touches[0].clientY);
-            
-            pointerNormalizedCoordinates.x = (cx / window.innerWidth) * 2 - 1;
-            pointerNormalizedCoordinates.y = -(cy / window.innerHeight) * 2 + 1;
-
-            interactionRaycaster.setFromCamera(pointerNormalizedCoordinates, corePerspectiveCameraNode);
-            const intersects = interactionRaycaster.intersectObjects(structuralAvatar3DModelRoot.children, true);
-            
-            if (intersects.length > 0) {
-                let hitObjectName = intersects[0].object.name.toLowerCase();
-                let currentCheckNode = intersects[0].object;
-
-                while(currentCheckNode && currentCheckNode !== structuralAvatar3DModelRoot) {
-                    if(currentCheckNode.name) {
-                        let innerName = currentCheckNode.name.toLowerCase();
-                        if(innerName.includes("head") || innerName.includes("face") || innerName.includes("neck")) {
-                            hitObjectName = "head_zone";
-                            break;
-                        }
-                        if(innerName.includes("leftarm") || innerName.includes("leftshoulder") || innerName.includes("leftforearm")) {
-                            hitObjectName = "left_arm_zone";
-                            break;
-                        }
-                        if(innerName.includes("rightarm") || innerName.includes("rightshoulder") || innerName.includes("rightforearm")) {
-                            hitObjectName = "right_arm_zone";
-                            break;
-                        }
-                        if(innerName.includes("spine") || innerName.includes("body") || innerName.includes("hips") || innerName.includes("tops")) {
-                            hitObjectName = "spine_zone";
-                            break;
-                        }
-                    }
-                    currentCheckNode = currentCheckNode.parent;
-                }
-
-                if (hitObjectName === "head_zone") {
-                    triggerStateMatrix('touch_head');
-                    dispatchSpeechBuffer("अरे! चेहरे पर टच मत कीजिए ना, सीधे बात बताइए क्या काम है?");
-                } 
-                else if (hitObjectName === "left_arm_zone" || hitObjectName === "right_arm_zone") {
-                    triggerStateMatrix('touch_hand');
-                    dispatchSpeechBuffer("आप मेरा हाथ पकड़कर बात कर सकते हैं, मैं सुन रही हूँ।");
-                } 
-                else if (hitObjectName === "spine_zone") {
-                    triggerStateMatrix('touch_spine');
-                    dispatchSpeechBuffer("कृपया थोड़ा ध्यान रखें, सीधे वॉयस कमांड का इस्तेमाल करें।");
-                }
-                else {
-                    triggerStateMatrix('subtle_touch');
-                    dispatchSpeechBuffer("जी बताइए, क्या निर्देश है मेरे लिए?");
-                }
-            }
-        }
-
-        function parseAndRouteCommands(rawStr) {
-            if (!rawStr || !rawStr.trim()) return;
-            const text = rawStr.trim().toLowerCase();
-
-            if (text.includes("नमस्ते") || text.includes("hello") || text.includes("hi")) {
-                triggerStateMatrix('greet');
-                dispatchSpeechBuffer("नमस्ते! आपसे मिलकर बहुत अच्छा लगा।");
-            } else if (text.includes("डांस") || text.includes("dance") || text.includes("नाचो")) {
-                triggerStateMatrix('dance');
-                dispatchSpeechBuffer("बिल्कुल, देखिए मेरे मूवमेंट्स!");
-            } else if (text.includes("गुस्सा") || text.includes("angry")) {
-                triggerStateMatrix('angry');
-                dispatchSpeechBuffer("मुझे गुस्सा मत दिलाइए!");
-            } else if (text.includes("मुस्कुरा") || text.includes("smile")) {
-                triggerStateMatrix('smile');
-                dispatchSpeechBuffer("शुक्रिया, आपके निर्देश का पालन कर रही हूँ।");
-            } else {
-                triggerServerFallback(rawStr);
-            }
-        }
-
-        function triggerStateMatrix(stateName) {
-            activeEmotionalState = stateName;
-            stateStartTime = coreSystemClockReference.getElapsedTime();
-            document.getElementById('system-core-mood-txt').innerText = `प्रिया मोड: ${stateName.toUpperCase()}`;
-        }
-
-        function dispatchSpeechBuffer(text) {
-            if (!window.speechSynthesis || !text) return;
-            window.speechSynthesis.cancel();
-
-            const subtitleBox = document.getElementById('subtitle-monitor-box');
-            subtitleBox.innerText = text;
-            subtitleBox.style.display = 'block';
-
-            let utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'hi-IN';
-            utterance.onstart = () => { liveVocalOutputStateSignalActive = true; };
-            utterance.onend = () => { liveVocalOutputStateSignalActive = false; subtitleBox.style.display = 'none'; };
-            utterance.onerror = () => { liveVocalOutputStateSignalActive = false; };
-            window.speechSynthesis.speak(utterance);
-        }
-
-        async function triggerServerFallback(userString) {
-            if (!userString.trim()) return;
-            triggerStateMatrix("thinking");
-            try {
-                const response = await fetch(APPS_SCRIPT_WEB_APP_URL, { method: "POST", body: JSON.stringify({ query: userString }) });
-                const data = await response.json();
-                triggerStateMatrix("idle");
-                dispatchSpeechBuffer(data.text || data.output || "उत्तर मिल गया है।");
-            } catch (e) {
-                triggerStateMatrix("idle");
-                dispatchSpeechBuffer("मैं पूरी तरह तैयार हूँ, बताइए।");
-            }
-        }
-
-        function executeMasterFrameCycle() {
-            requestAnimationFrame(executeMasterFrameCycle);
-
-            const delta = coreSystemClockReference.getDelta();
-            const elapsed = coreSystemClockReference.getElapsedTime();
-
-            if (coreOrbitControlsRig) coreOrbitControlsRig.update();
-
-            if (structuralAvatar3DModelRoot) {
-                smoothTrackX = THREE.MathUtils.lerp(smoothTrackX, pointerTargetX, 0.07);
-                smoothTrackY = THREE.MathUtils.lerp(smoothTrackY, pointerTargetY, 0.07);
-
-                const breathWave = Math.sin(elapsed * 1.5);
-                const naturalSway = Math.cos(elapsed * 0.5);
-
-                enforceAnatomicalBaselines();
-
-                const stateElapsed = elapsed - stateStartTime;
-                let morphTarget = null;
-                let morphIntensity = 0;
-
-                if (activeEmotionalState === 'touch_head') {
-                    boneTargets.spine = { x: 0.02, y: 0.06, z: 0.02 };
-                    morphTarget = 'mouthSmileLeft'; morphIntensity = 0.85;
-                    if (stateElapsed > 2.5) triggerStateMatrix('idle');
-
-                } else if (activeEmotionalState === 'touch_hand') {
-                    boneTargets.leftArm = { x: 0.15, y: 0.1, z: -Math.PI / 2.5 };
-                    boneTargets.rightArm = { x: 0.15, y: -0.1, z: Math.PI / 2.5 };
-                    morphTarget = 'mouthSmileRight'; morphIntensity = 0.5;
-                    if (stateElapsed > 3.0) triggerStateMatrix('idle');
-
-                } else if (activeEmotionalState === 'touch_spine') {
-                    boneTargets.spine = { x: -0.06, y: -0.06, z: 0 };
-                    morphTarget = 'mouthFrownLeft'; morphIntensity = 0.6;
-                    if (stateElapsed > 2.5) triggerStateMatrix('idle');
-
-                } else if (activeEmotionalState === 'greet') {
-                    boneTargets.rightArm = { x: -0.1, y: -0.1, z: Math.PI / 2.8 };
-                    boneTargets.rightForeArm = { x: 0.2, y: Math.sin(stateElapsed * 4) * 0.1, z: 0 };
-                    morphTarget = 'mouthSmileLeft'; morphIntensity = 0.5;
-                    if (stateElapsed > 3.0) triggerStateMatrix('idle');
-
-                } else if (activeEmotionalState === 'dance') {
-                    const wave = Math.sin(stateElapsed * 3.0);
-                    boneTargets.spine = { x: 0, y: wave * 0.06, z: wave * 0.03 };
-                    boneTargets.leftArm = { x: 0.0, y: 0, z: -Math.PI / 2.1 + (wave * 0.05) };
-                    boneTargets.rightArm = { x: 0.0, y: 0, z: Math.PI / 2.1 - (wave * 0.05) };
-                    if (stateElapsed > 5.5) triggerStateMatrix('idle');
-
-                } else if (activeEmotionalState === 'smile') {
-                    morphTarget = 'mouthSmileLeft'; morphIntensity = 0.7;
-                    if (stateElapsed > 3.5) triggerStateMatrix('idle');
-
-                } else if (activeEmotionalState === 'angry') {
-                    boneTargets.spine = { x: 0.04, y: 0, z: 0 };
-                    morphTarget = 'mouthFrownLeft'; morphIntensity = 0.7;
-                    if (stateElapsed > 3.0) triggerStateMatrix('idle');
-                }
-
-                const speed = 0.08;
-                if (boneSpine) {
-                    boneSpine.rotation.x = THREE.MathUtils.lerp(boneSpine.rotation.x, boneTargets.spine.x + (breathWave * 0.005), speed);
-                    boneSpine.rotation.y = THREE.MathUtils.lerp(boneSpine.rotation.y, boneTargets.spine.y, speed);
-                    boneSpine.rotation.z = THREE.MathUtils.lerp(boneSpine.rotation.z, boneTargets.spine.z + (naturalSway * 0.002), speed);
-                }
-
-                if (boneLeftArm) {
-                    boneLeftArm.rotation.x = THREE.MathUtils.lerp(boneLeftArm.rotation.x, boneTargets.leftArm.x, speed);
-                    boneLeftArm.rotation.z = THREE.MathUtils.lerp(boneLeftArm.rotation.z, boneTargets.leftArm.z, speed);
-                }
-                if (boneRightArm) {
-                    boneRightArm.rotation.x = THREE.MathUtils.lerp(boneRightArm.rotation.x, boneTargets.rightArm.x, speed);
-                    boneRightArm.rotation.z = THREE.MathUtils.lerp(boneRightArm.rotation.z, boneTargets.rightArm.z, speed);
-                }
-                if (boneLeftForeArm) boneLeftForeArm.rotation.y = THREE.MathUtils.lerp(boneLeftForeArm.rotation.y, boneTargets.leftForeArm.y, speed);
-                if (boneRightForeArm) boneRightForeArm.rotation.y = THREE.MathUtils.lerp(boneRightForeArm.rotation.y, boneTargets.rightForeArm.y, speed);
-
-                if (boneHead) {
-                    let lookModifier = (activeEmotionalState === 'touch_head') ? 0.04 : 0.28;
-                    boneHead.rotation.y = THREE.MathUtils.lerp(boneHead.rotation.y, smoothTrackX * lookModifier, 0.08);
-                    boneHead.rotation.x = THREE.MathUtils.lerp(boneHead.rotation.x, -smoothTrackY * 0.18 + (breathWave * 0.003), 0.08);
-                }
-                if (boneNeck) {
-                    boneNeck.rotation.y = THREE.MathUtils.lerp(boneNeck.rotation.y, smoothTrackX * 0.08, 0.08);
-                    boneNeck.position.y = THREE.MathUtils.lerp(boneNeck.position.y, boneNeck.position.y, speed);
-                }
-
-                if (liveVocalOutputStateSignalActive) {
-                    syntheticAudioAmplitudeWave = (Math.sin(elapsed * 25) * Math.cos(elapsed * 14) * 0.35) + 0.3;
-                } else {
-                    syntheticAudioAmplitudeWave = THREE.MathUtils.lerp(syntheticAudioAmplitudeWave, 0, 0.25);
-                }
-
-                let blinkValue = (Math.sin(elapsed * 4.8) > 0.98 || (elapsed % 6.5 > 6.2)) ? 1.0 : 0.0;
-
-                avaturnSkinnedMeshes.forEach(mesh => {
-                    const dict = mesh.morphTargetDictionary;
-                    const influences = mesh.morphTargetInfluences;
-                    if (!dict || !influences) return;
-
-                    if (dict['jawOpen'] !== undefined) influences[dict['jawOpen']] = syntheticAudioAmplitudeWave;
-                    if (dict['eyeBlinkLeft'] !== undefined) influences[dict['eyeBlinkLeft']] = blinkValue;
-                    if (dict['eyeBlinkRight'] !== undefined) influences[dict['eyeBlinkRight']] = blinkValue;
-
-                    if (morphTarget && dict[morphTarget] !== undefined) {
-                        influences[dict[morphTarget]] = THREE.MathUtils.lerp(influences[dict[morphTarget]], morphIntensity, 0.15);
-                    } else {
-                        Object.keys(dict).forEach(key => {
-                            if (key !== 'jawOpen' && key !== 'eyeBlinkLeft' && key !== 'eyeBlinkRight') {
-                                influences[dict[key]] = THREE.MathUtils.lerp(influences[dict[key]], 0, 0.15);
-                            }
-                        });
-                    }
-                });
-
-                structuralAvatar3DModelRoot.updateMatrixWorld(true);
-            }
-
-            coreWebGLRendererModule.render(coreThreeSceneInstance, corePerspectiveCameraNode);
-        }
-
-        document.getElementById('sendBtn').addEventListener('click', () => {
-            const input = document.getElementById('userInput');
-            if(input.value.trim()) { parseAndRouteCommands(input.value.trim()); input.value = ""; }
-        });
-        document.getElementById('userInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                const input = document.getElementById('userInput');
-                if(input.value.trim()) { parseAndRouteCommands(input.value.trim()); input.value = ""; }
-            }
+        // LOADER
+        const loader = new THREE.GLTFLoader();
+        loader.load("https://cdn.jsdelivr.net/gh/jessearmy572-hub/naman3@main/model.glb", (gltf) => {
+            model = gltf.scene;
+            scene.add(model);
+            model.traverse(n => { if(n.isBone) bones[n.name] = n; });
         });
 
-        if (speechProcessor) {
-            speechProcessor.onresult = (e) => {
-                if (e.results && e.results[0]) {
-                    const text = e.results[0][0].transcript;
-                    if (text && text.trim()) {
-                        document.getElementById('userInput').value = text;
-                        parseAndRouteCommands(text);
-                    }
-                }
-            };
-            speechProcessor.onstart = () => { document.getElementById('micBtn').classList.add('listening'); };
-            speechProcessor.onend = () => { document.getElementById('micBtn').classList.remove('listening'); };
-            document.getElementById('micBtn').addEventListener('click', () => { try{ speechProcessor.start(); }catch(e){} });
+        // COMMAND ENGINE
+        function executeCommand(text) {
+            text = text.toLowerCase();
+            if(text.includes('नमस्ते')) { state = 'greet'; speak("नमस्ते!"); }
+            else if(text.includes('डांस')) { state = 'dance'; speak("देखिए मेरे मूवमेंट्स!"); }
+            else if(text.includes('गुस्सा')) { state = 'angry'; speak("मुझे गुस्सा मत दिलाइए!"); }
+            else { state = 'idle'; }
+            stateTime = performance.now();
         }
 
-        initializeGraphicsPipeline();
-        executeMasterFrameCycle();
+        // SPEECH ENGINE
+        function speak(text) {
+            const sub = document.getElementById('subtitle');
+            sub.innerText = text; sub.style.display = 'block';
+            const msg = new SpeechSynthesisUtterance(text);
+            msg.lang = 'hi-IN';
+            msg.onend = () => sub.style.display = 'none';
+            window.speechSynthesis.speak(msg);
+        }
+
+        // ANIMATION LOOP
+        function animate() {
+            requestAnimationFrame(animate);
+            if(model) {
+                // Smooth Bone Interpolation for States
+                if(state === 'dance') {
+                    const wave = Math.sin(Date.now() * 0.005);
+                    if(bones['Spine']) bones['Spine'].rotation.y = wave * 0.2;
+                }
+                // Reset to Idle
+                if(state !== 'idle' && (performance.now() - stateTime > 5000)) state = 'idle';
+            }
+            renderer.render(scene, camera);
+        }
+
+        // LISTENERS
+        document.getElementById('sendBtn').onclick = () => executeCommand(document.getElementById('userInput').value);
+        
+        animate();
     </script>
 </body>
 </html>
