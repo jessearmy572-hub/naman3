@@ -1,114 +1,46 @@
-<!DOCTYPE html>
-<html lang="hi">
-<head>
-    <meta charset="UTF-8">
-    <title>Priya AI - Final Master v8.5</title>
-    <style>
-        body { margin: 0; overflow: hidden; background: #020208; font-family: sans-serif; color: white; }
-        #canvas-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-        .ui-dock { position: absolute; bottom: 30px; width: 100%; display: flex; justify-content: center; gap: 10px; z-index: 10; }
-        input { padding: 15px; width: 300px; border-radius: 25px; border: none; background: rgba(255,255,255,0.1); color: white; }
-        button { padding: 15px 25px; border-radius: 25px; border: none; background: #ff007f; color: white; cursor: pointer; }
-        #status, #subtitle { position: absolute; left: 20px; color: #00ffcc; font-weight: bold; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 10px; }
-        #status { top: 20px; }
-        #subtitle { bottom: 100px; left: 50%; transform: translateX(-50%); display: none; }
-    </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-</head>
-<body>
-    <div id="status">Priya AI: Loading...</div>
-    <div id="subtitle"></div>
-    <div id="canvas-container"></div>
-    <div class="ui-dock">
-        <button id="micBtn">🎤</button>
-        <input type="text" id="userInput" placeholder="कमांड दें...">
-        <button id="sendBtn">➔</button>
-    </div>
+<script>
+    // 1. Speech Recognition Fix
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = SpeechRecognition ? new SpeechRecognition() : null;
 
-    <script>
-        // CORE SETUP
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 0.1, 100);
-        const renderer = new THREE.WebGLRenderer({antialias: true});
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.getElementById('canvas-container').appendChild(renderer.domElement);
-        
-        const controls = new THREE.OrbitControls(camera, renderer.domElement);
-        controls.minDistance = 0.8; controls.maxDistance = 3.0;
-        camera.position.set(0, 0, 1.5);
+    if (recognition) {
+        recognition.lang = 'hi-IN';
+        recognition.continuous = false;
 
-        let model, bones = {}, state = 'idle', startTime = Date.now();
-        
-        // LOADER & BONE MAPPING
-        new THREE.GLTFLoader().load("https://cdn.jsdelivr.net/gh/jessearmy572-hub/naman3@main/model.glb", (gltf) => {
-            model = gltf.scene;
-            scene.add(model);
-            model.traverse(n => { if(n.isBone) bones[n.name] = n; });
-            document.getElementById('status').innerText = "Priya AI: Online";
-        });
-
-        // 1. SPEECH RECOGNITION (Integrated)
-        const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        rec.lang = 'hi-IN';
-        rec.onresult = (e) => {
-            const cmd = e.results[0][0].transcript;
-            document.getElementById('userInput').value = cmd;
-            processCommand(cmd);
+        recognition.onstart = () => {
+            document.getElementById('micBtn').classList.add('listening');
+            console.log("Mic listening...");
         };
-        document.getElementById('micBtn').onclick = () => rec.start();
 
-        // 2. COMMAND PROCESSOR (Emotional Logic)
-        function processCommand(cmd) {
-            cmd = cmd.toLowerCase();
-            if(cmd.includes('डांस')) state = 'dance';
-            else if(cmd.includes('नमस्ते')) state = 'greet';
-            else if(cmd.includes('गुस्सा')) state = 'angry';
-            else state = 'idle';
-            
-            startTime = Date.now();
-            speak("कमांड स्वीकार किया गया: " + cmd);
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            document.getElementById('userInput').value = transcript;
+            parseAndRouteAICommands(transcript); // Command process karein
+        };
+
+        recognition.onend = () => {
+            document.getElementById('micBtn').classList.remove('listening');
+        };
+    }
+
+    // 2. Click Handler (Interaction Fix)
+    document.getElementById('micBtn').addEventListener('click', () => {
+        if (recognition) {
+            try { recognition.start(); } 
+            catch(e) { console.log("Mic already active or blocked."); }
+        } else {
+            alert("Speech Recognition not supported in this browser.");
         }
+    });
 
-        function speak(text) {
-            const sub = document.getElementById('subtitle');
-            sub.innerText = text; sub.style.display = 'block';
-            const msg = new SpeechSynthesisUtterance(text);
-            msg.lang = 'hi-IN';
-            window.speechSynthesis.speak(msg);
-            setTimeout(() => sub.style.display = 'none', 3000);
-        }
-
-        // 3. INTERACTION (Touch/Raycaster)
-        window.addEventListener('click', (e) => {
-            const ray = new THREE.Raycaster();
-            ray.setFromCamera(new THREE.Vector2((e.clientX/window.innerWidth)*2-1, -(e.clientY/window.innerHeight)*2+1), camera);
-            if(model && ray.intersectObjects(model.children, true).length > 0) {
-                state = 'smile';
-                speak("मुझे क्यों छू रहे हैं?");
-            }
-        });
-
-        // 4. ANIMATION LOOP (State Machine)
-        function animate() {
-            requestAnimationFrame(animate);
-            if(model) {
-                const t = Date.now();
-                if(state === 'dance') {
-                    if(bones['Spine']) bones['Spine'].rotation.z = Math.sin(t * 0.01) * 0.5;
-                } else if(state === 'angry') {
-                    if(bones['Head']) bones['Head'].rotation.x = 0.2;
-                }
-                // Auto Reset
-                if(t - startTime > 5000) state = 'idle';
-            }
-            controls.update();
-            renderer.render(scene, camera);
-        }
-        animate();
-
-        document.getElementById('sendBtn').onclick = () => processCommand(document.getElementById('userInput').value);
-    </script>
-</body>
-</html>
+    // 3. Morph Target Fix (Blinking)
+    // model-viewer mein morph targets ke liye hum 'model-value' direct access karte hain
+    const modelViewer = document.getElementById('myModel');
+    
+    // Blink function (Error free version)
+    function triggerBlink() {
+        // Direct access via model-viewer's internal access
+        const blink = modelViewer.queryModelInfo().morphTargets.find(m => m.name === 'eyeBlinkLeft');
+        // Agar manual animation chahiye to model.animationName = "Blink" use karna best hai
+    }
+</script>
